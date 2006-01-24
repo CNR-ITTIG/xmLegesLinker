@@ -1,0 +1,2483 @@
+Simboli nonterminali inutili
+
+   leggeRegionale
+   regolamentoRegionale
+
+
+Simboli terminali inutilizzati
+
+   PAROLA
+
+
+Regole inutili
+
+  129 leggeRegionale: LEGGE regionaleConnettivo PAROLA_REGIONE
+
+  130 regolamentoRegionale: REGOLAMENTO regionaleConnettivo PAROLA_REGIONE
+
+
+State 2 conflicts: 1 shift/reduce
+State 4 conflicts: 4 shift/reduce
+State 5 conflicts: 4 shift/reduce
+State 6 conflicts: 4 shift/reduce
+State 7 conflicts: 4 shift/reduce
+State 8 conflicts: 4 shift/reduce
+State 9 conflicts: 4 shift/reduce
+State 10 conflicts: 4 shift/reduce
+State 11 conflicts: 4 shift/reduce
+State 12 conflicts: 4 shift/reduce
+State 13 conflicts: 4 shift/reduce
+State 14 conflicts: 4 shift/reduce
+State 15 conflicts: 4 shift/reduce
+State 75 conflicts: 5 shift/reduce, 3 reduce/reduce
+State 76 conflicts: 5 shift/reduce, 3 reduce/reduce
+State 86 conflicts: 2 shift/reduce
+State 88 conflicts: 2 shift/reduce
+State 109 conflicts: 3 reduce/reduce
+State 115 conflicts: 3 shift/reduce
+State 116 conflicts: 2 shift/reduce
+State 120 conflicts: 2 shift/reduce
+State 135 conflicts: 1 shift/reduce, 43 reduce/reduce
+State 145 conflicts: 1 shift/reduce
+State 157 conflicts: 2 shift/reduce
+State 168 conflicts: 3 shift/reduce
+State 172 conflicts: 1 shift/reduce, 43 reduce/reduce
+
+
+Grammatica
+
+    0 $accept: documento $end
+
+    1 documento: documento blocco
+    2          | error
+
+    3 blocco: riferimento
+    4       | BREAK
+
+    5 riferimento: normativo
+    6            | costituzione
+    7            | codice
+    8            | comunitario
+
+    9 costituzione: suddivisione COSTITUZIONE
+
+   10 normativo: suddivisioneOpz normativoTipo estremi
+
+   11 normativoTipo: leggeOrdinaria
+   12              | decretoPresidenteRepubblica
+   13              | decretoPresidenteConsiglioMinistri
+   14              | direttivaPresidenteConsiglioMinistri
+   15              | ordinanzaPresidenteConsiglioMinistri
+   16              | regio
+   17              | regionale
+
+   18 decretoPresidenteRepubblica: DECRETO_PRESIDENTE_REPUBBLICA
+
+   19 decretoPresidenteConsiglioMinistri: DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI
+
+   20 direttivaPresidenteConsiglioMinistri: DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI
+
+   21 ordinanzaPresidenteConsiglioMinistri: ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI
+
+   22 leggeOrdinaria: LEGGE_COSTITUZIONALE
+   23               | LEGGE
+   24               | DECRETO_LEGGE
+   25               | DECRETO_LEGISLATIVO
+
+   26 regio: REGIO_DECRETO
+   27      | REGIO_DECRETO_LEGGE
+   28      | REGIO_DECRETO_LEGISLATIVO
+
+   29 regionale: regionaleTipo regionaleConnettivo regioneParola regioneNome
+
+   30 regioneParola: PAROLA_REGIONE
+   31              | /* vuoto */
+
+   32 regioneNome: REGIONE
+   33            | /* vuoto */
+
+   34 regionaleTipo: LEGGE_REGIONALE
+   35              | REGOLAMENTO_REGIONALE
+
+   36 regionaleConnettivo: DEL
+   37                    | DELL
+   38                    | DELLA
+   39                    | /* vuoto */
+
+   40 codice: suddivisioneOpz codiceTipo
+
+   41 codiceTipo: CODICE_CIVILE
+   42           | CODICE_PROCEDURA_CIVILE
+   43           | CODICE_PENALE
+   44           | CODICE_PROCEDURA_PENALE
+
+   45 comunitario: suddivisioneOpz comunitarioTipo estremiConnettivo dataOpz
+
+   46 comunitarioTipo: comunitarioDirettiva
+   47                | comunitarioDecisione
+   48                | comunitarioRegolamento
+
+   49 comunitarioNumero: UE_NUM
+
+   50 comunitarioEmanante: comunitarioConnettivo comunitarioOrgano comunitarioEmananteAltri
+
+   51 comunitarioConnettivo: DEL
+   52                      | DELLA
+   53                      | /* vuoto */
+
+   54 comunitarioOrgano: PARLAMENTO
+   55                  | CONSIGLIO
+   56                  | COMMISSIONE
+   57                  | /* vuoto */
+
+   58 comunitarioEmananteAltri: comunitarioAltri comunitarioConnettivo comunitarioOrgano comunitarioEmananteAltri
+   59                         | /* vuoto */
+
+   60 comunitarioAltri: E
+   61                 | /* vuoto */
+
+   62 comunitarioDirettiva: DIRETTIVA comunitarioEstremi comunitarioEmanante comunitarioDenominazione
+   63                     | DIRETTIVA comunitarioEmanante comunitarioDenominazione comunitarioEstremi
+
+   64 comunitarioDenominazione: UE_DEN
+   65                         | /* vuoto */
+
+   66 comunitarioEstremi: comunitarioNumero
+   67                   | estremi
+
+   68 comunitarioDecisione: DECISIONE comunitarioEstremi comunitarioEmanante comunitarioDenominazione
+   69                     | DECISIONE comunitarioEmanante comunitarioDenominazione comunitarioEstremi
+
+   70 comunitarioRegolamento: REGOLAMENTO comunitarioDenominazione comunitarioEstremi
+
+   71 suddivisioneOpz: suddivisione
+   72                | /* vuoto */
+
+   73 suddivisione: suddivisioni connettivoAtto
+
+   74 suddivisioni: suddivisionePartizioneSupArt
+   75             | suddivisioneArticolo
+
+   76 connettivoAtto: CITATO
+   77               | DEL
+   78               | DELL
+   79               | DELLA
+   80               | /* vuoto */
+
+   81 suddivisioneConnettivo: connettivoAtto
+
+   82 suddivisionePartizioneSupArtOpz: suddivisionePartizioneSupArt
+   83                                | /* vuoto */
+
+   84 suddivisionePartizioneSupArt: suddivisioneLibro
+   85                             | suddivisioneParte
+   86                             | suddivisioneTitolo
+   87                             | suddivisioneCapo
+   88                             | suddivisioneSezione
+
+   89 suddivisionePartizioneInfArtOpz: suddivisionePartizioneInfArt
+   90                                | /* vuoto */
+
+   91 suddivisionePartizioneInfArt: suddivisioneComma
+   92                             | suddivisioneCapoverso
+   93                             | suddivisioneLettera
+   94                             | suddivisioneNumero
+   95                             | suddivisionePeriodo
+   96                             | suddivisioneParagrafo
+
+   97 suddivisioneLibro: LIBRO suddivisioneConnettivo suddivisionePartizioneSupArtOpz
+
+   98 suddivisioneParte: PARTE suddivisioneConnettivo suddivisionePartizioneSupArtOpz
+
+   99 suddivisioneTitolo: TITOLO suddivisioneConnettivo suddivisionePartizioneSupArtOpz
+
+  100 suddivisioneCapo: CAPO suddivisioneConnettivo suddivisionePartizioneSupArtOpz
+
+  101 suddivisioneSezione: SEZIONE suddivisioneConnettivo suddivisionePartizioneSupArtOpz
+
+  102 suddivisioneArticolo: ARTICOLO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+  103                     | suddivisionePartizioneInfArtOpz suddivisioneConnettivo ARTICOLO
+
+  104 suddivisioneComma: COMMA suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+  105 suddivisioneCapoverso: CAPOVERSO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+  106 suddivisioneLettera: LETTERA suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+  107 suddivisioneNumero: NUMERO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+  108 suddivisioneParagrafo: PARAGRAFO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+  109 suddivisionePeriodo: PERIODO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+  110 estremi: estremiConnettivo estremiTipo
+
+  111 estremiTipo: estremiEstesi
+  112            | estremiAbbreviati
+
+  113 estremiEstesi: data estremiNumero
+  114              | estremiNumero estremiConnettivo data
+  115              | data
+
+  116 estremiAbbreviati: estremiNumero BARRA NUMERO_CARDINALE
+  117                  | estremiNumero estremiConnettivo NUMERO_CARDINALE
+  118                  | NUMERO_CARDINALE NUMERO
+
+  119 estremiNumero: NUMERO
+  120              | NUMERO_CARDINALE
+
+  121 estremiConnettivo: DEL
+  122                  | DELL
+  123                  | IN_DATA
+  124                  | /* vuoto */
+
+  125 dataOpz: data
+  126        | /* vuoto */
+
+  127 data: dataTipo
+
+  128 dataTipo: DATA_GG_MM_AAAA
+
+
+Simboli terminali e regole in cui appaiono
+
+$end (0) 0
+error (256) 2
+LIBRO (258) 97
+PARTE (259) 98
+TITOLO (260) 99
+CAPO (261) 100
+SEZIONE (262) 101
+ARTICOLO (263) 102 103
+COMMA (264) 104
+CAPOVERSO (265) 105
+LETTERA (266) 106
+NUMERO (267) 107 118 119
+PARAGRAFO (268) 108
+PERIODO (269) 109
+COSTITUZIONE (270) 9
+DECRETO_PRESIDENTE_REPUBBLICA (271) 18
+DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI (272) 19
+DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI (273) 20
+ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI (274) 21
+LEGGE_COSTITUZIONALE (275) 22
+LEGGE (276) 23
+DECRETO_LEGGE (277) 24
+DECRETO_LEGISLATIVO (278) 25
+REGIO_DECRETO (279) 26
+REGIO_DECRETO_LEGGE (280) 27
+REGIO_DECRETO_LEGISLATIVO (281) 28
+CODICE_CIVILE (282) 41
+CODICE_PROCEDURA_CIVILE (283) 42
+CODICE_PENALE (284) 43
+CODICE_PROCEDURA_PENALE (285) 44
+LEGGE_REGIONALE (286) 34
+REGOLAMENTO_REGIONALE (287) 35
+REGIONE (288) 32
+PAROLA_REGIONE (289) 30
+UE_NUM (290) 49
+UE_DEN (291) 64
+PARLAMENTO (292) 54
+CONSIGLIO (293) 55
+COMMISSIONE (294) 56
+DIRETTIVA (295) 62 63
+DECISIONE (296) 68 69
+REGOLAMENTO (297) 70
+DATA_GG_MM_AAAA (298) 128
+NUMERO_CARDINALE (299) 116 117 118 120
+CITATO (300) 76
+DEL (301) 36 51 77 121
+DELL (302) 37 78 122
+DELLA (303) 38 52 79
+E (304) 60
+IN_DATA (305) 123
+BARRA (306) 116
+PAROLA (307)
+BREAK (308) 4
+
+
+Simboli nonterminali e regole in cui appaiono
+
+$accept (54)
+    nel primo membro: 0
+documento (55)
+    nel primo membro: 1 2, nel secondo membro: 0 1
+blocco (56)
+    nel primo membro: 3 4, nel secondo membro: 1
+riferimento (57)
+    nel primo membro: 5 6 7 8, nel secondo membro: 3
+costituzione (58)
+    nel primo membro: 9, nel secondo membro: 6
+normativo (59)
+    nel primo membro: 10, nel secondo membro: 5
+normativoTipo (60)
+    nel primo membro: 11 12 13 14 15 16 17, nel secondo membro: 10
+decretoPresidenteRepubblica (61)
+    nel primo membro: 18, nel secondo membro: 12
+decretoPresidenteConsiglioMinistri (62)
+    nel primo membro: 19, nel secondo membro: 13
+direttivaPresidenteConsiglioMinistri (63)
+    nel primo membro: 20, nel secondo membro: 14
+ordinanzaPresidenteConsiglioMinistri (64)
+    nel primo membro: 21, nel secondo membro: 15
+leggeOrdinaria (65)
+    nel primo membro: 22 23 24 25, nel secondo membro: 11
+regio (66)
+    nel primo membro: 26 27 28, nel secondo membro: 16
+regionale (67)
+    nel primo membro: 29, nel secondo membro: 17
+regioneParola (68)
+    nel primo membro: 30 31, nel secondo membro: 29
+regioneNome (69)
+    nel primo membro: 32 33, nel secondo membro: 29
+regionaleTipo (70)
+    nel primo membro: 34 35, nel secondo membro: 29
+regionaleConnettivo (71)
+    nel primo membro: 36 37 38 39, nel secondo membro: 29
+codice (72)
+    nel primo membro: 40, nel secondo membro: 7
+codiceTipo (73)
+    nel primo membro: 41 42 43 44, nel secondo membro: 40
+comunitario (74)
+    nel primo membro: 45, nel secondo membro: 8
+comunitarioTipo (75)
+    nel primo membro: 46 47 48, nel secondo membro: 45
+comunitarioNumero (76)
+    nel primo membro: 49, nel secondo membro: 66
+comunitarioEmanante (77)
+    nel primo membro: 50, nel secondo membro: 62 63 68 69
+comunitarioConnettivo (78)
+    nel primo membro: 51 52 53, nel secondo membro: 50 58
+comunitarioOrgano (79)
+    nel primo membro: 54 55 56 57, nel secondo membro: 50 58
+comunitarioEmananteAltri (80)
+    nel primo membro: 58 59, nel secondo membro: 50 58
+comunitarioAltri (81)
+    nel primo membro: 60 61, nel secondo membro: 58
+comunitarioDirettiva (82)
+    nel primo membro: 62 63, nel secondo membro: 46
+comunitarioDenominazione (83)
+    nel primo membro: 64 65, nel secondo membro: 62 63 68 69 70
+comunitarioEstremi (84)
+    nel primo membro: 66 67, nel secondo membro: 62 63 68 69 70
+comunitarioDecisione (85)
+    nel primo membro: 68 69, nel secondo membro: 47
+comunitarioRegolamento (86)
+    nel primo membro: 70, nel secondo membro: 48
+suddivisioneOpz (87)
+    nel primo membro: 71 72, nel secondo membro: 10 40 45
+suddivisione (88)
+    nel primo membro: 73, nel secondo membro: 9 71
+suddivisioni (89)
+    nel primo membro: 74 75, nel secondo membro: 73
+connettivoAtto (90)
+    nel primo membro: 76 77 78 79 80, nel secondo membro: 73 81
+suddivisioneConnettivo (91)
+    nel primo membro: 81, nel secondo membro: 97 98 99 100 101 102
+    103 104 105 106 107 108 109
+suddivisionePartizioneSupArtOpz (92)
+    nel primo membro: 82 83, nel secondo membro: 97 98 99 100 101
+suddivisionePartizioneSupArt (93)
+    nel primo membro: 84 85 86 87 88, nel secondo membro: 74 82
+suddivisionePartizioneInfArtOpz (94)
+    nel primo membro: 89 90, nel secondo membro: 102 103 104 105 106
+    107 108 109
+suddivisionePartizioneInfArt (95)
+    nel primo membro: 91 92 93 94 95 96, nel secondo membro: 89
+suddivisioneLibro (96)
+    nel primo membro: 97, nel secondo membro: 84
+suddivisioneParte (97)
+    nel primo membro: 98, nel secondo membro: 85
+suddivisioneTitolo (98)
+    nel primo membro: 99, nel secondo membro: 86
+suddivisioneCapo (99)
+    nel primo membro: 100, nel secondo membro: 87
+suddivisioneSezione (100)
+    nel primo membro: 101, nel secondo membro: 88
+suddivisioneArticolo (101)
+    nel primo membro: 102 103, nel secondo membro: 75
+suddivisioneComma (102)
+    nel primo membro: 104, nel secondo membro: 91
+suddivisioneCapoverso (103)
+    nel primo membro: 105, nel secondo membro: 92
+suddivisioneLettera (104)
+    nel primo membro: 106, nel secondo membro: 93
+suddivisioneNumero (105)
+    nel primo membro: 107, nel secondo membro: 94
+suddivisioneParagrafo (106)
+    nel primo membro: 108, nel secondo membro: 96
+suddivisionePeriodo (107)
+    nel primo membro: 109, nel secondo membro: 95
+estremi (108)
+    nel primo membro: 110, nel secondo membro: 10 67
+estremiTipo (109)
+    nel primo membro: 111 112, nel secondo membro: 110
+estremiEstesi (110)
+    nel primo membro: 113 114 115, nel secondo membro: 111
+estremiAbbreviati (111)
+    nel primo membro: 116 117 118, nel secondo membro: 112
+estremiNumero (112)
+    nel primo membro: 119 120, nel secondo membro: 113 114 116 117
+estremiConnettivo (113)
+    nel primo membro: 121 122 123 124, nel secondo membro: 45 110 114
+    117
+dataOpz (114)
+    nel primo membro: 125 126, nel secondo membro: 45
+data (115)
+    nel primo membro: 127, nel secondo membro: 113 114 115 125
+dataTipo (116)
+    nel primo membro: 128, nel secondo membro: 127
+
+
+stato 0
+
+    0 $accept: . documento $end
+
+    error  shift e prosecuzione allo stato 1
+
+    documento  prosecuzione allo stato 2
+
+
+stato 1
+
+    2 documento: error .
+
+    $default  riduzione con la regola 2 (documento)
+
+
+stato 2
+
+    0 $accept: documento . $end
+    1 documento: documento . blocco
+
+    $end       shift e prosecuzione allo stato 3
+    LIBRO      shift e prosecuzione allo stato 4
+    PARTE      shift e prosecuzione allo stato 5
+    TITOLO     shift e prosecuzione allo stato 6
+    CAPO       shift e prosecuzione allo stato 7
+    SEZIONE    shift e prosecuzione allo stato 8
+    ARTICOLO   shift e prosecuzione allo stato 9
+    COMMA      shift e prosecuzione allo stato 10
+    CAPOVERSO  shift e prosecuzione allo stato 11
+    LETTERA    shift e prosecuzione allo stato 12
+    NUMERO     shift e prosecuzione allo stato 13
+    PARAGRAFO  shift e prosecuzione allo stato 14
+    PERIODO    shift e prosecuzione allo stato 15
+    BREAK      shift e prosecuzione allo stato 16
+
+    ARTICOLO  [riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)]
+    CITATO    riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)
+    DEL       riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)
+    DELL      riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)
+    DELLA     riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)
+    $default  riduzione con la regola 72 (suddivisioneOpz)
+
+    blocco                           prosecuzione allo stato 17
+    riferimento                      prosecuzione allo stato 18
+    costituzione                     prosecuzione allo stato 19
+    normativo                        prosecuzione allo stato 20
+    codice                           prosecuzione allo stato 21
+    comunitario                      prosecuzione allo stato 22
+    suddivisioneOpz                  prosecuzione allo stato 23
+    suddivisione                     prosecuzione allo stato 24
+    suddivisioni                     prosecuzione allo stato 25
+    suddivisionePartizioneSupArt     prosecuzione allo stato 26
+    suddivisionePartizioneInfArtOpz  prosecuzione allo stato 27
+    suddivisionePartizioneInfArt     prosecuzione allo stato 28
+    suddivisioneLibro                prosecuzione allo stato 29
+    suddivisioneParte                prosecuzione allo stato 30
+    suddivisioneTitolo               prosecuzione allo stato 31
+    suddivisioneCapo                 prosecuzione allo stato 32
+    suddivisioneSezione              prosecuzione allo stato 33
+    suddivisioneArticolo             prosecuzione allo stato 34
+    suddivisioneComma                prosecuzione allo stato 35
+    suddivisioneCapoverso            prosecuzione allo stato 36
+    suddivisioneLettera              prosecuzione allo stato 37
+    suddivisioneNumero               prosecuzione allo stato 38
+    suddivisioneParagrafo            prosecuzione allo stato 39
+    suddivisionePeriodo              prosecuzione allo stato 40
+
+
+stato 3
+
+    0 $accept: documento $end .
+
+    $default  accetta
+
+
+stato 4
+
+   97 suddivisioneLibro: LIBRO . suddivisioneConnettivo suddivisionePartizioneSupArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 46
+
+
+stato 5
+
+   98 suddivisioneParte: PARTE . suddivisioneConnettivo suddivisionePartizioneSupArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 47
+
+
+stato 6
+
+   99 suddivisioneTitolo: TITOLO . suddivisioneConnettivo suddivisionePartizioneSupArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 48
+
+
+stato 7
+
+  100 suddivisioneCapo: CAPO . suddivisioneConnettivo suddivisionePartizioneSupArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 49
+
+
+stato 8
+
+  101 suddivisioneSezione: SEZIONE . suddivisioneConnettivo suddivisionePartizioneSupArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 50
+
+
+stato 9
+
+  102 suddivisioneArticolo: ARTICOLO . suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 51
+
+
+stato 10
+
+  104 suddivisioneComma: COMMA . suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 52
+
+
+stato 11
+
+  105 suddivisioneCapoverso: CAPOVERSO . suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 53
+
+
+stato 12
+
+  106 suddivisioneLettera: LETTERA . suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 54
+
+
+stato 13
+
+  107 suddivisioneNumero: NUMERO . suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 55
+
+
+stato 14
+
+  108 suddivisioneParagrafo: PARAGRAFO . suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 56
+
+
+stato 15
+
+  109 suddivisionePeriodo: PERIODO . suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    CITATO    [riduzione con la regola 80 (connettivoAtto)]
+    DEL       [riduzione con la regola 80 (connettivoAtto)]
+    DELL      [riduzione con la regola 80 (connettivoAtto)]
+    DELLA     [riduzione con la regola 80 (connettivoAtto)]
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 57
+
+
+stato 16
+
+    4 blocco: BREAK .
+
+    $default  riduzione con la regola 4 (blocco)
+
+
+stato 17
+
+    1 documento: documento blocco .
+
+    $default  riduzione con la regola 1 (documento)
+
+
+stato 18
+
+    3 blocco: riferimento .
+
+    $default  riduzione con la regola 3 (blocco)
+
+
+stato 19
+
+    6 riferimento: costituzione .
+
+    $default  riduzione con la regola 6 (riferimento)
+
+
+stato 20
+
+    5 riferimento: normativo .
+
+    $default  riduzione con la regola 5 (riferimento)
+
+
+stato 21
+
+    7 riferimento: codice .
+
+    $default  riduzione con la regola 7 (riferimento)
+
+
+stato 22
+
+    8 riferimento: comunitario .
+
+    $default  riduzione con la regola 8 (riferimento)
+
+
+stato 23
+
+   10 normativo: suddivisioneOpz . normativoTipo estremi
+   40 codice: suddivisioneOpz . codiceTipo
+   45 comunitario: suddivisioneOpz . comunitarioTipo estremiConnettivo dataOpz
+
+    DECRETO_PRESIDENTE_REPUBBLICA            shift e prosecuzione allo stato 58
+    DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI    shift e prosecuzione allo stato 59
+    DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI  shift e prosecuzione allo stato 60
+    ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI  shift e prosecuzione allo stato 61
+    LEGGE_COSTITUZIONALE                     shift e prosecuzione allo stato 62
+    LEGGE                                    shift e prosecuzione allo stato 63
+    DECRETO_LEGGE                            shift e prosecuzione allo stato 64
+    DECRETO_LEGISLATIVO                      shift e prosecuzione allo stato 65
+    REGIO_DECRETO                            shift e prosecuzione allo stato 66
+    REGIO_DECRETO_LEGGE                      shift e prosecuzione allo stato 67
+    REGIO_DECRETO_LEGISLATIVO                shift e prosecuzione allo stato 68
+    CODICE_CIVILE                            shift e prosecuzione allo stato 69
+    CODICE_PROCEDURA_CIVILE                  shift e prosecuzione allo stato 70
+    CODICE_PENALE                            shift e prosecuzione allo stato 71
+    CODICE_PROCEDURA_PENALE                  shift e prosecuzione allo stato 72
+    LEGGE_REGIONALE                          shift e prosecuzione allo stato 73
+    REGOLAMENTO_REGIONALE                    shift e prosecuzione allo stato 74
+    DIRETTIVA                                shift e prosecuzione allo stato 75
+    DECISIONE                                shift e prosecuzione allo stato 76
+    REGOLAMENTO                              shift e prosecuzione allo stato 77
+
+    normativoTipo                         prosecuzione allo stato 78
+    decretoPresidenteRepubblica           prosecuzione allo stato 79
+    decretoPresidenteConsiglioMinistri    prosecuzione allo stato 80
+    direttivaPresidenteConsiglioMinistri  prosecuzione allo stato 81
+    ordinanzaPresidenteConsiglioMinistri  prosecuzione allo stato 82
+    leggeOrdinaria                        prosecuzione allo stato 83
+    regio                                 prosecuzione allo stato 84
+    regionale                             prosecuzione allo stato 85
+    regionaleTipo                         prosecuzione allo stato 86
+    codiceTipo                            prosecuzione allo stato 87
+    comunitarioTipo                       prosecuzione allo stato 88
+    comunitarioDirettiva                  prosecuzione allo stato 89
+    comunitarioDecisione                  prosecuzione allo stato 90
+    comunitarioRegolamento                prosecuzione allo stato 91
+
+
+stato 24
+
+    9 costituzione: suddivisione . COSTITUZIONE
+   71 suddivisioneOpz: suddivisione .
+
+    COSTITUZIONE  shift e prosecuzione allo stato 92
+
+    $default  riduzione con la regola 71 (suddivisioneOpz)
+
+
+stato 25
+
+   73 suddivisione: suddivisioni . connettivoAtto
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto  prosecuzione allo stato 93
+
+
+stato 26
+
+   74 suddivisioni: suddivisionePartizioneSupArt .
+
+    $default  riduzione con la regola 74 (suddivisioni)
+
+
+stato 27
+
+  103 suddivisioneArticolo: suddivisionePartizioneInfArtOpz . suddivisioneConnettivo ARTICOLO
+
+    CITATO  shift e prosecuzione allo stato 41
+    DEL     shift e prosecuzione allo stato 42
+    DELL    shift e prosecuzione allo stato 43
+    DELLA   shift e prosecuzione allo stato 44
+
+    $default  riduzione con la regola 80 (connettivoAtto)
+
+    connettivoAtto          prosecuzione allo stato 45
+    suddivisioneConnettivo  prosecuzione allo stato 94
+
+
+stato 28
+
+   89 suddivisionePartizioneInfArtOpz: suddivisionePartizioneInfArt .
+
+    $default  riduzione con la regola 89 (suddivisionePartizioneInfArtOpz)
+
+
+stato 29
+
+   84 suddivisionePartizioneSupArt: suddivisioneLibro .
+
+    $default  riduzione con la regola 84 (suddivisionePartizioneSupArt)
+
+
+stato 30
+
+   85 suddivisionePartizioneSupArt: suddivisioneParte .
+
+    $default  riduzione con la regola 85 (suddivisionePartizioneSupArt)
+
+
+stato 31
+
+   86 suddivisionePartizioneSupArt: suddivisioneTitolo .
+
+    $default  riduzione con la regola 86 (suddivisionePartizioneSupArt)
+
+
+stato 32
+
+   87 suddivisionePartizioneSupArt: suddivisioneCapo .
+
+    $default  riduzione con la regola 87 (suddivisionePartizioneSupArt)
+
+
+stato 33
+
+   88 suddivisionePartizioneSupArt: suddivisioneSezione .
+
+    $default  riduzione con la regola 88 (suddivisionePartizioneSupArt)
+
+
+stato 34
+
+   75 suddivisioni: suddivisioneArticolo .
+
+    $default  riduzione con la regola 75 (suddivisioni)
+
+
+stato 35
+
+   91 suddivisionePartizioneInfArt: suddivisioneComma .
+
+    $default  riduzione con la regola 91 (suddivisionePartizioneInfArt)
+
+
+stato 36
+
+   92 suddivisionePartizioneInfArt: suddivisioneCapoverso .
+
+    $default  riduzione con la regola 92 (suddivisionePartizioneInfArt)
+
+
+stato 37
+
+   93 suddivisionePartizioneInfArt: suddivisioneLettera .
+
+    $default  riduzione con la regola 93 (suddivisionePartizioneInfArt)
+
+
+stato 38
+
+   94 suddivisionePartizioneInfArt: suddivisioneNumero .
+
+    $default  riduzione con la regola 94 (suddivisionePartizioneInfArt)
+
+
+stato 39
+
+   96 suddivisionePartizioneInfArt: suddivisioneParagrafo .
+
+    $default  riduzione con la regola 96 (suddivisionePartizioneInfArt)
+
+
+stato 40
+
+   95 suddivisionePartizioneInfArt: suddivisionePeriodo .
+
+    $default  riduzione con la regola 95 (suddivisionePartizioneInfArt)
+
+
+stato 41
+
+   76 connettivoAtto: CITATO .
+
+    $default  riduzione con la regola 76 (connettivoAtto)
+
+
+stato 42
+
+   77 connettivoAtto: DEL .
+
+    $default  riduzione con la regola 77 (connettivoAtto)
+
+
+stato 43
+
+   78 connettivoAtto: DELL .
+
+    $default  riduzione con la regola 78 (connettivoAtto)
+
+
+stato 44
+
+   79 connettivoAtto: DELLA .
+
+    $default  riduzione con la regola 79 (connettivoAtto)
+
+
+stato 45
+
+   81 suddivisioneConnettivo: connettivoAtto .
+
+    $default  riduzione con la regola 81 (suddivisioneConnettivo)
+
+
+stato 46
+
+   97 suddivisioneLibro: LIBRO suddivisioneConnettivo . suddivisionePartizioneSupArtOpz
+
+    LIBRO    shift e prosecuzione allo stato 4
+    PARTE    shift e prosecuzione allo stato 5
+    TITOLO   shift e prosecuzione allo stato 6
+    CAPO     shift e prosecuzione allo stato 7
+    SEZIONE  shift e prosecuzione allo stato 8
+
+    $default  riduzione con la regola 83 (suddivisionePartizioneSupArtOpz)
+
+    suddivisionePartizioneSupArtOpz  prosecuzione allo stato 95
+    suddivisionePartizioneSupArt     prosecuzione allo stato 96
+    suddivisioneLibro                prosecuzione allo stato 29
+    suddivisioneParte                prosecuzione allo stato 30
+    suddivisioneTitolo               prosecuzione allo stato 31
+    suddivisioneCapo                 prosecuzione allo stato 32
+    suddivisioneSezione              prosecuzione allo stato 33
+
+
+stato 47
+
+   98 suddivisioneParte: PARTE suddivisioneConnettivo . suddivisionePartizioneSupArtOpz
+
+    LIBRO    shift e prosecuzione allo stato 4
+    PARTE    shift e prosecuzione allo stato 5
+    TITOLO   shift e prosecuzione allo stato 6
+    CAPO     shift e prosecuzione allo stato 7
+    SEZIONE  shift e prosecuzione allo stato 8
+
+    $default  riduzione con la regola 83 (suddivisionePartizioneSupArtOpz)
+
+    suddivisionePartizioneSupArtOpz  prosecuzione allo stato 97
+    suddivisionePartizioneSupArt     prosecuzione allo stato 96
+    suddivisioneLibro                prosecuzione allo stato 29
+    suddivisioneParte                prosecuzione allo stato 30
+    suddivisioneTitolo               prosecuzione allo stato 31
+    suddivisioneCapo                 prosecuzione allo stato 32
+    suddivisioneSezione              prosecuzione allo stato 33
+
+
+stato 48
+
+   99 suddivisioneTitolo: TITOLO suddivisioneConnettivo . suddivisionePartizioneSupArtOpz
+
+    LIBRO    shift e prosecuzione allo stato 4
+    PARTE    shift e prosecuzione allo stato 5
+    TITOLO   shift e prosecuzione allo stato 6
+    CAPO     shift e prosecuzione allo stato 7
+    SEZIONE  shift e prosecuzione allo stato 8
+
+    $default  riduzione con la regola 83 (suddivisionePartizioneSupArtOpz)
+
+    suddivisionePartizioneSupArtOpz  prosecuzione allo stato 98
+    suddivisionePartizioneSupArt     prosecuzione allo stato 96
+    suddivisioneLibro                prosecuzione allo stato 29
+    suddivisioneParte                prosecuzione allo stato 30
+    suddivisioneTitolo               prosecuzione allo stato 31
+    suddivisioneCapo                 prosecuzione allo stato 32
+    suddivisioneSezione              prosecuzione allo stato 33
+
+
+stato 49
+
+  100 suddivisioneCapo: CAPO suddivisioneConnettivo . suddivisionePartizioneSupArtOpz
+
+    LIBRO    shift e prosecuzione allo stato 4
+    PARTE    shift e prosecuzione allo stato 5
+    TITOLO   shift e prosecuzione allo stato 6
+    CAPO     shift e prosecuzione allo stato 7
+    SEZIONE  shift e prosecuzione allo stato 8
+
+    $default  riduzione con la regola 83 (suddivisionePartizioneSupArtOpz)
+
+    suddivisionePartizioneSupArtOpz  prosecuzione allo stato 99
+    suddivisionePartizioneSupArt     prosecuzione allo stato 96
+    suddivisioneLibro                prosecuzione allo stato 29
+    suddivisioneParte                prosecuzione allo stato 30
+    suddivisioneTitolo               prosecuzione allo stato 31
+    suddivisioneCapo                 prosecuzione allo stato 32
+    suddivisioneSezione              prosecuzione allo stato 33
+
+
+stato 50
+
+  101 suddivisioneSezione: SEZIONE suddivisioneConnettivo . suddivisionePartizioneSupArtOpz
+
+    LIBRO    shift e prosecuzione allo stato 4
+    PARTE    shift e prosecuzione allo stato 5
+    TITOLO   shift e prosecuzione allo stato 6
+    CAPO     shift e prosecuzione allo stato 7
+    SEZIONE  shift e prosecuzione allo stato 8
+
+    $default  riduzione con la regola 83 (suddivisionePartizioneSupArtOpz)
+
+    suddivisionePartizioneSupArtOpz  prosecuzione allo stato 100
+    suddivisionePartizioneSupArt     prosecuzione allo stato 96
+    suddivisioneLibro                prosecuzione allo stato 29
+    suddivisioneParte                prosecuzione allo stato 30
+    suddivisioneTitolo               prosecuzione allo stato 31
+    suddivisioneCapo                 prosecuzione allo stato 32
+    suddivisioneSezione              prosecuzione allo stato 33
+
+
+stato 51
+
+  102 suddivisioneArticolo: ARTICOLO suddivisioneConnettivo . suddivisionePartizioneInfArtOpz
+
+    COMMA      shift e prosecuzione allo stato 10
+    CAPOVERSO  shift e prosecuzione allo stato 11
+    LETTERA    shift e prosecuzione allo stato 12
+    NUMERO     shift e prosecuzione allo stato 13
+    PARAGRAFO  shift e prosecuzione allo stato 14
+    PERIODO    shift e prosecuzione allo stato 15
+
+    $default  riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)
+
+    suddivisionePartizioneInfArtOpz  prosecuzione allo stato 101
+    suddivisionePartizioneInfArt     prosecuzione allo stato 28
+    suddivisioneComma                prosecuzione allo stato 35
+    suddivisioneCapoverso            prosecuzione allo stato 36
+    suddivisioneLettera              prosecuzione allo stato 37
+    suddivisioneNumero               prosecuzione allo stato 38
+    suddivisioneParagrafo            prosecuzione allo stato 39
+    suddivisionePeriodo              prosecuzione allo stato 40
+
+
+stato 52
+
+  104 suddivisioneComma: COMMA suddivisioneConnettivo . suddivisionePartizioneInfArtOpz
+
+    COMMA      shift e prosecuzione allo stato 10
+    CAPOVERSO  shift e prosecuzione allo stato 11
+    LETTERA    shift e prosecuzione allo stato 12
+    NUMERO     shift e prosecuzione allo stato 13
+    PARAGRAFO  shift e prosecuzione allo stato 14
+    PERIODO    shift e prosecuzione allo stato 15
+
+    $default  riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)
+
+    suddivisionePartizioneInfArtOpz  prosecuzione allo stato 102
+    suddivisionePartizioneInfArt     prosecuzione allo stato 28
+    suddivisioneComma                prosecuzione allo stato 35
+    suddivisioneCapoverso            prosecuzione allo stato 36
+    suddivisioneLettera              prosecuzione allo stato 37
+    suddivisioneNumero               prosecuzione allo stato 38
+    suddivisioneParagrafo            prosecuzione allo stato 39
+    suddivisionePeriodo              prosecuzione allo stato 40
+
+
+stato 53
+
+  105 suddivisioneCapoverso: CAPOVERSO suddivisioneConnettivo . suddivisionePartizioneInfArtOpz
+
+    COMMA      shift e prosecuzione allo stato 10
+    CAPOVERSO  shift e prosecuzione allo stato 11
+    LETTERA    shift e prosecuzione allo stato 12
+    NUMERO     shift e prosecuzione allo stato 13
+    PARAGRAFO  shift e prosecuzione allo stato 14
+    PERIODO    shift e prosecuzione allo stato 15
+
+    $default  riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)
+
+    suddivisionePartizioneInfArtOpz  prosecuzione allo stato 103
+    suddivisionePartizioneInfArt     prosecuzione allo stato 28
+    suddivisioneComma                prosecuzione allo stato 35
+    suddivisioneCapoverso            prosecuzione allo stato 36
+    suddivisioneLettera              prosecuzione allo stato 37
+    suddivisioneNumero               prosecuzione allo stato 38
+    suddivisioneParagrafo            prosecuzione allo stato 39
+    suddivisionePeriodo              prosecuzione allo stato 40
+
+
+stato 54
+
+  106 suddivisioneLettera: LETTERA suddivisioneConnettivo . suddivisionePartizioneInfArtOpz
+
+    COMMA      shift e prosecuzione allo stato 10
+    CAPOVERSO  shift e prosecuzione allo stato 11
+    LETTERA    shift e prosecuzione allo stato 12
+    NUMERO     shift e prosecuzione allo stato 13
+    PARAGRAFO  shift e prosecuzione allo stato 14
+    PERIODO    shift e prosecuzione allo stato 15
+
+    $default  riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)
+
+    suddivisionePartizioneInfArtOpz  prosecuzione allo stato 104
+    suddivisionePartizioneInfArt     prosecuzione allo stato 28
+    suddivisioneComma                prosecuzione allo stato 35
+    suddivisioneCapoverso            prosecuzione allo stato 36
+    suddivisioneLettera              prosecuzione allo stato 37
+    suddivisioneNumero               prosecuzione allo stato 38
+    suddivisioneParagrafo            prosecuzione allo stato 39
+    suddivisionePeriodo              prosecuzione allo stato 40
+
+
+stato 55
+
+  107 suddivisioneNumero: NUMERO suddivisioneConnettivo . suddivisionePartizioneInfArtOpz
+
+    COMMA      shift e prosecuzione allo stato 10
+    CAPOVERSO  shift e prosecuzione allo stato 11
+    LETTERA    shift e prosecuzione allo stato 12
+    NUMERO     shift e prosecuzione allo stato 13
+    PARAGRAFO  shift e prosecuzione allo stato 14
+    PERIODO    shift e prosecuzione allo stato 15
+
+    $default  riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)
+
+    suddivisionePartizioneInfArtOpz  prosecuzione allo stato 105
+    suddivisionePartizioneInfArt     prosecuzione allo stato 28
+    suddivisioneComma                prosecuzione allo stato 35
+    suddivisioneCapoverso            prosecuzione allo stato 36
+    suddivisioneLettera              prosecuzione allo stato 37
+    suddivisioneNumero               prosecuzione allo stato 38
+    suddivisioneParagrafo            prosecuzione allo stato 39
+    suddivisionePeriodo              prosecuzione allo stato 40
+
+
+stato 56
+
+  108 suddivisioneParagrafo: PARAGRAFO suddivisioneConnettivo . suddivisionePartizioneInfArtOpz
+
+    COMMA      shift e prosecuzione allo stato 10
+    CAPOVERSO  shift e prosecuzione allo stato 11
+    LETTERA    shift e prosecuzione allo stato 12
+    NUMERO     shift e prosecuzione allo stato 13
+    PARAGRAFO  shift e prosecuzione allo stato 14
+    PERIODO    shift e prosecuzione allo stato 15
+
+    $default  riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)
+
+    suddivisionePartizioneInfArtOpz  prosecuzione allo stato 106
+    suddivisionePartizioneInfArt     prosecuzione allo stato 28
+    suddivisioneComma                prosecuzione allo stato 35
+    suddivisioneCapoverso            prosecuzione allo stato 36
+    suddivisioneLettera              prosecuzione allo stato 37
+    suddivisioneNumero               prosecuzione allo stato 38
+    suddivisioneParagrafo            prosecuzione allo stato 39
+    suddivisionePeriodo              prosecuzione allo stato 40
+
+
+stato 57
+
+  109 suddivisionePeriodo: PERIODO suddivisioneConnettivo . suddivisionePartizioneInfArtOpz
+
+    COMMA      shift e prosecuzione allo stato 10
+    CAPOVERSO  shift e prosecuzione allo stato 11
+    LETTERA    shift e prosecuzione allo stato 12
+    NUMERO     shift e prosecuzione allo stato 13
+    PARAGRAFO  shift e prosecuzione allo stato 14
+    PERIODO    shift e prosecuzione allo stato 15
+
+    $default  riduzione con la regola 90 (suddivisionePartizioneInfArtOpz)
+
+    suddivisionePartizioneInfArtOpz  prosecuzione allo stato 107
+    suddivisionePartizioneInfArt     prosecuzione allo stato 28
+    suddivisioneComma                prosecuzione allo stato 35
+    suddivisioneCapoverso            prosecuzione allo stato 36
+    suddivisioneLettera              prosecuzione allo stato 37
+    suddivisioneNumero               prosecuzione allo stato 38
+    suddivisioneParagrafo            prosecuzione allo stato 39
+    suddivisionePeriodo              prosecuzione allo stato 40
+
+
+stato 58
+
+   18 decretoPresidenteRepubblica: DECRETO_PRESIDENTE_REPUBBLICA .
+
+    $default  riduzione con la regola 18 (decretoPresidenteRepubblica)
+
+
+stato 59
+
+   19 decretoPresidenteConsiglioMinistri: DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI .
+
+    $default  riduzione con la regola 19 (decretoPresidenteConsiglioMinistri)
+
+
+stato 60
+
+   20 direttivaPresidenteConsiglioMinistri: DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI .
+
+    $default  riduzione con la regola 20 (direttivaPresidenteConsiglioMinistri)
+
+
+stato 61
+
+   21 ordinanzaPresidenteConsiglioMinistri: ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI .
+
+    $default  riduzione con la regola 21 (ordinanzaPresidenteConsiglioMinistri)
+
+
+stato 62
+
+   22 leggeOrdinaria: LEGGE_COSTITUZIONALE .
+
+    $default  riduzione con la regola 22 (leggeOrdinaria)
+
+
+stato 63
+
+   23 leggeOrdinaria: LEGGE .
+
+    $default  riduzione con la regola 23 (leggeOrdinaria)
+
+
+stato 64
+
+   24 leggeOrdinaria: DECRETO_LEGGE .
+
+    $default  riduzione con la regola 24 (leggeOrdinaria)
+
+
+stato 65
+
+   25 leggeOrdinaria: DECRETO_LEGISLATIVO .
+
+    $default  riduzione con la regola 25 (leggeOrdinaria)
+
+
+stato 66
+
+   26 regio: REGIO_DECRETO .
+
+    $default  riduzione con la regola 26 (regio)
+
+
+stato 67
+
+   27 regio: REGIO_DECRETO_LEGGE .
+
+    $default  riduzione con la regola 27 (regio)
+
+
+stato 68
+
+   28 regio: REGIO_DECRETO_LEGISLATIVO .
+
+    $default  riduzione con la regola 28 (regio)
+
+
+stato 69
+
+   41 codiceTipo: CODICE_CIVILE .
+
+    $default  riduzione con la regola 41 (codiceTipo)
+
+
+stato 70
+
+   42 codiceTipo: CODICE_PROCEDURA_CIVILE .
+
+    $default  riduzione con la regola 42 (codiceTipo)
+
+
+stato 71
+
+   43 codiceTipo: CODICE_PENALE .
+
+    $default  riduzione con la regola 43 (codiceTipo)
+
+
+stato 72
+
+   44 codiceTipo: CODICE_PROCEDURA_PENALE .
+
+    $default  riduzione con la regola 44 (codiceTipo)
+
+
+stato 73
+
+   34 regionaleTipo: LEGGE_REGIONALE .
+
+    $default  riduzione con la regola 34 (regionaleTipo)
+
+
+stato 74
+
+   35 regionaleTipo: REGOLAMENTO_REGIONALE .
+
+    $default  riduzione con la regola 35 (regionaleTipo)
+
+
+stato 75
+
+   62 comunitarioDirettiva: DIRETTIVA . comunitarioEstremi comunitarioEmanante comunitarioDenominazione
+   63                     | DIRETTIVA . comunitarioEmanante comunitarioDenominazione comunitarioEstremi
+
+    UE_NUM   shift e prosecuzione allo stato 108
+    DEL      shift e prosecuzione allo stato 109
+    DELL     shift e prosecuzione allo stato 110
+    DELLA    shift e prosecuzione allo stato 111
+    IN_DATA  shift e prosecuzione allo stato 112
+
+    NUMERO            riduzione con la regola 53 (comunitarioConnettivo)
+    NUMERO            [riduzione con la regola 124 (estremiConnettivo)]
+    UE_NUM            [riduzione con la regola 53 (comunitarioConnettivo)]
+    DATA_GG_MM_AAAA   riduzione con la regola 53 (comunitarioConnettivo)
+    DATA_GG_MM_AAAA   [riduzione con la regola 124 (estremiConnettivo)]
+    NUMERO_CARDINALE  riduzione con la regola 53 (comunitarioConnettivo)
+    NUMERO_CARDINALE  [riduzione con la regola 124 (estremiConnettivo)]
+    DEL               [riduzione con la regola 53 (comunitarioConnettivo)]
+    DELL              [riduzione con la regola 53 (comunitarioConnettivo)]
+    DELLA             [riduzione con la regola 53 (comunitarioConnettivo)]
+    IN_DATA           [riduzione con la regola 53 (comunitarioConnettivo)]
+    $default          riduzione con la regola 53 (comunitarioConnettivo)
+
+    comunitarioNumero      prosecuzione allo stato 113
+    comunitarioEmanante    prosecuzione allo stato 114
+    comunitarioConnettivo  prosecuzione allo stato 115
+    comunitarioEstremi     prosecuzione allo stato 116
+    estremi                prosecuzione allo stato 117
+    estremiConnettivo      prosecuzione allo stato 118
+
+
+stato 76
+
+   68 comunitarioDecisione: DECISIONE . comunitarioEstremi comunitarioEmanante comunitarioDenominazione
+   69                     | DECISIONE . comunitarioEmanante comunitarioDenominazione comunitarioEstremi
+
+    UE_NUM   shift e prosecuzione allo stato 108
+    DEL      shift e prosecuzione allo stato 109
+    DELL     shift e prosecuzione allo stato 110
+    DELLA    shift e prosecuzione allo stato 111
+    IN_DATA  shift e prosecuzione allo stato 112
+
+    NUMERO            riduzione con la regola 53 (comunitarioConnettivo)
+    NUMERO            [riduzione con la regola 124 (estremiConnettivo)]
+    UE_NUM            [riduzione con la regola 53 (comunitarioConnettivo)]
+    DATA_GG_MM_AAAA   riduzione con la regola 53 (comunitarioConnettivo)
+    DATA_GG_MM_AAAA   [riduzione con la regola 124 (estremiConnettivo)]
+    NUMERO_CARDINALE  riduzione con la regola 53 (comunitarioConnettivo)
+    NUMERO_CARDINALE  [riduzione con la regola 124 (estremiConnettivo)]
+    DEL               [riduzione con la regola 53 (comunitarioConnettivo)]
+    DELL              [riduzione con la regola 53 (comunitarioConnettivo)]
+    DELLA             [riduzione con la regola 53 (comunitarioConnettivo)]
+    IN_DATA           [riduzione con la regola 53 (comunitarioConnettivo)]
+    $default          riduzione con la regola 53 (comunitarioConnettivo)
+
+    comunitarioNumero      prosecuzione allo stato 113
+    comunitarioEmanante    prosecuzione allo stato 119
+    comunitarioConnettivo  prosecuzione allo stato 115
+    comunitarioEstremi     prosecuzione allo stato 120
+    estremi                prosecuzione allo stato 117
+    estremiConnettivo      prosecuzione allo stato 118
+
+
+stato 77
+
+   70 comunitarioRegolamento: REGOLAMENTO . comunitarioDenominazione comunitarioEstremi
+
+    UE_DEN  shift e prosecuzione allo stato 121
+
+    $default  riduzione con la regola 65 (comunitarioDenominazione)
+
+    comunitarioDenominazione  prosecuzione allo stato 122
+
+
+stato 78
+
+   10 normativo: suddivisioneOpz normativoTipo . estremi
+
+    DEL      shift e prosecuzione allo stato 123
+    DELL     shift e prosecuzione allo stato 110
+    IN_DATA  shift e prosecuzione allo stato 112
+
+    $default  riduzione con la regola 124 (estremiConnettivo)
+
+    estremi            prosecuzione allo stato 124
+    estremiConnettivo  prosecuzione allo stato 118
+
+
+stato 79
+
+   12 normativoTipo: decretoPresidenteRepubblica .
+
+    $default  riduzione con la regola 12 (normativoTipo)
+
+
+stato 80
+
+   13 normativoTipo: decretoPresidenteConsiglioMinistri .
+
+    $default  riduzione con la regola 13 (normativoTipo)
+
+
+stato 81
+
+   14 normativoTipo: direttivaPresidenteConsiglioMinistri .
+
+    $default  riduzione con la regola 14 (normativoTipo)
+
+
+stato 82
+
+   15 normativoTipo: ordinanzaPresidenteConsiglioMinistri .
+
+    $default  riduzione con la regola 15 (normativoTipo)
+
+
+stato 83
+
+   11 normativoTipo: leggeOrdinaria .
+
+    $default  riduzione con la regola 11 (normativoTipo)
+
+
+stato 84
+
+   16 normativoTipo: regio .
+
+    $default  riduzione con la regola 16 (normativoTipo)
+
+
+stato 85
+
+   17 normativoTipo: regionale .
+
+    $default  riduzione con la regola 17 (normativoTipo)
+
+
+stato 86
+
+   29 regionale: regionaleTipo . regionaleConnettivo regioneParola regioneNome
+
+    DEL    shift e prosecuzione allo stato 125
+    DELL   shift e prosecuzione allo stato 126
+    DELLA  shift e prosecuzione allo stato 127
+
+    DEL       [riduzione con la regola 39 (regionaleConnettivo)]
+    DELL      [riduzione con la regola 39 (regionaleConnettivo)]
+    $default  riduzione con la regola 39 (regionaleConnettivo)
+
+    regionaleConnettivo  prosecuzione allo stato 128
+
+
+stato 87
+
+   40 codice: suddivisioneOpz codiceTipo .
+
+    $default  riduzione con la regola 40 (codice)
+
+
+stato 88
+
+   45 comunitario: suddivisioneOpz comunitarioTipo . estremiConnettivo dataOpz
+
+    DEL      shift e prosecuzione allo stato 123
+    DELL     shift e prosecuzione allo stato 110
+    IN_DATA  shift e prosecuzione allo stato 112
+
+    DEL       [riduzione con la regola 124 (estremiConnettivo)]
+    DELL      [riduzione con la regola 124 (estremiConnettivo)]
+    $default  riduzione con la regola 124 (estremiConnettivo)
+
+    estremiConnettivo  prosecuzione allo stato 129
+
+
+stato 89
+
+   46 comunitarioTipo: comunitarioDirettiva .
+
+    $default  riduzione con la regola 46 (comunitarioTipo)
+
+
+stato 90
+
+   47 comunitarioTipo: comunitarioDecisione .
+
+    $default  riduzione con la regola 47 (comunitarioTipo)
+
+
+stato 91
+
+   48 comunitarioTipo: comunitarioRegolamento .
+
+    $default  riduzione con la regola 48 (comunitarioTipo)
+
+
+stato 92
+
+    9 costituzione: suddivisione COSTITUZIONE .
+
+    $default  riduzione con la regola 9 (costituzione)
+
+
+stato 93
+
+   73 suddivisione: suddivisioni connettivoAtto .
+
+    $default  riduzione con la regola 73 (suddivisione)
+
+
+stato 94
+
+  103 suddivisioneArticolo: suddivisionePartizioneInfArtOpz suddivisioneConnettivo . ARTICOLO
+
+    ARTICOLO  shift e prosecuzione allo stato 130
+
+
+stato 95
+
+   97 suddivisioneLibro: LIBRO suddivisioneConnettivo suddivisionePartizioneSupArtOpz .
+
+    $default  riduzione con la regola 97 (suddivisioneLibro)
+
+
+stato 96
+
+   82 suddivisionePartizioneSupArtOpz: suddivisionePartizioneSupArt .
+
+    $default  riduzione con la regola 82 (suddivisionePartizioneSupArtOpz)
+
+
+stato 97
+
+   98 suddivisioneParte: PARTE suddivisioneConnettivo suddivisionePartizioneSupArtOpz .
+
+    $default  riduzione con la regola 98 (suddivisioneParte)
+
+
+stato 98
+
+   99 suddivisioneTitolo: TITOLO suddivisioneConnettivo suddivisionePartizioneSupArtOpz .
+
+    $default  riduzione con la regola 99 (suddivisioneTitolo)
+
+
+stato 99
+
+  100 suddivisioneCapo: CAPO suddivisioneConnettivo suddivisionePartizioneSupArtOpz .
+
+    $default  riduzione con la regola 100 (suddivisioneCapo)
+
+
+stato 100
+
+  101 suddivisioneSezione: SEZIONE suddivisioneConnettivo suddivisionePartizioneSupArtOpz .
+
+    $default  riduzione con la regola 101 (suddivisioneSezione)
+
+
+stato 101
+
+  102 suddivisioneArticolo: ARTICOLO suddivisioneConnettivo suddivisionePartizioneInfArtOpz .
+
+    $default  riduzione con la regola 102 (suddivisioneArticolo)
+
+
+stato 102
+
+  104 suddivisioneComma: COMMA suddivisioneConnettivo suddivisionePartizioneInfArtOpz .
+
+    $default  riduzione con la regola 104 (suddivisioneComma)
+
+
+stato 103
+
+  105 suddivisioneCapoverso: CAPOVERSO suddivisioneConnettivo suddivisionePartizioneInfArtOpz .
+
+    $default  riduzione con la regola 105 (suddivisioneCapoverso)
+
+
+stato 104
+
+  106 suddivisioneLettera: LETTERA suddivisioneConnettivo suddivisionePartizioneInfArtOpz .
+
+    $default  riduzione con la regola 106 (suddivisioneLettera)
+
+
+stato 105
+
+  107 suddivisioneNumero: NUMERO suddivisioneConnettivo suddivisionePartizioneInfArtOpz .
+
+    $default  riduzione con la regola 107 (suddivisioneNumero)
+
+
+stato 106
+
+  108 suddivisioneParagrafo: PARAGRAFO suddivisioneConnettivo suddivisionePartizioneInfArtOpz .
+
+    $default  riduzione con la regola 108 (suddivisioneParagrafo)
+
+
+stato 107
+
+  109 suddivisionePeriodo: PERIODO suddivisioneConnettivo suddivisionePartizioneInfArtOpz .
+
+    $default  riduzione con la regola 109 (suddivisionePeriodo)
+
+
+stato 108
+
+   49 comunitarioNumero: UE_NUM .
+
+    $default  riduzione con la regola 49 (comunitarioNumero)
+
+
+stato 109
+
+   51 comunitarioConnettivo: DEL .
+  121 estremiConnettivo: DEL .
+
+    NUMERO            riduzione con la regola 51 (comunitarioConnettivo)
+    NUMERO            [riduzione con la regola 121 (estremiConnettivo)]
+    DATA_GG_MM_AAAA   riduzione con la regola 51 (comunitarioConnettivo)
+    DATA_GG_MM_AAAA   [riduzione con la regola 121 (estremiConnettivo)]
+    NUMERO_CARDINALE  riduzione con la regola 51 (comunitarioConnettivo)
+    NUMERO_CARDINALE  [riduzione con la regola 121 (estremiConnettivo)]
+    $default          riduzione con la regola 51 (comunitarioConnettivo)
+
+
+stato 110
+
+  122 estremiConnettivo: DELL .
+
+    $default  riduzione con la regola 122 (estremiConnettivo)
+
+
+stato 111
+
+   52 comunitarioConnettivo: DELLA .
+
+    $default  riduzione con la regola 52 (comunitarioConnettivo)
+
+
+stato 112
+
+  123 estremiConnettivo: IN_DATA .
+
+    $default  riduzione con la regola 123 (estremiConnettivo)
+
+
+stato 113
+
+   66 comunitarioEstremi: comunitarioNumero .
+
+    $default  riduzione con la regola 66 (comunitarioEstremi)
+
+
+stato 114
+
+   63 comunitarioDirettiva: DIRETTIVA comunitarioEmanante . comunitarioDenominazione comunitarioEstremi
+
+    UE_DEN  shift e prosecuzione allo stato 121
+
+    $default  riduzione con la regola 65 (comunitarioDenominazione)
+
+    comunitarioDenominazione  prosecuzione allo stato 131
+
+
+stato 115
+
+   50 comunitarioEmanante: comunitarioConnettivo . comunitarioOrgano comunitarioEmananteAltri
+
+    PARLAMENTO   shift e prosecuzione allo stato 132
+    CONSIGLIO    shift e prosecuzione allo stato 133
+    COMMISSIONE  shift e prosecuzione allo stato 134
+
+    PARLAMENTO   [riduzione con la regola 57 (comunitarioOrgano)]
+    CONSIGLIO    [riduzione con la regola 57 (comunitarioOrgano)]
+    COMMISSIONE  [riduzione con la regola 57 (comunitarioOrgano)]
+    $default     riduzione con la regola 57 (comunitarioOrgano)
+
+    comunitarioOrgano  prosecuzione allo stato 135
+
+
+stato 116
+
+   62 comunitarioDirettiva: DIRETTIVA comunitarioEstremi . comunitarioEmanante comunitarioDenominazione
+
+    DEL    shift e prosecuzione allo stato 136
+    DELLA  shift e prosecuzione allo stato 111
+
+    DEL       [riduzione con la regola 53 (comunitarioConnettivo)]
+    DELLA     [riduzione con la regola 53 (comunitarioConnettivo)]
+    $default  riduzione con la regola 53 (comunitarioConnettivo)
+
+    comunitarioEmanante    prosecuzione allo stato 137
+    comunitarioConnettivo  prosecuzione allo stato 115
+
+
+stato 117
+
+   67 comunitarioEstremi: estremi .
+
+    $default  riduzione con la regola 67 (comunitarioEstremi)
+
+
+stato 118
+
+  110 estremi: estremiConnettivo . estremiTipo
+
+    NUMERO            shift e prosecuzione allo stato 138
+    DATA_GG_MM_AAAA   shift e prosecuzione allo stato 139
+    NUMERO_CARDINALE  shift e prosecuzione allo stato 140
+
+    estremiTipo        prosecuzione allo stato 141
+    estremiEstesi      prosecuzione allo stato 142
+    estremiAbbreviati  prosecuzione allo stato 143
+    estremiNumero      prosecuzione allo stato 144
+    data               prosecuzione allo stato 145
+    dataTipo           prosecuzione allo stato 146
+
+
+stato 119
+
+   69 comunitarioDecisione: DECISIONE comunitarioEmanante . comunitarioDenominazione comunitarioEstremi
+
+    UE_DEN  shift e prosecuzione allo stato 121
+
+    $default  riduzione con la regola 65 (comunitarioDenominazione)
+
+    comunitarioDenominazione  prosecuzione allo stato 147
+
+
+stato 120
+
+   68 comunitarioDecisione: DECISIONE comunitarioEstremi . comunitarioEmanante comunitarioDenominazione
+
+    DEL    shift e prosecuzione allo stato 136
+    DELLA  shift e prosecuzione allo stato 111
+
+    DEL       [riduzione con la regola 53 (comunitarioConnettivo)]
+    DELLA     [riduzione con la regola 53 (comunitarioConnettivo)]
+    $default  riduzione con la regola 53 (comunitarioConnettivo)
+
+    comunitarioEmanante    prosecuzione allo stato 148
+    comunitarioConnettivo  prosecuzione allo stato 115
+
+
+stato 121
+
+   64 comunitarioDenominazione: UE_DEN .
+
+    $default  riduzione con la regola 64 (comunitarioDenominazione)
+
+
+stato 122
+
+   70 comunitarioRegolamento: REGOLAMENTO comunitarioDenominazione . comunitarioEstremi
+
+    UE_NUM   shift e prosecuzione allo stato 108
+    DEL      shift e prosecuzione allo stato 123
+    DELL     shift e prosecuzione allo stato 110
+    IN_DATA  shift e prosecuzione allo stato 112
+
+    $default  riduzione con la regola 124 (estremiConnettivo)
+
+    comunitarioNumero   prosecuzione allo stato 113
+    comunitarioEstremi  prosecuzione allo stato 149
+    estremi             prosecuzione allo stato 117
+    estremiConnettivo   prosecuzione allo stato 118
+
+
+stato 123
+
+  121 estremiConnettivo: DEL .
+
+    $default  riduzione con la regola 121 (estremiConnettivo)
+
+
+stato 124
+
+   10 normativo: suddivisioneOpz normativoTipo estremi .
+
+    $default  riduzione con la regola 10 (normativo)
+
+
+stato 125
+
+   36 regionaleConnettivo: DEL .
+
+    $default  riduzione con la regola 36 (regionaleConnettivo)
+
+
+stato 126
+
+   37 regionaleConnettivo: DELL .
+
+    $default  riduzione con la regola 37 (regionaleConnettivo)
+
+
+stato 127
+
+   38 regionaleConnettivo: DELLA .
+
+    $default  riduzione con la regola 38 (regionaleConnettivo)
+
+
+stato 128
+
+   29 regionale: regionaleTipo regionaleConnettivo . regioneParola regioneNome
+
+    PAROLA_REGIONE  shift e prosecuzione allo stato 150
+
+    $default  riduzione con la regola 31 (regioneParola)
+
+    regioneParola  prosecuzione allo stato 151
+
+
+stato 129
+
+   45 comunitario: suddivisioneOpz comunitarioTipo estremiConnettivo . dataOpz
+
+    DATA_GG_MM_AAAA  shift e prosecuzione allo stato 139
+
+    $default  riduzione con la regola 126 (dataOpz)
+
+    dataOpz   prosecuzione allo stato 152
+    data      prosecuzione allo stato 153
+    dataTipo  prosecuzione allo stato 146
+
+
+stato 130
+
+  103 suddivisioneArticolo: suddivisionePartizioneInfArtOpz suddivisioneConnettivo ARTICOLO .
+
+    $default  riduzione con la regola 103 (suddivisioneArticolo)
+
+
+stato 131
+
+   63 comunitarioDirettiva: DIRETTIVA comunitarioEmanante comunitarioDenominazione . comunitarioEstremi
+
+    UE_NUM   shift e prosecuzione allo stato 108
+    DEL      shift e prosecuzione allo stato 123
+    DELL     shift e prosecuzione allo stato 110
+    IN_DATA  shift e prosecuzione allo stato 112
+
+    $default  riduzione con la regola 124 (estremiConnettivo)
+
+    comunitarioNumero   prosecuzione allo stato 113
+    comunitarioEstremi  prosecuzione allo stato 154
+    estremi             prosecuzione allo stato 117
+    estremiConnettivo   prosecuzione allo stato 118
+
+
+stato 132
+
+   54 comunitarioOrgano: PARLAMENTO .
+
+    $default  riduzione con la regola 54 (comunitarioOrgano)
+
+
+stato 133
+
+   55 comunitarioOrgano: CONSIGLIO .
+
+    $default  riduzione con la regola 55 (comunitarioOrgano)
+
+
+stato 134
+
+   56 comunitarioOrgano: COMMISSIONE .
+
+    $default  riduzione con la regola 56 (comunitarioOrgano)
+
+
+stato 135
+
+   50 comunitarioEmanante: comunitarioConnettivo comunitarioOrgano . comunitarioEmananteAltri
+
+    E  shift e prosecuzione allo stato 155
+
+    $end                                     riduzione con la regola 59 (comunitarioEmananteAltri)
+    $end                                     [riduzione con la regola 61 (comunitarioAltri)]
+    LIBRO                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    LIBRO                                    [riduzione con la regola 61 (comunitarioAltri)]
+    PARTE                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    PARTE                                    [riduzione con la regola 61 (comunitarioAltri)]
+    TITOLO                                   riduzione con la regola 59 (comunitarioEmananteAltri)
+    TITOLO                                   [riduzione con la regola 61 (comunitarioAltri)]
+    CAPO                                     riduzione con la regola 59 (comunitarioEmananteAltri)
+    CAPO                                     [riduzione con la regola 61 (comunitarioAltri)]
+    SEZIONE                                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    SEZIONE                                  [riduzione con la regola 61 (comunitarioAltri)]
+    ARTICOLO                                 riduzione con la regola 59 (comunitarioEmananteAltri)
+    ARTICOLO                                 [riduzione con la regola 61 (comunitarioAltri)]
+    COMMA                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    COMMA                                    [riduzione con la regola 61 (comunitarioAltri)]
+    CAPOVERSO                                riduzione con la regola 59 (comunitarioEmananteAltri)
+    CAPOVERSO                                [riduzione con la regola 61 (comunitarioAltri)]
+    LETTERA                                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    LETTERA                                  [riduzione con la regola 61 (comunitarioAltri)]
+    NUMERO                                   riduzione con la regola 59 (comunitarioEmananteAltri)
+    NUMERO                                   [riduzione con la regola 61 (comunitarioAltri)]
+    PARAGRAFO                                riduzione con la regola 59 (comunitarioEmananteAltri)
+    PARAGRAFO                                [riduzione con la regola 61 (comunitarioAltri)]
+    PERIODO                                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    PERIODO                                  [riduzione con la regola 61 (comunitarioAltri)]
+    DECRETO_PRESIDENTE_REPUBBLICA            riduzione con la regola 59 (comunitarioEmananteAltri)
+    DECRETO_PRESIDENTE_REPUBBLICA            [riduzione con la regola 61 (comunitarioAltri)]
+    DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI    riduzione con la regola 59 (comunitarioEmananteAltri)
+    DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI    [riduzione con la regola 61 (comunitarioAltri)]
+    DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI  riduzione con la regola 59 (comunitarioEmananteAltri)
+    DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI  [riduzione con la regola 61 (comunitarioAltri)]
+    ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI  riduzione con la regola 59 (comunitarioEmananteAltri)
+    ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI  [riduzione con la regola 61 (comunitarioAltri)]
+    LEGGE_COSTITUZIONALE                     riduzione con la regola 59 (comunitarioEmananteAltri)
+    LEGGE_COSTITUZIONALE                     [riduzione con la regola 61 (comunitarioAltri)]
+    LEGGE                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    LEGGE                                    [riduzione con la regola 61 (comunitarioAltri)]
+    DECRETO_LEGGE                            riduzione con la regola 59 (comunitarioEmananteAltri)
+    DECRETO_LEGGE                            [riduzione con la regola 61 (comunitarioAltri)]
+    DECRETO_LEGISLATIVO                      riduzione con la regola 59 (comunitarioEmananteAltri)
+    DECRETO_LEGISLATIVO                      [riduzione con la regola 61 (comunitarioAltri)]
+    REGIO_DECRETO                            riduzione con la regola 59 (comunitarioEmananteAltri)
+    REGIO_DECRETO                            [riduzione con la regola 61 (comunitarioAltri)]
+    REGIO_DECRETO_LEGGE                      riduzione con la regola 59 (comunitarioEmananteAltri)
+    REGIO_DECRETO_LEGGE                      [riduzione con la regola 61 (comunitarioAltri)]
+    REGIO_DECRETO_LEGISLATIVO                riduzione con la regola 59 (comunitarioEmananteAltri)
+    REGIO_DECRETO_LEGISLATIVO                [riduzione con la regola 61 (comunitarioAltri)]
+    CODICE_CIVILE                            riduzione con la regola 59 (comunitarioEmananteAltri)
+    CODICE_CIVILE                            [riduzione con la regola 61 (comunitarioAltri)]
+    CODICE_PROCEDURA_CIVILE                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    CODICE_PROCEDURA_CIVILE                  [riduzione con la regola 61 (comunitarioAltri)]
+    CODICE_PENALE                            riduzione con la regola 59 (comunitarioEmananteAltri)
+    CODICE_PENALE                            [riduzione con la regola 61 (comunitarioAltri)]
+    CODICE_PROCEDURA_PENALE                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    CODICE_PROCEDURA_PENALE                  [riduzione con la regola 61 (comunitarioAltri)]
+    LEGGE_REGIONALE                          riduzione con la regola 59 (comunitarioEmananteAltri)
+    LEGGE_REGIONALE                          [riduzione con la regola 61 (comunitarioAltri)]
+    REGOLAMENTO_REGIONALE                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    REGOLAMENTO_REGIONALE                    [riduzione con la regola 61 (comunitarioAltri)]
+    UE_NUM                                   riduzione con la regola 59 (comunitarioEmananteAltri)
+    UE_NUM                                   [riduzione con la regola 61 (comunitarioAltri)]
+    UE_DEN                                   riduzione con la regola 59 (comunitarioEmananteAltri)
+    UE_DEN                                   [riduzione con la regola 61 (comunitarioAltri)]
+    PARLAMENTO                               riduzione con la regola 61 (comunitarioAltri)
+    CONSIGLIO                                riduzione con la regola 61 (comunitarioAltri)
+    COMMISSIONE                              riduzione con la regola 61 (comunitarioAltri)
+    DIRETTIVA                                riduzione con la regola 59 (comunitarioEmananteAltri)
+    DIRETTIVA                                [riduzione con la regola 61 (comunitarioAltri)]
+    DECISIONE                                riduzione con la regola 59 (comunitarioEmananteAltri)
+    DECISIONE                                [riduzione con la regola 61 (comunitarioAltri)]
+    REGOLAMENTO                              riduzione con la regola 59 (comunitarioEmananteAltri)
+    REGOLAMENTO                              [riduzione con la regola 61 (comunitarioAltri)]
+    DATA_GG_MM_AAAA                          riduzione con la regola 59 (comunitarioEmananteAltri)
+    DATA_GG_MM_AAAA                          [riduzione con la regola 61 (comunitarioAltri)]
+    NUMERO_CARDINALE                         riduzione con la regola 59 (comunitarioEmananteAltri)
+    NUMERO_CARDINALE                         [riduzione con la regola 61 (comunitarioAltri)]
+    CITATO                                   riduzione con la regola 59 (comunitarioEmananteAltri)
+    CITATO                                   [riduzione con la regola 61 (comunitarioAltri)]
+    DEL                                      riduzione con la regola 59 (comunitarioEmananteAltri)
+    DEL                                      [riduzione con la regola 61 (comunitarioAltri)]
+    DELL                                     riduzione con la regola 59 (comunitarioEmananteAltri)
+    DELL                                     [riduzione con la regola 61 (comunitarioAltri)]
+    DELLA                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    DELLA                                    [riduzione con la regola 61 (comunitarioAltri)]
+    E                                        [riduzione con la regola 61 (comunitarioAltri)]
+    IN_DATA                                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    IN_DATA                                  [riduzione con la regola 61 (comunitarioAltri)]
+    BREAK                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    BREAK                                    [riduzione con la regola 61 (comunitarioAltri)]
+    $default                                 riduzione con la regola 59 (comunitarioEmananteAltri)
+
+    comunitarioEmananteAltri  prosecuzione allo stato 156
+    comunitarioAltri          prosecuzione allo stato 157
+
+
+stato 136
+
+   51 comunitarioConnettivo: DEL .
+
+    $default  riduzione con la regola 51 (comunitarioConnettivo)
+
+
+stato 137
+
+   62 comunitarioDirettiva: DIRETTIVA comunitarioEstremi comunitarioEmanante . comunitarioDenominazione
+
+    UE_DEN  shift e prosecuzione allo stato 121
+
+    $default  riduzione con la regola 65 (comunitarioDenominazione)
+
+    comunitarioDenominazione  prosecuzione allo stato 158
+
+
+stato 138
+
+  119 estremiNumero: NUMERO .
+
+    $default  riduzione con la regola 119 (estremiNumero)
+
+
+stato 139
+
+  128 dataTipo: DATA_GG_MM_AAAA .
+
+    $default  riduzione con la regola 128 (dataTipo)
+
+
+stato 140
+
+  118 estremiAbbreviati: NUMERO_CARDINALE . NUMERO
+  120 estremiNumero: NUMERO_CARDINALE .
+
+    NUMERO  shift e prosecuzione allo stato 159
+
+    $default  riduzione con la regola 120 (estremiNumero)
+
+
+stato 141
+
+  110 estremi: estremiConnettivo estremiTipo .
+
+    $default  riduzione con la regola 110 (estremi)
+
+
+stato 142
+
+  111 estremiTipo: estremiEstesi .
+
+    $default  riduzione con la regola 111 (estremiTipo)
+
+
+stato 143
+
+  112 estremiTipo: estremiAbbreviati .
+
+    $default  riduzione con la regola 112 (estremiTipo)
+
+
+stato 144
+
+  114 estremiEstesi: estremiNumero . estremiConnettivo data
+  116 estremiAbbreviati: estremiNumero . BARRA NUMERO_CARDINALE
+  117                  | estremiNumero . estremiConnettivo NUMERO_CARDINALE
+
+    DEL      shift e prosecuzione allo stato 123
+    DELL     shift e prosecuzione allo stato 110
+    IN_DATA  shift e prosecuzione allo stato 112
+    BARRA    shift e prosecuzione allo stato 160
+
+    $default  riduzione con la regola 124 (estremiConnettivo)
+
+    estremiConnettivo  prosecuzione allo stato 161
+
+
+stato 145
+
+  113 estremiEstesi: data . estremiNumero
+  115              | data .
+
+    NUMERO            shift e prosecuzione allo stato 138
+    NUMERO_CARDINALE  shift e prosecuzione allo stato 162
+
+    NUMERO    [riduzione con la regola 115 (estremiEstesi)]
+    $default  riduzione con la regola 115 (estremiEstesi)
+
+    estremiNumero  prosecuzione allo stato 163
+
+
+stato 146
+
+  127 data: dataTipo .
+
+    $default  riduzione con la regola 127 (data)
+
+
+stato 147
+
+   69 comunitarioDecisione: DECISIONE comunitarioEmanante comunitarioDenominazione . comunitarioEstremi
+
+    UE_NUM   shift e prosecuzione allo stato 108
+    DEL      shift e prosecuzione allo stato 123
+    DELL     shift e prosecuzione allo stato 110
+    IN_DATA  shift e prosecuzione allo stato 112
+
+    $default  riduzione con la regola 124 (estremiConnettivo)
+
+    comunitarioNumero   prosecuzione allo stato 113
+    comunitarioEstremi  prosecuzione allo stato 164
+    estremi             prosecuzione allo stato 117
+    estremiConnettivo   prosecuzione allo stato 118
+
+
+stato 148
+
+   68 comunitarioDecisione: DECISIONE comunitarioEstremi comunitarioEmanante . comunitarioDenominazione
+
+    UE_DEN  shift e prosecuzione allo stato 121
+
+    $default  riduzione con la regola 65 (comunitarioDenominazione)
+
+    comunitarioDenominazione  prosecuzione allo stato 165
+
+
+stato 149
+
+   70 comunitarioRegolamento: REGOLAMENTO comunitarioDenominazione comunitarioEstremi .
+
+    $default  riduzione con la regola 70 (comunitarioRegolamento)
+
+
+stato 150
+
+   30 regioneParola: PAROLA_REGIONE .
+
+    $default  riduzione con la regola 30 (regioneParola)
+
+
+stato 151
+
+   29 regionale: regionaleTipo regionaleConnettivo regioneParola . regioneNome
+
+    REGIONE  shift e prosecuzione allo stato 166
+
+    $default  riduzione con la regola 33 (regioneNome)
+
+    regioneNome  prosecuzione allo stato 167
+
+
+stato 152
+
+   45 comunitario: suddivisioneOpz comunitarioTipo estremiConnettivo dataOpz .
+
+    $default  riduzione con la regola 45 (comunitario)
+
+
+stato 153
+
+  125 dataOpz: data .
+
+    $default  riduzione con la regola 125 (dataOpz)
+
+
+stato 154
+
+   63 comunitarioDirettiva: DIRETTIVA comunitarioEmanante comunitarioDenominazione comunitarioEstremi .
+
+    $default  riduzione con la regola 63 (comunitarioDirettiva)
+
+
+stato 155
+
+   60 comunitarioAltri: E .
+
+    $default  riduzione con la regola 60 (comunitarioAltri)
+
+
+stato 156
+
+   50 comunitarioEmanante: comunitarioConnettivo comunitarioOrgano comunitarioEmananteAltri .
+
+    $default  riduzione con la regola 50 (comunitarioEmanante)
+
+
+stato 157
+
+   58 comunitarioEmananteAltri: comunitarioAltri . comunitarioConnettivo comunitarioOrgano comunitarioEmananteAltri
+
+    DEL    shift e prosecuzione allo stato 136
+    DELLA  shift e prosecuzione allo stato 111
+
+    DEL       [riduzione con la regola 53 (comunitarioConnettivo)]
+    DELLA     [riduzione con la regola 53 (comunitarioConnettivo)]
+    $default  riduzione con la regola 53 (comunitarioConnettivo)
+
+    comunitarioConnettivo  prosecuzione allo stato 168
+
+
+stato 158
+
+   62 comunitarioDirettiva: DIRETTIVA comunitarioEstremi comunitarioEmanante comunitarioDenominazione .
+
+    $default  riduzione con la regola 62 (comunitarioDirettiva)
+
+
+stato 159
+
+  118 estremiAbbreviati: NUMERO_CARDINALE NUMERO .
+
+    $default  riduzione con la regola 118 (estremiAbbreviati)
+
+
+stato 160
+
+  116 estremiAbbreviati: estremiNumero BARRA . NUMERO_CARDINALE
+
+    NUMERO_CARDINALE  shift e prosecuzione allo stato 169
+
+
+stato 161
+
+  114 estremiEstesi: estremiNumero estremiConnettivo . data
+  117 estremiAbbreviati: estremiNumero estremiConnettivo . NUMERO_CARDINALE
+
+    DATA_GG_MM_AAAA   shift e prosecuzione allo stato 139
+    NUMERO_CARDINALE  shift e prosecuzione allo stato 170
+
+    data      prosecuzione allo stato 171
+    dataTipo  prosecuzione allo stato 146
+
+
+stato 162
+
+  120 estremiNumero: NUMERO_CARDINALE .
+
+    $default  riduzione con la regola 120 (estremiNumero)
+
+
+stato 163
+
+  113 estremiEstesi: data estremiNumero .
+
+    $default  riduzione con la regola 113 (estremiEstesi)
+
+
+stato 164
+
+   69 comunitarioDecisione: DECISIONE comunitarioEmanante comunitarioDenominazione comunitarioEstremi .
+
+    $default  riduzione con la regola 69 (comunitarioDecisione)
+
+
+stato 165
+
+   68 comunitarioDecisione: DECISIONE comunitarioEstremi comunitarioEmanante comunitarioDenominazione .
+
+    $default  riduzione con la regola 68 (comunitarioDecisione)
+
+
+stato 166
+
+   32 regioneNome: REGIONE .
+
+    $default  riduzione con la regola 32 (regioneNome)
+
+
+stato 167
+
+   29 regionale: regionaleTipo regionaleConnettivo regioneParola regioneNome .
+
+    $default  riduzione con la regola 29 (regionale)
+
+
+stato 168
+
+   58 comunitarioEmananteAltri: comunitarioAltri comunitarioConnettivo . comunitarioOrgano comunitarioEmananteAltri
+
+    PARLAMENTO   shift e prosecuzione allo stato 132
+    CONSIGLIO    shift e prosecuzione allo stato 133
+    COMMISSIONE  shift e prosecuzione allo stato 134
+
+    PARLAMENTO   [riduzione con la regola 57 (comunitarioOrgano)]
+    CONSIGLIO    [riduzione con la regola 57 (comunitarioOrgano)]
+    COMMISSIONE  [riduzione con la regola 57 (comunitarioOrgano)]
+    $default     riduzione con la regola 57 (comunitarioOrgano)
+
+    comunitarioOrgano  prosecuzione allo stato 172
+
+
+stato 169
+
+  116 estremiAbbreviati: estremiNumero BARRA NUMERO_CARDINALE .
+
+    $default  riduzione con la regola 116 (estremiAbbreviati)
+
+
+stato 170
+
+  117 estremiAbbreviati: estremiNumero estremiConnettivo NUMERO_CARDINALE .
+
+    $default  riduzione con la regola 117 (estremiAbbreviati)
+
+
+stato 171
+
+  114 estremiEstesi: estremiNumero estremiConnettivo data .
+
+    $default  riduzione con la regola 114 (estremiEstesi)
+
+
+stato 172
+
+   58 comunitarioEmananteAltri: comunitarioAltri comunitarioConnettivo comunitarioOrgano . comunitarioEmananteAltri
+
+    E  shift e prosecuzione allo stato 155
+
+    $end                                     riduzione con la regola 59 (comunitarioEmananteAltri)
+    $end                                     [riduzione con la regola 61 (comunitarioAltri)]
+    LIBRO                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    LIBRO                                    [riduzione con la regola 61 (comunitarioAltri)]
+    PARTE                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    PARTE                                    [riduzione con la regola 61 (comunitarioAltri)]
+    TITOLO                                   riduzione con la regola 59 (comunitarioEmananteAltri)
+    TITOLO                                   [riduzione con la regola 61 (comunitarioAltri)]
+    CAPO                                     riduzione con la regola 59 (comunitarioEmananteAltri)
+    CAPO                                     [riduzione con la regola 61 (comunitarioAltri)]
+    SEZIONE                                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    SEZIONE                                  [riduzione con la regola 61 (comunitarioAltri)]
+    ARTICOLO                                 riduzione con la regola 59 (comunitarioEmananteAltri)
+    ARTICOLO                                 [riduzione con la regola 61 (comunitarioAltri)]
+    COMMA                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    COMMA                                    [riduzione con la regola 61 (comunitarioAltri)]
+    CAPOVERSO                                riduzione con la regola 59 (comunitarioEmananteAltri)
+    CAPOVERSO                                [riduzione con la regola 61 (comunitarioAltri)]
+    LETTERA                                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    LETTERA                                  [riduzione con la regola 61 (comunitarioAltri)]
+    NUMERO                                   riduzione con la regola 59 (comunitarioEmananteAltri)
+    NUMERO                                   [riduzione con la regola 61 (comunitarioAltri)]
+    PARAGRAFO                                riduzione con la regola 59 (comunitarioEmananteAltri)
+    PARAGRAFO                                [riduzione con la regola 61 (comunitarioAltri)]
+    PERIODO                                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    PERIODO                                  [riduzione con la regola 61 (comunitarioAltri)]
+    DECRETO_PRESIDENTE_REPUBBLICA            riduzione con la regola 59 (comunitarioEmananteAltri)
+    DECRETO_PRESIDENTE_REPUBBLICA            [riduzione con la regola 61 (comunitarioAltri)]
+    DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI    riduzione con la regola 59 (comunitarioEmananteAltri)
+    DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI    [riduzione con la regola 61 (comunitarioAltri)]
+    DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI  riduzione con la regola 59 (comunitarioEmananteAltri)
+    DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI  [riduzione con la regola 61 (comunitarioAltri)]
+    ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI  riduzione con la regola 59 (comunitarioEmananteAltri)
+    ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI  [riduzione con la regola 61 (comunitarioAltri)]
+    LEGGE_COSTITUZIONALE                     riduzione con la regola 59 (comunitarioEmananteAltri)
+    LEGGE_COSTITUZIONALE                     [riduzione con la regola 61 (comunitarioAltri)]
+    LEGGE                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    LEGGE                                    [riduzione con la regola 61 (comunitarioAltri)]
+    DECRETO_LEGGE                            riduzione con la regola 59 (comunitarioEmananteAltri)
+    DECRETO_LEGGE                            [riduzione con la regola 61 (comunitarioAltri)]
+    DECRETO_LEGISLATIVO                      riduzione con la regola 59 (comunitarioEmananteAltri)
+    DECRETO_LEGISLATIVO                      [riduzione con la regola 61 (comunitarioAltri)]
+    REGIO_DECRETO                            riduzione con la regola 59 (comunitarioEmananteAltri)
+    REGIO_DECRETO                            [riduzione con la regola 61 (comunitarioAltri)]
+    REGIO_DECRETO_LEGGE                      riduzione con la regola 59 (comunitarioEmananteAltri)
+    REGIO_DECRETO_LEGGE                      [riduzione con la regola 61 (comunitarioAltri)]
+    REGIO_DECRETO_LEGISLATIVO                riduzione con la regola 59 (comunitarioEmananteAltri)
+    REGIO_DECRETO_LEGISLATIVO                [riduzione con la regola 61 (comunitarioAltri)]
+    CODICE_CIVILE                            riduzione con la regola 59 (comunitarioEmananteAltri)
+    CODICE_CIVILE                            [riduzione con la regola 61 (comunitarioAltri)]
+    CODICE_PROCEDURA_CIVILE                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    CODICE_PROCEDURA_CIVILE                  [riduzione con la regola 61 (comunitarioAltri)]
+    CODICE_PENALE                            riduzione con la regola 59 (comunitarioEmananteAltri)
+    CODICE_PENALE                            [riduzione con la regola 61 (comunitarioAltri)]
+    CODICE_PROCEDURA_PENALE                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    CODICE_PROCEDURA_PENALE                  [riduzione con la regola 61 (comunitarioAltri)]
+    LEGGE_REGIONALE                          riduzione con la regola 59 (comunitarioEmananteAltri)
+    LEGGE_REGIONALE                          [riduzione con la regola 61 (comunitarioAltri)]
+    REGOLAMENTO_REGIONALE                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    REGOLAMENTO_REGIONALE                    [riduzione con la regola 61 (comunitarioAltri)]
+    UE_NUM                                   riduzione con la regola 59 (comunitarioEmananteAltri)
+    UE_NUM                                   [riduzione con la regola 61 (comunitarioAltri)]
+    UE_DEN                                   riduzione con la regola 59 (comunitarioEmananteAltri)
+    UE_DEN                                   [riduzione con la regola 61 (comunitarioAltri)]
+    PARLAMENTO                               riduzione con la regola 61 (comunitarioAltri)
+    CONSIGLIO                                riduzione con la regola 61 (comunitarioAltri)
+    COMMISSIONE                              riduzione con la regola 61 (comunitarioAltri)
+    DIRETTIVA                                riduzione con la regola 59 (comunitarioEmananteAltri)
+    DIRETTIVA                                [riduzione con la regola 61 (comunitarioAltri)]
+    DECISIONE                                riduzione con la regola 59 (comunitarioEmananteAltri)
+    DECISIONE                                [riduzione con la regola 61 (comunitarioAltri)]
+    REGOLAMENTO                              riduzione con la regola 59 (comunitarioEmananteAltri)
+    REGOLAMENTO                              [riduzione con la regola 61 (comunitarioAltri)]
+    DATA_GG_MM_AAAA                          riduzione con la regola 59 (comunitarioEmananteAltri)
+    DATA_GG_MM_AAAA                          [riduzione con la regola 61 (comunitarioAltri)]
+    NUMERO_CARDINALE                         riduzione con la regola 59 (comunitarioEmananteAltri)
+    NUMERO_CARDINALE                         [riduzione con la regola 61 (comunitarioAltri)]
+    CITATO                                   riduzione con la regola 59 (comunitarioEmananteAltri)
+    CITATO                                   [riduzione con la regola 61 (comunitarioAltri)]
+    DEL                                      riduzione con la regola 59 (comunitarioEmananteAltri)
+    DEL                                      [riduzione con la regola 61 (comunitarioAltri)]
+    DELL                                     riduzione con la regola 59 (comunitarioEmananteAltri)
+    DELL                                     [riduzione con la regola 61 (comunitarioAltri)]
+    DELLA                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    DELLA                                    [riduzione con la regola 61 (comunitarioAltri)]
+    E                                        [riduzione con la regola 61 (comunitarioAltri)]
+    IN_DATA                                  riduzione con la regola 59 (comunitarioEmananteAltri)
+    IN_DATA                                  [riduzione con la regola 61 (comunitarioAltri)]
+    BREAK                                    riduzione con la regola 59 (comunitarioEmananteAltri)
+    BREAK                                    [riduzione con la regola 61 (comunitarioAltri)]
+    $default                                 riduzione con la regola 59 (comunitarioEmananteAltri)
+
+    comunitarioEmananteAltri  prosecuzione allo stato 173
+    comunitarioAltri          prosecuzione allo stato 157
+
+
+stato 173
+
+   58 comunitarioEmananteAltri: comunitarioAltri comunitarioConnettivo comunitarioOrgano comunitarioEmananteAltri .
+
+    $default  riduzione con la regola 58 (comunitarioEmananteAltri)
