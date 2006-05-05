@@ -11,10 +11,16 @@
 #ifndef __URN_H__
 #define __URN_H__
 
+typedef struct _ids {
+	long posiz;
+	char *value;
+} ids;
+
 typedef struct _urn {
 	long inizio;
 	long fine;
 	long ultimo;
+	char tipo;
 	char *autorita;
 	char *provvedimento;
 	char *data;
@@ -33,11 +39,16 @@ typedef struct _urn {
 } urn;
 
 void urnVisualizza(urn *u);
+void urnCompletaId();
+int  urnCercaId(ids *tab[], int nt, char str[]);
+void urnTrasforma(int i);
+void urnCloseIds();
 
 void urnInit(urn *u);
 void urnShift(urn *u);
 void urnFree(urn *u);
 char * urnStringa(urn u);
+char * urnPartizioni(urn u);
 void urnMemorizza(urn u);
 
 #endif /* __URN_H__ */
