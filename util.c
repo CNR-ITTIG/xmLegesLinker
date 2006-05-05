@@ -1,16 +1,16 @@
 /******************************************************************************
 * Project:	xmLeges
-* Module:	Linker
+* Module:		Linker
 * File:		util.c
 * Copyright:	ITTIG/CNR - Firenze - Italy (http://www.ittig.cnr.it)
 * Licence:	GNU/GPL (http://www.gnu.org/licenses/gpl.html)
 * Authors:	Mirco Taddei (m.taddei@ittig.cnr.it)
+*			PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
 ******************************************************************************/
 
 #include "util.h"
 #define _XOPEN_SOURCE
 #include <IttigUtil.h>
-
 #include <IttigLogger.h>
 
 
@@ -26,6 +26,7 @@ void utilPercPrint(void)
 {
 	loggerPerc((char *)utilItoa((int)mCurrPerc));
 }
+
 //Forza la percentuale corrente
 void utilPercSet(int pPerc)
 {

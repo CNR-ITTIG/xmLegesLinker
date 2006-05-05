@@ -5,6 +5,7 @@
 * Copyright:	ITTIG/CNR - Firenze - Italy (http://www.ittig.cnr.it)
 * Licence:	GNU/GPL (http://www.gnu.org/licenses/gpl.html)
 * Authors:	Mirco Taddei (m.taddei@ittig.cnr.it)
+*		PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
 ******************************************************************************/
 
 #ifndef __UTIL__
@@ -12,7 +13,6 @@
 
 #define MAX_AUTORITA		50
 #define MAX_PROVVEDIMENTO	50
-
 
 //new
 void utilPercPrint(void);
