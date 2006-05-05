@@ -1,11 +1,11 @@
 /******************************************************************************
 * Project:	xmLeges
-* Module:	Linker
+* Module:		Linker
 * File:		riferimenti.y
 * Copyright:	ITTIG/CNR - Firenze - Italy (http://www.ittig.cnr.it)
 * Licence:	GNU/GPL (http://www.gnu.org/licenses/gpl.html)
 * Authors:	Mirco Taddei (m.taddei@ittig.cnr.it)
-*		PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
+*			PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
 ******************************************************************************/
 
 %{
@@ -24,6 +24,13 @@ int errore = 0;
 int yydebug = 0;		/* per debug */
 
 urn urnTmp;
+
+void rifInit() 
+{
+	urnTmp.tipo = 'e';	/* riferimenti esterni */
+}
+
+
 int pos = 0;
 extern char * yytext;
 extern int yyleng;
@@ -36,7 +43,6 @@ void yyerror(const char *str) {
 int yywrap() {
 	return 1;
 }
-
 
 
 %}
@@ -96,6 +102,7 @@ int yywrap() {
 %token DEL
 %token DELL
 %token DELLA
+%token DELLO
 %token E
 %token IN_DATA
 %token BARRA
@@ -314,17 +321,17 @@ comunitario:
 
 comunitarioTipo:
 	comunitarioDirettiva		{ urnTmp.autorita = strdup("comunita.europee"); 
-					urnTmp.provvedimento = strdup("direttiva"); }
+								urnTmp.provvedimento = strdup("direttiva"); }
 
 	| comunitarioDecisione		{ urnTmp.autorita = strdup("comunita.europee"); 
-					urnTmp.provvedimento = strdup("decisione"); }
+								urnTmp.provvedimento = strdup("decisione"); }
 
-	| comunitarioRegolamento	{ urnTmp.autorita = strdup("comunita.europee"); 
-					urnTmp.provvedimento = strdup("regolamento"); }
+	| comunitarioRegolamento		{ urnTmp.autorita = strdup("comunita.europee"); 
+								urnTmp.provvedimento = strdup("regolamento"); }
 	;
 
 comunitarioNumero:
-	UE_NUM		{ urnTmp.numero = (char *) $1; }
+	UE_NUM					{ urnTmp.numero = (char *) $1; }
 	;
 
 comunitarioEmanante:
@@ -402,7 +409,7 @@ suddivisioni:
 	;
 
 connettivoAtto:
-	CITATO | DEL | DELL | DELLA | /* vuoto */ 
+	CITATO | DEL | DELL | DELLA | DELLO | /* vuoto */ 
 	;
 
 
