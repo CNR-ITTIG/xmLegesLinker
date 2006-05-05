@@ -5,6 +5,7 @@
 * Copyright:	ITTIG/CNR - Firenze - Italy (http://www.ittig.cnr.it)
 * Licence:	GNU/GPL (http://www.gnu.org/licenses/gpl.html)
 * Authors:	Mirco Taddei (m.taddei@ittig.cnr.it)
+*		PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
 ******************************************************************************/
 
 #include <ctype.h>
@@ -13,24 +14,30 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <search.h>
 
-#include "config.h"
 #include <IttigUtil.h>
 #include <IttigLogger.h>
 #include "parser.h"
 #include "uscita.h"
+#include "config.h"
+#include "urn.h"
 
-const char *versione = "1.0";
+const char *versione = "1.2";
 
 extern FILE * yyin;
 extern urn *urns[];
 extern int nurns;
+extern ids *tabSupIds[];
+extern int nSupIds;
+extern ids *tabInfIds[];
+extern int nInfIds;
 
 char *	fpPreMem = NULL;
 size_t	fpPreSize;
 int 	fpPrePos;
 
-
+int posComp(urn **a, urn **b);
 void help(void);
 //void closeLogFile();
 
@@ -42,6 +49,11 @@ int main(int argc, char *argv[]) {
 	trattamentoLink paramLink = keep;
 	char *paramPrima = "<a href=\"http://www.nir.it/cgi-bin/N2Ln?__URN__\">";
 	char *paramDopo = "</a>";
+	char *paramNocPrima = "<?rif <rif xlink:href=\"__URN__\">";
+	char *paramNocDopo = "</rif>?>";
+	int paramRifNoc = 0; 	// riferimenti non completi = no
+	int paramRifInt = 0; 	// riferimenti interni = no
+	int markDtdNir = 0;		// marcatura con dtd nir
 
 	tipoUscita paramUscita = doc;
 	char *paramRegione = NULL;
@@ -55,8 +67,9 @@ int main(int argc, char *argv[]) {
 	int fpTmpInc = 1000000;
 
 	opterr = 0;
-	while ((c = getopt (argc, argv, "i:l:b:a:m:o:R:L:M:f:F:v:hc:g")) != -1)
-		switch (c) {
+	while ((c = getopt (argc, argv, "i:l:b:a:m:o:r:R:L:M:f:F:v:hc:g")) != -1)
+		switch (c) 
+		{
 			case 'i':	// TIPO DI INPUT
 				if (!strcmp(optarg, "txt")) 		paramInput = txt;
 				else if (!strcmp(optarg, "html")) 	paramInput = html;
@@ -81,20 +94,29 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'm':	// IMPOSTAZIONE AUTOMATICA DI -b E -a
 				if (!strcmp(optarg, "htmlnir")) ;
-				  else if (!strcmp(optarg, "dtdnir")) {
+				else if (!strcmp(optarg, "dtdnir")) 
+				{
 					paramPrima = "<rif xlink:href=\"__URN__\">";
 					paramDopo = "</rif>";
-				} else if (!strcmp(optarg, "urn")) {
+					markDtdNir = 1;
+				} 
+				else if (!strcmp(optarg, "urn")) 
+				{
 					paramPrima = "<urn urn=\"__URN__\">";
 					paramDopo = "</urn>";
-				} else
+				} 
+				else
 					help();
+				break;
+			case 'r':	// TIPO RIFERIMENTI: non completi, interni
+				if (strchr(optarg, 'n')) 	paramRifNoc = 1;
+				if (strchr(optarg, 'i')) 	paramRifInt = 1;
 				break;
 			case 'o':	// TIPO DI USCITA
 				if (!strcmp(optarg, "doc")) 		paramUscita = doc;
 				else if (!strcmp(optarg, "rif")) 	paramUscita = rif;
-				else if (!strcmp(optarg, "list")) 	paramUscita = list;
-				else help();
+					else if (!strcmp(optarg, "list")) 	paramUscita = list;
+						else help();
 				break;
 			case 'R':	// REGIONE
 				paramRegione = (char *)strdup(optarg);
@@ -109,14 +131,16 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'f':	// FILE di INPUT
 				paramFile = (char *)strdup(optarg);
-				if (!(yyin = fopen(paramFile, "r"))) {
+				if (!(yyin = fopen(paramFile, "r"))) 
+				{
 					printf("Errore apertura file input: %s\n", paramFile);
 					exit(1);
 				}
 				break;
 			case 'F':	// FILE di OUTPUT
 				paramFileOut = (char *)strdup(optarg);
-				if (!(stdout = fopen(paramFileOut, "w"))) {
+				if (!(stdout = fopen(paramFileOut, "w"))) 
+				{
 					printf("Errore apertura file output: %s\n", paramFileOut);
 					exit(1);
 				}
@@ -143,8 +167,14 @@ int main(int argc, char *argv[]) {
 				break;
 			default:
 				abort ();
-			}
+		}
 
+	// congruità parametri rif. non completi e interni
+
+	if (paramUscita == doc)
+	{
+		if (!markDtdNir || paramInput != xml)	paramRifNoc, paramRifInt = 0;
+	}
 
 	//loggerImpostaLivello(none);
 	loggerInfo("-------------------------------------------");
@@ -157,8 +187,10 @@ int main(int argc, char *argv[]) {
 		yyin = stdin;
 
 	fpTmpMem = malloc(sizeof(char) * fpTmpSize);
-	for (i = 0; !feof(yyin); i++) {
-		if (i == fpTmpSize) {
+	for (i = 0; !feof(yyin); i++) 
+	{
+		if (i == fpTmpSize) 
+		{
 			fpTmpSize += fpTmpInc;
 			fpTmpMem = realloc(fpTmpMem, sizeof(char) * fpTmpSize);
 		}
@@ -172,29 +204,59 @@ int main(int argc, char *argv[]) {
 
 	fpPreMem = malloc(sizeof(char) * fpPreSize);
 	pre_scan_bytes(fpTmpMem, fpTmpSize);
-	/*puts("---------------DOPO PRESCANBYTES------------------");
-
-	puts(fpTmpMem);
-	puts("---------------PRIMA PREPARSE------------------");*/
-	
 	preparse();
-	/*puts("------------------DOPO PREPARSE----------------");
-	puts(fpPreMem);
-	puts("------------------FINE PREPARSE----------------");*/
+
 	utilPercAdd(4);
-	//printf("================== PRE\n%s\n================== PRE\n",fpPreMem);
 	
 	utilPercNumBlockSet(0);
 	utilPercBlockSetLen(fpPreSize);
 
+// riconoscimento dei riferimenti esterni completi
+
+	rifInit();
 	yy_scan_bytes(fpPreMem, fpPreSize);
 	yyparse();
-	switch (paramUscita) {
+	uscitaMascheraRif(fpPreMem, urns, nurns);	// mascheramento completi
+
+// riconoscimento dei riferimenti non completi
+
+	if (paramRifNoc + paramRifInt)
+	{
+		nocInit();
+		noc_scan_bytes(fpPreMem, fpPreSize);
+		nocparse();
+		uscitaMascheraRif(fpPreMem, urns, nurns);	// mascheramento non completi
+	}
+
+// riconoscimento dei riferimenti interni
+
+	if (paramRifInt)
+	{
+		ids_scan_bytes(fpTmpMem, fpTmpSize);		// carica tabella id delle partizioni
+		idslex();
+		urnCloseIds();
+
+		intInit();
+		int_scan_bytes(fpPreMem, fpPreSize);
+		intparse();
+	}
+
+// ordina urns per posizione
+
+	qsort(urns, nurns, sizeof(urn *), posComp);
+
+// completa riferimenti interni e controlla esistenza id
+
+	if (paramRifInt)
+		urnCompletaId();
+
+	switch (paramUscita) 
+	{
 		case doc:
-			uscitaInserimento(fpTmpMem, urns, nurns, paramPrima, paramDopo);
+			uscitaInserimento(fpTmpMem, urns, nurns, paramPrima, paramDopo, paramRifNoc, paramNocPrima, paramNocDopo);
 			break;
 		case rif:
-			uscitaListaConTesto(fpTmpMem, urns, nurns);
+			uscitaListaConTesto(fpTmpMem, urns, nurns, paramRifNoc, paramNocPrima, paramNocDopo);
 			break;
 		case list:
 			uscitaLista(urns, nurns);
@@ -208,30 +270,43 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
-void appendStringToPreprocess(char *s) {
+// compara posizione urn
+
+int posComp(urn **a, urn **b)
+{
+	return ((*a)->inizio - (*b)->inizio);
+}
+
+void appendStringToPreprocess(char *s) 
+{
 	int len = strlen(s);
-	if (len + fpPrePos <= fpPreSize) {
+	if (len + fpPrePos <= fpPreSize) 
+	{
 		memcpy(fpPreMem + fpPrePos, s, len);
 		fpPrePos += len;
 	}
 }
 
-void appendCharsToPreprocess(int n, int c) {
+void appendCharsToPreprocess(int n, int c) 
+{
 	register int i;
-	if (n + fpPrePos <= fpPreSize) {
+	if (n + fpPrePos <= fpPreSize) 
+	{
 		for (i = 0; i < n; i++)
 			*(fpPreMem + fpPrePos + i) = c;
 		fpPrePos += n;
 	}
 }
 
-void erroreParserToLog(char *str, char *text) {
+void erroreParserToLog(char *str, char *text) 
+{
 	loggerDebug(utilConcatena(3, str, " -> ", text));
 }
 
 
 
-void help(void) {
+void help(void) 
+{
 	puts("SINTASSI:");
 	puts("xmLeges-Link [opzioni] [-f file] [-F file] ...");
 	puts("");
@@ -267,6 +342,9 @@ void help(void) {
 	puts("                             URN   inizio   fine   ante   rif   post");
 	puts("                     - list: lista dei soli URN trovati, con relative posizioni:");
 	puts("                             URN   inizio   fine");
+	puts("-r <ni>: tipo di riferimenti:");
+	puts("                     - n:  segnalazione dei riferimenti non completi (solo dtdnir)");
+	puts("                     - i:  marcatura dei riferimenti interni (solo dtdnir)");
 	puts("-R <regione>: indica la regione di default se non specificata nella citazione");
 	puts("-M <ministero>: [non ancora attivo]");
 	puts("-v: livello di log: error, warn, info, debug");
