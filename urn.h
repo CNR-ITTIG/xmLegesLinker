@@ -41,7 +41,6 @@ typedef struct _urn {
 void urnVisualizza(urn *u);
 void urnCompletaId();
 int  urnCercaId(ids *tab[], int nt, char str[]);
-void urnTrasforma(int i);
 void urnCloseIds();
 
 void urnInit(urn *u);
