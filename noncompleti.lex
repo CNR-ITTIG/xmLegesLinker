@@ -213,7 +213,7 @@ ROM	([ivx]+)
 {LET}{S}[a-z][a-z]?{LAT}?\)?	{ BEGIN(sudd); salvaNocPos(); 
 							noclval=(int)strdup(utilCalcLettera(noctext)); return LETTERA; }
 
-{NUM}{S}{N}({PTO}|\))?{LAT}?	salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO;
+{NUM}{S}{N}{PTO}?{LAT}?		salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO;
 {NUM}{S}{ORD}{LAT}?			salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return NUMERO;
 {N}{PTO}{S}{NUM}{SPA}		{ BEGIN(sudd); salvaNocPos(); 
 							noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO; }
@@ -293,7 +293,7 @@ r\.d\.l\.						BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGGE;
 {DIR}					BEGIN(atto); salvaNocPos(); return DIRETTIVA;
 {DECI}					BEGIN(atto); salvaNocPos(); return DECISIONE;
 {REGOLAM}					BEGIN(atto); salvaNocPos(); return REGOLAMENTO;
-{REGOLAM}{S}{UE_P}			BEGIN(atto); salvaNocPos(); return REGOLAMENTO;
+{REGOLAM}{S}{UE_P}			BEGIN(atto); salvaNocPos(); return REGOLAMENTO_UE;
 
 {COD_E}			BEGIN(0); salvaNocPos(); return CODICE_GEN;
 {DECRETO_E}		BEGIN(0); salvaNocPos(); return DECRETO_GEN;
