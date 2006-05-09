@@ -194,12 +194,12 @@ ROM	([ivx]+)
 {LET}{S}[a-z][a-z]?{LAT}?\)?		{ BEGIN(sudd); salvaPos(); 
 								yylval=(int)strdup(utilCalcLettera(yytext)); return LETTERA; }
 
-{NUM}{S}{N}({PTO}|\))?{LAT}?		salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO;
-{NUM}{S}{ORD}{LAT}?				salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return NUMERO;
-{N}{PTO}{S}{NUM}{SPA}			{ BEGIN(sudd); salvaPos(); 
-								yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO; }
-{ORD}{S}{NUM}					{ BEGIN(sudd); salvaPos(); 
-								yylval=(int)strdup(utilConvOrdinale(yytext,0)); return NUMERO; }
+{NUM}{S}{N}{PTO}?{LAT}?		salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO;
+{NUM}{S}{ORD}{LAT}?			salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return NUMERO;
+{N}{PTO}{S}{NUM}{SPA}		{ BEGIN(sudd); salvaPos(); 
+							yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO; }
+{ORD}{S}{NUM}				{ BEGIN(sudd); salvaPos(); 
+							yylval=(int)strdup(utilConvOrdinale(yytext,0)); return NUMERO; }
 
 {PARA}{S}{N}			BEGIN(sudd); salvaPos(); yylval=(int)strdup(yytext); return PARAGRAFO;
 {ORD}{S}{PARA}			BEGIN(sudd); salvaPos(); yylval=(int)strdup(yytext); return PARAGRAFO;
