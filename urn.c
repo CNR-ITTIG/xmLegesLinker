@@ -235,7 +235,7 @@ void urnCompletaId()
 			if (strstr(tmp, "art"))				// presente articolo: id completo
 			{
 				if (urnCercaId(tabInfIds, nInfIds, tmp))	// non trovato id uguale
-					urnTrasforma(i);					// trasformo in rif. non completo
+					urns[i]->tipo = 'n';				// trasformo in rif. non completo
 			}
 			else								// manca articolo: id forse incompleto
 			{
@@ -269,7 +269,7 @@ void urnCompletaId()
 						}
 					}
 					if (!p || nc)				// non trovato id uguale
-						urnTrasforma(i);		// trasformo in rif. non completo
+						urns[i]->tipo = 'n';	// trasformo in rif. non completo
 				}
 				else		// partizione superiore all'articolo: id completo o no
 				{
@@ -302,26 +302,13 @@ void urnCompletaId()
 							if (*tmp && !urns[i]->sez) urns[i]->sez = strdup(tmp);
 						}
 					}
-					if (!p || nc)			// non trovato id uguale
-						urnTrasforma(i);	// trasformo in rif. non completo
+					if (!p || nc)				// non trovato id uguale
+						urns[i]->tipo = 'n';	// trasformo in rif. non completo
 				}
 			}
 		}
 	}
 }
-
-/******************************************************************************/
-/*********************************************************** URN TRASFORMA ****/
-/******************************************************************************/
-// trasforma riferimenti interni non congruenti in non completi
-
-void urnTrasforma(int i)
-{
-	urns[i]->tipo = 'n';
-	urns[i]->autorita = strdup("xxxxx");
-	urns[i]->provvedimento = strdup("yyyyy");
-}
-
 
 /******************************************************************************/
 /************************************************************ URN CERCA ID ****/
