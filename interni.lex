@@ -37,8 +37,8 @@ void salvaIntpos() {
 }
 
 /*----------------------------------------- pattern tolti
-PARA		(paragrafo|par{PS})
-PERIO	(periodo|per{PS})
+PARA				(paragrafo|par{PS})
+PERIO			(periodo|per{PS})
 {PARA}{S}{N}		BEGIN(sudd); salvaIntpos(); intlval=(int)strdup(inttext); return PARAGRAFO;
 {ORD}{S}{PARA}		BEGIN(sudd); salvaIntpos(); intlval=(int)strdup(inttext); return PARAGRAFO;
 {ORD}{S}{PERIO}	BEGIN(sudd); salvaIntpos(); intlval=(int)strdup(inttext); return PERIODO;
@@ -46,6 +46,7 @@ PERIO	(periodo|per{PS})
 
 %}
 
+NOAN	([^a-z0-9])
 SPA	([ ]+)
 PS	(\.|{SPA})
 S	({SPA}*)
@@ -83,8 +84,8 @@ ROM	([ivx]+)
 ((gazzetta{SPA}+ufficiale|g\.?{S}u\.?){SPA}+{NUM}{S}{N})	intpos+=intleng; return BREAK;
 ((registro|foglio){SPA}+{NUM}{S}{N})					intpos+=intleng; return BREAK;
 
-{LIB}{S}{ROM}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvRomanoDopo(inttext)); return LIBRO; }
+{LIB}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
+							intlval=(int)strdup(utilConvRomanoDopo(inttext)); return LIBRO; }
 {LIB}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return LIBRO; }
 {ROM}{S}{LIB}			{ BEGIN(sudd); salvaIntpos(); 
@@ -92,8 +93,8 @@ ROM	([ivx]+)
 {ORD}{S}{LIB}			{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return LIBRO; }
 
-{PAR}{S}{ROM}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvRomanoDopo(inttext)); return PARTE; }
+{PAR}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
+							intlval=(int)strdup(utilConvRomanoDopo(inttext)); return PARTE; }
 {PAR}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return PARTE; }
 {ROM}{S}{PAR}			{ BEGIN(sudd); salvaIntpos(); 
@@ -101,8 +102,8 @@ ROM	([ivx]+)
 {ORD}{S}{PAR}			{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return PARTE; }
 
-{TIT}{S}{ROM}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvRomanoDopo(inttext)); return TITOLO; }
+{TIT}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
+							intlval=(int)strdup(utilConvRomanoDopo(inttext)); return TITOLO; }
 {TIT}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return TITOLO; }
 {ROM}{S}{TIT}			{ BEGIN(sudd); salvaIntpos(); 
@@ -119,8 +120,8 @@ ROM	([ivx]+)
 {ORD}{LAT}?{S}{CAPOV}		{ BEGIN(sudd); salvaIntpos(); 
 							intlval=(int)strdup(utilConvOrdinale(inttext,1)); return CAPOVERSO; }
 
-{CAP}{S}{ROM}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvRomanoDopo(inttext)); return CAPO; }
+{CAP}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
+							intlval=(int)strdup(utilConvRomanoDopo(inttext)); return CAPO; }
 {CAP}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return CAPO; }
 {ROM}{S}{CAP}			{ BEGIN(sudd); salvaIntpos(); 
@@ -128,8 +129,8 @@ ROM	([ivx]+)
 {ORD}{S}{CAP}			{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return CAPO; }
 
-{SEZ}{S}{ROM}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvRomanoDopo(inttext)); return SEZIONE; }
+{SEZ}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
+							intlval=(int)strdup(utilConvRomanoDopo(inttext)); return SEZIONE; }
 {SEZ}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return SEZIONE; }
 {ROM}{S}{SEZ}			{ BEGIN(sudd); salvaIntpos(); 
