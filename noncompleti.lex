@@ -134,6 +134,7 @@ ROM	([ivx]+)
 %%
 
 ((effett[oi]|fine){SPA}di{SPA}legge)						nocpos+=nocleng; return BREAK;
+(legge{SPA}(italiana|(dello{SPA}stato)))					nocpos+=nocleng; return BREAK;
 ((disposizion[ei]|valore){SPA}di{SPA}legge)					nocpos+=nocleng; return BREAK;
 ((presente|seguente){SPA}(legge|decreto|regolamento))			nocpos+=nocleng; return BREAK;
 ((u|ca)s[oi]{SPA}(consentit|indicat)[oi]{SPA}dalla{SPA}legge)	nocpos+=nocleng; return BREAK;
