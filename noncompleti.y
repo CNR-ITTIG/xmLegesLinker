@@ -42,6 +42,11 @@ int nocwrap() {
 	return 1;
 }
 
+/* ------------------------------------
+%token DETERMINA_GEN
+	| DETERMINA_GEN		{ urnTmp.provvedimento = strdup("determinazione"); }
+------------------------------------ */
+
 
 %}
 
@@ -63,7 +68,6 @@ int nocwrap() {
 %token CODICE_GEN
 %token DECRETO_GEN
 %token DELIBERA_GEN
-%token DETERMINA_GEN
 %token ORDINANZA_GEN
 %token PROVVEDIMENTO_GEN
 %token STATUTO_GEN
@@ -195,7 +199,6 @@ attoGenerico:
 	| DECRETO_MINISTERIALE	{ urnTmp.autorita = strdup("ministero"); urnTmp.provvedimento = strdup("decreto"); }
 	| DECRETO_GEN			{ urnTmp.provvedimento = strdup("decreto"); }
 	| DELIBERA_GEN			{ urnTmp.provvedimento = strdup("delibera"); }
-	| DETERMINA_GEN		{ urnTmp.provvedimento = strdup("determinazione"); }
 	| DIRETTIVA			{ urnTmp.provvedimento = strdup("direttiva"); }
 	| DISEGNO_LEGGE		{ urnTmp.autorita = strdup("senato.repubblica"); 
 							urnTmp.provvedimento = strdup("disegno.legge"); }
@@ -561,7 +564,8 @@ estremiEstesi:
 	;
 
 estremiAbbreviati:
-	estremiNumero BARRA NUMERO_CARDINALE				{ urnTmp.data = (char *) $3; }
+	estremiNumero
+	| estremiNumero BARRA NUMERO_CARDINALE				{ urnTmp.data = (char *) $3; }
 	| estremiNumero estremiConnettivo NUMERO_CARDINALE	{ urnTmp.data = (char *) $3; }
 	| NUMERO_CARDINALE NUMERO						{ urnTmp.data = (char *) $1; urnTmp.numero = (char *) $2;}
 /*	| NUMERO_CARDINALE estremiNumero */
