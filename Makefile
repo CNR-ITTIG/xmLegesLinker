@@ -89,7 +89,8 @@ clean:
 	rm -f *.o xmLeges-Linker.exe riferimenti.lex.yy.c riferimenti.tab.* \
 			ids.lex.yy.c noncompleti.lex.yy.c noncompleti.tab.* \
 			interni.lex.yy.c interni.tab.* \
-			pre.lex.yy.c pre.tab.* *~
+			pre.lex.yy.c pre.tab.* \
+			*.output *.vcg *~
 
 install: all
 
