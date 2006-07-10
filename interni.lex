@@ -97,9 +97,9 @@ ROM	([ivx]+)
 							intlval=(int)strdup(utilConvRomanoDopo(inttext)); return PARTE; }
 {PAR}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return PARTE; }
-{ROM}{S}{PAR}			{ BEGIN(sudd); salvaIntpos(); 
+{ROM}{S}{PAR}/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvRomanoPrima(inttext)); return PARTE; }
-{ORD}{S}{PAR}			{ BEGIN(sudd); salvaIntpos(); 
+{ORD}{S}{PAR}/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return PARTE; }
 
 {TIT}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
@@ -111,8 +111,8 @@ ROM	([ivx]+)
 {ORD}{S}{TIT}			{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return TITOLO; }
 
-{CAPOV}{S}{N}{PTO}?{LAT}?	{ BEGIN(sudd); salvaIntpos(); 
-							intlval=(int)strdup(utilConvCardinale(inttext,1)); return CAPOVERSO; }
+{CAPOV}{S}{N}{PTO}?{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
+								intlval=(int)strdup(utilConvCardinale(inttext,1)); return CAPOVERSO; }
 {CAPOV}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
 							intlval=(int)strdup(utilConvOrdinale(inttext,1)); return CAPOVERSO; }
 {N}{PTO}?{S}{CAPOV}			{ BEGIN(sudd); salvaIntpos(); 
@@ -124,9 +124,9 @@ ROM	([ivx]+)
 							intlval=(int)strdup(utilConvRomanoDopo(inttext)); return CAPO; }
 {CAP}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return CAPO; }
-{ROM}{S}{CAP}			{ BEGIN(sudd); salvaIntpos(); 
+{ROM}{S}{CAP}/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvRomanoPrima(inttext)); return CAPO; }
-{ORD}{S}{CAP}			{ BEGIN(sudd); salvaIntpos(); 
+{ORD}{S}{CAP}/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return CAPO; }
 
 {SEZ}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
@@ -138,22 +138,22 @@ ROM	([ivx]+)
 {ORD}{S}{SEZ}			{ BEGIN(sudd); salvaIntpos(); 
 						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return SEZIONE; }
 
-{ART}{S}{N}{PTO}?{LAT}?	{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvCardinale(inttext,0)); return ARTICOLO; }
-{ART}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return ARTICOLO; }
-{N}{PTO}?{S}{ART}		{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvCardinale(inttext,0)); return ARTICOLO; }
-{ORD}{S}{ART}			{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return ARTICOLO; }
-{COM}{S}{N}{PTO}?{LAT}?	{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvCardinale(inttext,0)); return COMMA; }
-{COM}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return COMMA; }
-{N}{PTO}?{S}{COM}		{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvCardinale(inttext,0)); return COMMA; }
-{ORD}{S}{COM}			{ BEGIN(sudd); salvaIntpos(); 
-						intlval=(int)strdup(utilConvOrdinale(inttext,0)); return COMMA; }
+{ART}{S}{N}{PTO}?{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
+								intlval=(int)strdup(utilConvCardinale(inttext,0)); return ARTICOLO; }
+{ART}{S}{ORD}{LAT}?			{ BEGIN(sudd); salvaIntpos(); 
+							intlval=(int)strdup(utilConvOrdinale(inttext,0)); return ARTICOLO; }
+{N}{PTO}?{S}{ART}			{ BEGIN(sudd); salvaIntpos(); 
+							intlval=(int)strdup(utilConvCardinale(inttext,0)); return ARTICOLO; }
+{ORD}{S}{ART}				{ BEGIN(sudd); salvaIntpos(); 
+							intlval=(int)strdup(utilConvOrdinale(inttext,0)); return ARTICOLO; }
+{COM}{S}{N}{PTO}?{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
+								intlval=(int)strdup(utilConvCardinale(inttext,0)); return COMMA; }
+{COM}{S}{ORD}{LAT}?			{ BEGIN(sudd); salvaIntpos(); 
+							intlval=(int)strdup(utilConvOrdinale(inttext,0)); return COMMA; }
+{N}{PTO}?{S}{COM}			{ BEGIN(sudd); salvaIntpos(); 
+							intlval=(int)strdup(utilConvCardinale(inttext,0)); return COMMA; }
+{ORD}{S}{COM}				{ BEGIN(sudd); salvaIntpos(); 
+							intlval=(int)strdup(utilConvOrdinale(inttext,0)); return COMMA; }
 
 {LET}{S}[a-z][a-z]?{LAT}?\)?	{ BEGIN(sudd); salvaIntpos(); 
 							intlval=(int)strdup(utilCalcLettera(inttext)); return LETTERA; }
