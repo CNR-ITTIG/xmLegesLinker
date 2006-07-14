@@ -62,6 +62,11 @@ int yywrap() {
 %token PARAGRAFO
 %token PERIODO
 
+%token DECRETO_GEN
+%token PROVVEDIMENTO_GEN
+%token PROVVEDIMENTO_ORDINAMENTALE
+%token STATUTO_GEN
+
 %token COSTITUZIONE
 %token DECRETO_PRESIDENTE_REPUBBLICA
 %token DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI
@@ -71,6 +76,10 @@ int yywrap() {
 %token LEGGE
 %token DECRETO_LEGGE
 %token DECRETO_LEGISLATIVO
+
+%token DECRETO_PRESIDENTE_CNR
+%token DECRETO_DIRETTORE_GENERALE_CNR
+%token PROVVEDIMENTO_ORDINAMENTALE_CNR
 
 %token REGIO_DECRETO
 %token REGIO_DECRETO_LEGGE
@@ -137,9 +146,9 @@ riferimento:
 	| costituzione
 	| codice
 	| comunitario
+	| amministrativo
 
 /*	| giurisprudenziale
-	| amministrativo
 */	;
 
 /******************************************************************************/
@@ -148,8 +157,8 @@ riferimento:
 
 costituzione:
 	suddivisione COSTITUZIONE	{ urnTmp.autorita = strdup("stato"); 
-	  				urnTmp.provvedimento = strdup("costituzione"); 
-	  				urnTmp.data = strdup("1947-12-27"); }
+	  							urnTmp.provvedimento = strdup("costituzione"); 
+	  							urnTmp.data = strdup("1947-12-27"); }
 	;
 
 /******************************************************************************/
@@ -161,59 +170,51 @@ normativo:
 	;
 
 normativoTipo:
-	leggeOrdinaria			{ urnTmp.autorita = strdup("stato"); }
-	| decretoPresidenteRepubblica	{ urnTmp.autorita = strdup("presidente.repubblica"); }
-	| decretoPresidenteConsiglioMinistri
-					{ urnTmp.autorita = strdup("presidente.consiglio.ministri"); }
-	| direttivaPresidenteConsiglioMinistri
-					{ urnTmp.autorita = strdup("presidente.consiglio.ministri"); }
-	| ordinanzaPresidenteConsiglioMinistri
-					{ urnTmp.autorita = strdup("presidente.consiglio.ministri"); }
-	| regio				{ urnTmp.autorita = strdup("stato"); }
-	| regionale
+	leggiOrdinarie					{ urnTmp.autorita = strdup("stato"); }
+	| attiPresidenteRepubblica		{ urnTmp.autorita = strdup("presidente.repubblica"); }
+	| attiPresidenteConsiglioMinistri	{ urnTmp.autorita = strdup("presidente.consiglio.ministri"); }
+	| attiRegi					{ urnTmp.autorita = strdup("stato"); }
+	| attiRegionali				{ urnTmp.autorita = strdup("regione."); }
+	| attiGenerici					{ urnTmp.autorita = strdup(configGetEmanante()); }
 
-/*	| leggeProvinciale		{ $autorita = "provincia.$provincia"; }
+/*	| leggeProvinciale				{ $autorita = "provincia.$provincia"; }
 	| regolamento
 	| statuto
 */	;
 
 /******************************************************************************/
-/******************************************* DECRETO PRESIDENTE REPUBBLICA ****/
+/*********************************************************** ATTI GENERICI ****/
 /******************************************************************************/
 
-decretoPresidenteRepubblica:
-	DECRETO_PRESIDENTE_REPUBBLICA	{ urnTmp.provvedimento = strdup("decreto"); }
+attiGenerici:
+	DECRETO_GEN			{ urnTmp.provvedimento = strdup("decreto"); }
+	| PROVVEDIMENTO_GEN		{ urnTmp.provvedimento = strdup("provvedimento"); }
+	| STATUTO_GEN			{ urnTmp.provvedimento = strdup("statuto"); }
 	;
 
 /******************************************************************************/
-/*********************************** DECRETO PRESIDENTE CONSIGLIO MINISTRI ****/
+/********************************************** ATTI PRESIDENTE REPUBBLICA ****/
 /******************************************************************************/
 
-decretoPresidenteConsiglioMinistri:
-	DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI	{ urnTmp.provvedimento = strdup("decreto"); }
+attiPresidenteRepubblica:
+	DECRETO_PRESIDENTE_REPUBBLICA		{ urnTmp.provvedimento = strdup("decreto"); }
 	;
 
 /******************************************************************************/
-/********************************* DIRETTIVA PRESIDENTE CONSIGLIO MINISTRI ****/
+/************************************** ATTI PRESIDENTE CONSIGLIO MINISTRI ****/
 /******************************************************************************/
 
-direttivaPresidenteConsiglioMinistri:
-	DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI	{ urnTmp.provvedimento = strdup("direttiva"); }
+attiPresidenteConsiglioMinistri:
+	DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI		{ urnTmp.provvedimento = strdup("decreto"); }
+	| DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI	{ urnTmp.provvedimento = strdup("direttiva"); }
+	| ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI	{ urnTmp.provvedimento = strdup("ordinanza"); }
 	;
 
 /******************************************************************************/
-/********************************* ORDINANZA PRESIDENTE CONSIGLIO MINISTRI ****/
+/********************************************************* LEGGI ORDINARIE ****/
 /******************************************************************************/
 
-ordinanzaPresidenteConsiglioMinistri:
-	ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI	{ urnTmp.provvedimento = strdup("ordinanza"); }
-	;
-
-/******************************************************************************/
-/********************************************************* LEGGE ORDINARIA ****/
-/******************************************************************************/
-
-leggeOrdinaria:
+leggiOrdinarie:
 	LEGGE_COSTITUZIONALE	{ urnTmp.provvedimento = strdup("legge.costituzionale"); }
 	| LEGGE			{ urnTmp.provvedimento = strdup("legge"); }
 	| DECRETO_LEGGE		{ urnTmp.provvedimento = strdup("decreto.legge"); }
@@ -224,7 +225,7 @@ leggeOrdinaria:
 /******************************************************************* REGIO ****/
 /******************************************************************************/
 
-regio:
+attiRegi:
 	REGIO_DECRETO			{ urnTmp.provvedimento = strdup("regio.decreto"); }
 	| REGIO_DECRETO_LEGGE		{ urnTmp.provvedimento = strdup("regio.decreto.legge"); }
 	| REGIO_DECRETO_LEGISLATIVO	{ urnTmp.provvedimento = strdup("regio.decreto.legislativo"); }
@@ -234,7 +235,7 @@ regio:
 /*************************************************************** REGIONALE ****/
 /******************************************************************************/
 
-regionale:
+attiRegionali:
 	regionaleTipo regionaleConnettivo regioneParola regioneNome 
 	;
 
@@ -243,8 +244,9 @@ regioneParola:
 	;
 
 regioneNome:
-	REGIONE		{ urnTmp.autorita = utilConcatena(2, "regione.", $1); }
-	| /* vuoto */ 	{ urnTmp.autorita = utilConcatena(2, "regione.", configGetRegione()); }
+	REGIONE			{ urnTmp.autorita = utilConcatena(1, $1); }
+	| /* vuoto */ 		{ if (configGetRegione()) 
+						urnTmp.autorita = utilConcatena(1, configGetRegione());}
 	;
 
 regionaleTipo:
@@ -254,6 +256,7 @@ regionaleTipo:
 //	| regolamentoRegionale		{ urnTmp.provvedimento = strdup("regolamento"); }
 	;
 
+/* ----------
 leggeRegionale:
 	LEGGE regionaleConnettivo PAROLA_REGIONE
 	;
@@ -261,32 +264,11 @@ leggeRegionale:
 regolamentoRegionale:
 	REGOLAMENTO regionaleConnettivo PAROLA_REGIONE
 	;
+---------- */
 
 regionaleConnettivo:
 	DEL | DELL | DELLA | /* vuoto */ 
 	;
-
-/* ----------------------------
-leggeRegionale:
-
-	legge ("regione " | /r(\.|\s|eg(\.|ionale\s)?)/) connettivoRegione(?) leggeRegionaleRegione estremi
-		{ debug("%%Legge Regionale-1", 1); }
-
-	| legge /r(\.|\s|eg(\.|ionale\s)?)/ connettivoRegione(?) estremi
-		{ $regione = "?regione?"; debug("%%Legge Regionale-2", 1); }
-
-leggeRegionaleRegione:
-	/(abruzzo|basilicata|calabria|campania|lazio|liguria|lombardia|marche|molise
-	| piemonte|puglia|sardegna|sicilia|toscana|umbria|veneto)/
-	| /emilia((\s+(e\s+)?|-)romagna)?/
-	| /friuli((\s+e|-)?\s+venezia(\s+|\s*-\s*)giulia)?/
-	| /trentino\s*(\s+|-)\s*alto\s*(\s+|-)\s*adige/
-	| /val(le)?\s+(d\s*)?\s*aosta/
-	
-connettivoRegione:
-	connettivo(?) /(regione)?/
-
----------------------------- */
 
 /******************************************************************************/
 /****************************************************************** CODICE ****/
@@ -297,18 +279,18 @@ codice:
 	;
 
 codiceTipo:
-	CODICE_CIVILE			{ urnTmp.provvedimento = strdup("codice.civile");
+	CODICE_CIVILE				{ urnTmp.provvedimento = strdup("codice.civile");
 					  			urnTmp.data = strdup("1942-03-16");
 					  			urnTmp.numero = strdup("262"); }
 	| CODICE_PROCEDURA_CIVILE	{ urnTmp.provvedimento = strdup("codice.procedura.civile"); 
-					  					urnTmp.data = strdup("1940-10-28");
-					  					urnTmp.numero = strdup("1443"); }
-	| CODICE_PENALE		{ urnTmp.provvedimento = strdup("codice.penale"); 
+					  			urnTmp.data = strdup("1940-10-28");
+					  			urnTmp.numero = strdup("1443"); }
+	| CODICE_PENALE			{ urnTmp.provvedimento = strdup("codice.penale"); 
 					  			urnTmp.data = strdup("1930-10-19");
 					  			urnTmp.numero = strdup("1398"); }
 	| CODICE_PROCEDURA_PENALE	{ urnTmp.provvedimento = strdup("codice.procedura.penale"); 
-					  					urnTmp.data = strdup("1988-09-22");
-					  					urnTmp.numero = strdup("447"); }
+					  			urnTmp.data = strdup("1988-09-22");
+					  			urnTmp.numero = strdup("447"); }
 	;
 
 /******************************************************************************/
@@ -390,6 +372,32 @@ comunitarioRegolamento:
 	REGOLAMENTO comunitarioDenominazione comunitarioEstremi
 	;
 	
+/******************************************************************************/
+/********************************************************** AMMINISTRATIVO ****/
+/******************************************************************************/
+
+amministrativo:
+	suddivisioneOpz amministrativoTipo estremi
+	;
+
+amministrativoTipo:
+	decretoCnr					{ urnTmp.provvedimento = strdup("decreto"); }
+	| PROVVEDIMENTO_ORDINAMENTALE_CNR	{ urnTmp.provvedimento = strdup("provvedimento"); 
+									urnTmp.autorita = strdup("consiglio.nazionale.ricerche"); }
+	| PROVVEDIMENTO_ORDINAMENTALE		{ urnTmp.provvedimento = strdup("provvedimento"); 
+									urnTmp.autorita = strdup(configGetEmanante()); }
+	;
+
+/******************************************************************************/
+/************************************************************* DECRETO CNR ****/
+/******************************************************************************/
+
+decretoCnr:
+	DECRETO_PRESIDENTE_CNR		{ urnTmp.autorita = strdup("consiglio.nazionale.ricerche;presidente"); }
+	| DECRETO_DIRETTORE_GENERALE_CNR	
+					{ urnTmp.autorita = strdup("consiglio.nazionale.ricerche;direttore.generale"); }
+	;
+
 /******************************************************************************/
 /************************************************************ SUDDIVISIONE ****/
 /******************************************************************************/
