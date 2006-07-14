@@ -82,6 +82,7 @@ ROM	([ivx]+)
 %%
 
 ((gazzetta{SPA}+ufficiale|g\.?{S}u\.?){SPA}+{NUM}{S}{N})	intpos+=intleng; return BREAK;
+((protocollo|prot{PS}){S}{NUM}{S}{N})					intpos+=intleng; return BREAK;
 ((registro|foglio){SPA}+{NUM}{S}{N})					intpos+=intleng; return BREAK;
 
 {LIB}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
