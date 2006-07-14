@@ -1,6 +1,6 @@
 /******************************************************************************
 * Project:	xmLeges
-* Module:	Linker
+* Module:		Linker
 * File:		config.h
 * Copyright:	ITTIG/CNR - Firenze - Italy (http://www.ittig.cnr.it)
 * Licence:	GNU/GPL (http://www.gnu.org/licenses/gpl.html)
@@ -24,5 +24,8 @@ void configSetTipoInput(tipoInput tipo);
 
 char *configGetRegione(void);
 void configSetRegione(char* regione);
+
+char *configGetEmanante(void);
+void configSetEmanante(char* emanante);
 
 #endif
