@@ -60,7 +60,12 @@ N	([0-9]+)
 N12	([0-9]{1,2})
 N4	([0-9]{4})
 
-DECRETO	(decreto|decr{PS}|d{PS})
+DECRETO_E	(decreto|decr{PS})
+PROVD	(provvedimento|provv{PS})
+STATU	(statuto)
+
+DECRETO_1	(d{PS})
+DECRETO	({DECRETO_E}|{DECRETO_1})
 LEG		(legge|l{PS})
 LGS		(legislativo|legisl{PS}|lgs{PS}vo|lgs{PS}|lgvo?|l{PS}vo)
 REGIO	(regio|r{PS})
@@ -85,6 +90,12 @@ PARLAM	(parlamento({SPA}europeo)?)
 CONS		(consiglio|cons{PS}|c{PS})
 MINIS	(ministri|min{PS}|m{PS})
 COMMIS	(commissione|comm{PS})
+
+PRORD	(provvedimento{S}ordinamentale)
+CNR		(({CONS}{S}nazionale{S}(delle)?{S}ricerche)|(c{PS}?n{PS}?r{PS}?))
+DIRET	(direttore|dir{PS})
+GENER	(generale|gen{PS})
+DIRGEN	({DIRET}{S}{GENER}|d{PS}g{PS}|dg)
 
 LIB		(libro)
 PAR		(parte|pt{PS}|p{PS})
@@ -209,6 +220,21 @@ ROM	([ivx]+)
 
 cost(\.|ituz(\.|ione))? 	BEGIN(0); salvaPos(); return COSTITUZIONE;
 
+{DECRETO}({S}del)?{S}{PRES}({S}del)?{S}{CNR}		{ BEGIN(atto); salvaPos();
+											return DECRETO_PRESIDENTE_CNR; }
+
+d[\.]?{ST}p[\.]?{ST}{CNR}					{ BEGIN(atto); salvaPos();
+											return DECRETO_PRESIDENTE_CNR; }
+
+{DECRETO}({S}del)?{S}{DIRGEN}({S}del)?{S}{CNR}	{ BEGIN(atto); salvaPos();
+											return DECRETO_DIRETTORE_GENERALE_CNR; }
+
+d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}				{ BEGIN(atto); salvaPos();
+											return DECRETO_DIRETTORE_GENERALE_CNR; }
+
+{PRORD}({S}del)?{S}{CNR}						{ BEGIN(atto); salvaPos();
+											return PROVVEDIMENTO_ORDINAMENTALE_CNR; }
+
 {DECRETO}({ST}del{ST})?{PRES}({ST}del{ST})?{CONS}({ST}dei{ST})?{MINIS}	{ BEGIN(atto); salvaPos();
 										return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI; }
 
@@ -270,6 +296,22 @@ r\.d\.l\.						BEGIN(atto); salvaPos(); return REGIO_DECRETO_LEGGE;
 {DECI}					BEGIN(atto); salvaPos(); return DECISIONE;
 {REGOLAM}					BEGIN(atto); salvaPos(); return REGOLAMENTO;
 {REGOLAM}{S}{UE_P}			BEGIN(atto); salvaPos(); return REGOLAMENTO;
+
+{PRORD}(({S}del)?{S}{PRES})?		{ if (configGetEmanante()) 
+								{ BEGIN(atto); salvaPos(); return PROVVEDIMENTO_ORDINAMENTALE; }
+							  else pos+=yyleng; }
+{PRORD}(({S}del)?{S}{DIRGEN})?	{ if (configGetEmanante())
+								{ BEGIN(atto); salvaPos(); return PROVVEDIMENTO_ORDINAMENTALE; }
+							  else pos+=yyleng; }
+{DECRETO_E}					{  if (configGetEmanante())
+								{ BEGIN(atto); salvaPos(); return DECRETO_GEN; }
+							  else pos+=yyleng; }
+{PROVD}						{  if (configGetEmanante()) 
+								{ BEGIN(atto); salvaPos(); return PROVVEDIMENTO_GEN; }
+							  else pos+=yyleng; }
+{STATU}						{  if (configGetEmanante()) 
+								{ BEGIN(atto); salvaPos(); return STATUTO_GEN; }
+							  else pos+=yyleng; }
 
 <atto>{NUM}?{S}({UENUM_NA}|{UENUM_AN})		{ salvaPos(); yylval=(int)strdup(yytext); return UE_NUM; }
 <atto>{UEDEN}				salvaPos(); return UE_DEN;
