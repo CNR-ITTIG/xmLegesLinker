@@ -115,12 +115,13 @@ char * urnStringa(urn u)
 	ret = utilConcatena(1, "");
 	if (u.tipo != 'i')		// riferimenti non interni
 	{
-		ret = utilConcatena(5, "urn:nir:", u.autorita, ":", u.provvedimento, ":");
+		if (u.autorita) 	ret = utilConcatena(5, "urn:nir:", u.autorita, ":", u.provvedimento, ":");
+		else 			ret = utilConcatena(3, "urn:nir::", u.provvedimento, ":");
 
 		if (u.numero) {
-			if (!strcmp(u.autorita,"comunita.europee")) {
+			if (u.autorita && !strcmp(u.autorita,"comunita.europee")) {
 				if (!strncasecmp(u.numero,"n",1) || 
-				    !strcmp(u.provvedimento,"regolamento"))
+				    (u.provvedimento && !strcmp(u.provvedimento,"regolamento")))
 					len = 1;
 				pun = utilCercaCifra(u.numero);
 				strcpy(u.numero, pun);					/* tolgo n. */
@@ -136,7 +137,10 @@ char * urnStringa(urn u)
 					u.data = strdup(cdc);
 				}
 			}			
-			for (pun = u.numero; pun = strpbrk(pun,"/#%:;,+@*"); *pun = '-');
+			for (pun = u.numero; pun = strpbrk(pun,"/#%:;,+@*"); *pun = '-');	// converto car. non ammessi
+
+			for (i = 0; u.numero[i] == '0'; i++);		// tolgo zeri iniziali
+			if (i) strcpy(u.numero, u.numero + 1);
 		}
 
 		if (u.data) {
