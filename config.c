@@ -18,7 +18,7 @@
 
 tipoInput _configTipoInput = txt;
 char* _configRegione = NULL;
-
+char* _configEmanante = NULL;
 
 
 /******************************************************************************/
@@ -29,6 +29,7 @@ void configConfigInLog(void) {
 	loggerInfo(utilConcatena(2, "CONFIG LogFile=", configGetLogFile()));
 	loggerInfo(utilConcatena(2, "CONFIG TipoInput=", configGetTipoInput()));
 	loggerInfo(utilConcatena(2, "CONFIG Regione=", configGetRegione()));
+	loggerInfo(utilConcatena(2, "CONFIG Emanante=", configGetEmanante()));
 }
 
 
@@ -109,4 +110,22 @@ char* configGetRegione(void) {
 /******************************************************************************/
 void configSetRegione(char* regione) {
 	_configRegione = strdup(regione);
+}
+
+
+
+/******************************************************************************/
+/***************************************************** CONFIG GET EMANANTE ****/
+/******************************************************************************/
+char* configGetEmanante(void) {
+	return _configEmanante;
+}
+
+
+
+/******************************************************************************/
+/***************************************************** CONFIG SET EMANANTE ****/
+/******************************************************************************/
+void configSetEmanante(char* emanante) {
+	_configEmanante = strdup(emanante);
 }
