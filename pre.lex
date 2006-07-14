@@ -48,7 +48,7 @@ S			[[:space:]]
 
 %%
 
-(l('|\?|\x92|&#146;|&apos;))	prelval=preleng; return SPACE;
+(l('|\?|\x92|&#146;|&apos;|\xe2\x80\x99))	prelval=preleng; return SPACE;
 
 {S}+						prelval=preleng; return SPACE;
 [\.\/\)\-]				prelval=(int)strdup(pretext); return COPY;
