@@ -13,7 +13,7 @@ ETCDIR=$(PREFIX)/etc
 LIBDIR=$(PREFIX)/lib
 INCLUDEDIR = $(PREFIX)/include
 
-CFLAGS=-O3 -I$(INCLUDEDIR)
+CFLAGS=-O3 -I$(INCLUDEDIR)		# produzione
 #CFLAGS=-ggdb -I$(INCLUDEDIR)
 #CFLAGS=-Wall -O3 -ggdb 
 CC=gcc
@@ -30,39 +30,39 @@ riferimenti: pre.lex.yy.c pre.tab.c riferimenti.lex.yy.c riferimenti.tab.c \
 				 util.o parser.o urn.o uscita.o config.o $(LIBS)
 
 pre.lex.yy.c: pre.lex
-	flex -i -8 -Ce -Ppre -opre.lex.yy.c pre.lex
+	flex -i -8 -Ce -Ppre -opre.lex.yy.c pre.lex		# produzione
 	# per debug
-	#flex -di8 -Ce -Ppre -opre.lex.yy.c pre.lex
+	#flex -d -i -8 -Ce -Ppre -opre.lex.yy.c pre.lex
 
 pre.tab.c: pre.y
 	# per debug (con predebug=1)
 	bison -td -ppre pre.y
 
 ids.lex.yy.c: ids.lex urn.h
-	flex -i -8 -Ce -Pids -oids.lex.yy.c ids.lex
+	flex -i -8 -Ce -Pids -oids.lex.yy.c ids.lex		# produzione
 	# per debug
 	#flex -di8 -Ce -Pids -oids.lex.yy.c ids.lex
 
 riferimenti.lex.yy.c: riferimenti.lex
-	flex -i -8 -CFe -oriferimenti.lex.yy.c riferimenti.lex
+	flex -i -8 -CFe -oriferimenti.lex.yy.c riferimenti.lex		# produzione
 	# per debug
-	#flex -di8 -CFe -oriferimenti.lex.yy.c riferimenti.lex
+	#flex -d -i -8 -CFe -oriferimenti.lex.yy.c riferimenti.lex
 
 riferimenti.tab.c: riferimenti.y
 	# per debug (con yydebug=1)
 	bison -g -v -td riferimenti.y
 
 noncompleti.lex.yy.c: noncompleti.lex
-	flex -i -8 -CFe -Pnoc -ononcompleti.lex.yy.c noncompleti.lex
+	flex -i -8 -CFe -Pnoc -ononcompleti.lex.yy.c noncompleti.lex		# produzione
 	# per debug
-	# flex -d -i -8 -CFe -Pnoc -ononcompleti.lex.yy.c noncompleti.lex
+	#flex -d -i -8 -CFe -Pnoc -ononcompleti.lex.yy.c noncompleti.lex
 
 noncompleti.tab.c: noncompleti.y
 	# per debug (con yydebug=1)
 	bison -g -v -td -pnoc noncompleti.y
 
 interni.lex.yy.c: interni.lex
-	flex -i -8 -CFe -Pint -ointerni.lex.yy.c interni.lex
+	flex -i -8 -CFe -Pint -ointerni.lex.yy.c interni.lex		# produzione
 	# per debug
 	# flex -d -i -8 -CFe -Pint -ointerni.lex.yy.c interni.lex
 
