@@ -1,11 +1,11 @@
 /******************************************************************************
 * Project:	xmLeges
-* Module:	Linker
+* Module:		Linker
 * File:		parser.c
 * Copyright:	ITTIG/CNR - Firenze - Italy (http://www.ittig.cnr.it)
 * Licence:	GNU/GPL (http://www.gnu.org/licenses/gpl.html)
 * Authors:	Mirco Taddei (m.taddei@ittig.cnr.it)
-*		PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
+*			PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
 ******************************************************************************/
 
 #include <ctype.h>
@@ -23,7 +23,7 @@
 #include "config.h"
 #include "urn.h"
 
-const char *versione = "1.4";
+const char *versione = "1.5";
 
 extern FILE * yyin;
 extern urn *urns[];
@@ -58,6 +58,7 @@ int main(int argc, char *argv[]) {
 	tipoUscita paramUscita = doc;
 	char *paramRegione = NULL;
 	char *paramMinistero = NULL;
+	char *paramEmanante = NULL;
 	char *paramFile = NULL;
 	char *paramFileOut = NULL;
 //	FILE *fileout = stdout;
@@ -67,7 +68,7 @@ int main(int argc, char *argv[]) {
 	int fpTmpInc = 1000000;
 
 	opterr = 0;
-	while ((c = getopt (argc, argv, "i:l:b:a:m:o:r:R:L:M:f:F:v:hc:g")) != -1)
+	while ((c = getopt (argc, argv, "i:l:b:a:m:o:r:R:E:L:M:f:F:v:hc:g")) != -1)
 		switch (c) 
 		{
 			case 'i':	// TIPO DI INPUT
@@ -128,6 +129,12 @@ int main(int argc, char *argv[]) {
 				paramMinistero = (char *)strdup(optarg);
 				if (!strlen(paramMinistero))
 					help();
+				break;
+			case 'E':	// EMANANTE
+				paramEmanante = (char *)strdup(optarg);
+				if (!strlen(paramEmanante))
+					help();
+				configSetEmanante(paramEmanante);
 				break;
 			case 'f':	// FILE di INPUT
 				paramFile = (char *)strdup(optarg);
@@ -201,6 +208,8 @@ int main(int argc, char *argv[]) {
 	fpTmpMem[i] = 0;
 	fclose(yyin);
 	fpPreSize = fpTmpSize = i;
+
+// pre-elaborazione del documento
 
 	fpPreMem = malloc(sizeof(char) * fpPreSize);
 	pre_scan_bytes(fpTmpMem, fpTmpSize);
@@ -345,8 +354,9 @@ void help(void)
 	puts("-r <ni>: tipo di riferimenti:");
 	puts("                     - n:  segnalazione dei riferimenti non completi (solo dtdnir)");
 	puts("                     - i:  marcatura dei riferimenti interni (solo dtdnir)");
-	puts("-R <regione>: indica la regione di default se non specificata nella citazione");
-	puts("-M <ministero>: [non ancora attivo]");
+	puts("-R <regione>:   regione di default se non specificata (per L.R. o REGOL.REG.)");
+	puts("-M <ministero>: [non attivato] ministero di default se non specificato (per D.M. o O.M.)");
+	puts("-E <emanante>:  istituzione emanante di default se non specificata (altri atti)");
 	puts("-v: livello di log: error, warn, info, debug");
 	puts("-L <stderr|file=nome> : attiva i log indicati(ripetibile)");
 	puts("                        Esempio1: -L strerr");
