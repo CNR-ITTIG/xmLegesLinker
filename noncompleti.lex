@@ -101,6 +101,12 @@ CONS		(consiglio|cons{PS}|c{PS})
 MINIS	(ministri|min{PS}|m{PS})
 COMMIS	(commissione|comm{PS})
 
+PRORD	(provvedimento{S}ordinamentale)
+CNR		(({CONS}{S}nazionale{S}(delle)?{S}ricerche)|(c{PS}?n{PS}?r{PS}?))
+DIRET	(direttore|dir{PS})
+GENER	(generale|gen{PS})
+DIRGEN	({DIRET}{S}{GENER}|d{PS}g{PS}|dg)
+
 LIB		(libro)
 PAR		(parte|pt{PS}|p{PS})
 TIT		(titolo|tit{PS})
@@ -233,6 +239,27 @@ ROM	([ivx]+)
 
 cost(\.|ituz(\.|ione))? 	BEGIN(0); salvaNocPos(); return COSTITUZIONE;
 
+{DECRETO}({S}del)?{S}{PRES}({S}del)?{S}{CNR}		{ BEGIN(atto); salvaNocPos();
+											return DECRETO_PRESIDENTE_CNR; }
+
+d[\.]?{ST}p[\.]?{ST}{CNR}					{ BEGIN(atto); salvaNocPos();
+											return DECRETO_PRESIDENTE_CNR; }
+
+{DECRETO}({S}del)?{S}{DIRGEN}({S}del)?{S}{CNR}	{ BEGIN(atto); salvaNocPos();
+											return DECRETO_DIRETTORE_GENERALE_CNR; }
+
+d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}				{ BEGIN(atto); salvaNocPos();
+											return DECRETO_DIRETTORE_GENERALE_CNR; }
+
+{PRORD}({S}del)?{S}{CNR}						{ BEGIN(atto); salvaNocPos();
+											return PROVVEDIMENTO_ORDINAMENTALE_CNR; }
+
+{PRORD}(({S}del)?{S}{PRES})?					{ BEGIN(atto); salvaNocPos();
+											return PROVVEDIMENTO_ORDINAMENTALE; }
+
+{PRORD}(({S}del)?{S}{DIRGEN})?				{ BEGIN(atto); salvaNocPos();
+											return PROVVEDIMENTO_ORDINAMENTALE; }
+
 {DECRETO}({ST}del{ST})?{PRES}({ST}del{ST})?{CONS}({ST}dei{ST})?{MINIS}	{ BEGIN(atto); salvaNocPos();
 												return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI; }
 
@@ -302,12 +329,19 @@ r\.d\.l\.						BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGGE;
 {REGOLAM}					BEGIN(atto); salvaNocPos(); return REGOLAMENTO;
 {REGOLAM}{S}{UE_P}			BEGIN(atto); salvaNocPos(); return REGOLAMENTO_UE;
 
+{DELIB}({ST}del{ST})?{CONS}({ST}dei{ST})?{MINIS}	{ BEGIN(atto); salvaNocPos();
+												return DELIBERA_CONSIGLIO_MINISTRI; }
+
+{DELIB}({ST}del{ST})?{CONS}					{ BEGIN(atto); salvaNocPos();
+												return DELIBERA_CONSIGLIO; }
+
+{DELIB}			BEGIN(atto); salvaNocPos(); return DELIBERA_GEN;
+{DECRETO_E}		BEGIN(atto); salvaNocPos(); return DECRETO_GEN;
+{ODZ_E}			BEGIN(atto); salvaNocPos(); return ORDINANZA_GEN;
+{PROVD}			BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_GEN;
+{STATU}			BEGIN(atto); salvaNocPos(); return STATUTO_GEN;
+
 {COD_E}			BEGIN(0); salvaNocPos(); return CODICE_GEN;
-{DECRETO_E}		BEGIN(0); salvaNocPos(); return DECRETO_GEN;
-{DELIB}			BEGIN(0); salvaNocPos(); return DELIBERA_GEN;
-{ODZ_E}			BEGIN(0); salvaNocPos(); return ORDINANZA_GEN;
-{PROVD}			BEGIN(0); salvaNocPos(); return PROVVEDIMENTO_GEN;
-{STATU}			BEGIN(0); salvaNocPos(); return STATUTO_GEN;
 {TU_E}			BEGIN(0); salvaNocPos(); return TESTO_UNICO_GEN;
 
 <atto>{NUM}?{S}({UENUM_NA}|{UENUM_AN})		{ salvaNocPos(); noclval=(int)strdup(noctext); return UE_NUM; }
