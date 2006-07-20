@@ -121,7 +121,8 @@ S			[[:space:]]
 
 
 
-([a-z0-9]+)			prelval=(int)strdup(pretext); return COPY;
+([a-km-z0-9]+)			prelval=(int)strdup(pretext); return COPY;
+l					prelval=(int)strdup(pretext); return COPY;
 
 .					prelval=preleng; return SPACE;
 
