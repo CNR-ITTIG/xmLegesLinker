@@ -33,6 +33,8 @@ extern int nSupIds;
 extern ids *tabInfIds[];
 extern int nInfIds;
 
+char  *fpTmpMem = NULL;
+size_t fpTmpSize = 1000000;
 char *	fpPreMem = NULL;
 size_t	fpPreSize;
 int 	fpPrePos;
@@ -63,8 +65,6 @@ int main(int argc, char *argv[]) {
 	char *paramFileOut = NULL;
 //	FILE *fileout = stdout;
 
-	char  *fpTmpMem = NULL;
-	size_t fpTmpSize = 1000000;
 	int fpTmpInc = 1000000;
 
 	opterr = 0;
@@ -208,6 +208,16 @@ int main(int argc, char *argv[]) {
 	fpTmpMem[i] = 0;
 	fclose(yyin);
 	fpPreSize = fpTmpSize = i;
+
+// eliminazione riferimenti non completi gia' presenti
+
+	if (paramInput == xml)
+	{
+		lev_scan_bytes(fpTmpMem, fpTmpSize);
+		levlex();
+		fpPreSize = fpTmpSize;
+		fpTmpMem[fpTmpSize] = 0;
+	}
 
 // pre-elaborazione del documento
 
