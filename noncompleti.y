@@ -187,7 +187,7 @@ normativoTipo:
 	| attiPresidenteRepubblica			{ urnTmp.autorita = strdup("presidente.repubblica"); }
 	| attiPresidenteConsiglioMinistri		{ urnTmp.autorita = strdup("presidente.consiglio.ministri"); }
 	| attiRegi						{ urnTmp.autorita = strdup("stato"); }
-	| attiRegionali					{ urnTmp.autorita = strdup("regione."); }
+	| attiRegionali
 	| attiGenerali
 	| attiGenerici						{ if (configGetEmanante()) 
 										urnTmp.autorita = strdup(configGetEmanante()); }
@@ -274,35 +274,40 @@ attiRegi:
 /******************************************************************************/
 
 attiRegionali:
-	regionaleTipo regionaleConnettivo regioneParola regioneNome 
+	regionaleTipoRegionale regionaleConnettivo regioneParolaOpz regioneNomeOpz
+	| regionaleTipoGenerico regionaleConnettivo regioneParola regioneNomeOpz
+	| regionaleTipoGenerico regionaleConnettivo regioneParolaOpz regioneNome 
+	;
+
+regionaleTipoRegionale:
+	LEGGE_REGIONALE			{ urnTmp.provvedimento = strdup("legge"); }
+	| REGOLAMENTO_REGIONALE		{ urnTmp.provvedimento = strdup("regolamento"); }
+	;
+
+regionaleTipoGenerico:
+	LEGGE					{ urnTmp.provvedimento = strdup("legge"); }
+	| REGOLAMENTO				{ urnTmp.provvedimento = strdup("regolamento"); }
+	;
+
+regioneParolaOpz:
+	regioneParola
+	| /* vuoto */
 	;
 
 regioneParola:
-	PAROLA_REGIONE | /* vuoto */
+	PAROLA_REGIONE
+	;
+
+regioneNomeOpz:
+	regioneNome
+	| /* vuoto */ 		{ if (configGetRegione()) 
+							urnTmp.autorita = utilConcatena(2, "regione.", configGetRegione());
+					  else	urnTmp.autorita = utilConcatena(1, "regione."); }
 	;
 
 regioneNome:
-	REGIONE			{ urnTmp.autorita = utilConcatena(1, $1); }
-	| /* vuoto */ 		{ if (configGetRegione()) 
-						urnTmp.autorita = utilConcatena(1, configGetRegione());}
+	REGIONE			{ urnTmp.autorita = utilConcatena(2, "regione.", $1); }
 	;
-
-regionaleTipo:
-	LEGGE_REGIONALE			{ urnTmp.provvedimento = strdup("legge"); }
-//	| leggeRegionale			{ urnTmp.provvedimento = strdup("legge"); }
-	| REGOLAMENTO_REGIONALE		{ urnTmp.provvedimento = strdup("regolamento"); }
-//	| regolamentoRegionale		{ urnTmp.provvedimento = strdup("regolamento"); }
-	;
-
-/* ----------
-leggeRegionale:
-	LEGGE regionaleConnettivo PAROLA_REGIONE
-	;
-
-regolamentoRegionale:
-	REGOLAMENTO regionaleConnettivo PAROLA_REGIONE
-	;
----------- */
 
 regionaleConnettivo:
 	DEL | DELL | DELLA | /* vuoto */ 
