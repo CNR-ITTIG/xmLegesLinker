@@ -21,11 +21,11 @@ LIBS=-L$(LIBDIR) -littig-1.0
 
 all: riferimenti
 
-riferimenti: pre.lex.yy.c pre.tab.c riferimenti.lex.yy.c riferimenti.tab.c \
+riferimenti: pre.lex.yy.c pre.tab.c riferimenti.lex.yy.c riferimenti.tab.c levarif.lex.yy.c \
 				 ids.lex.yy.c noncompleti.lex.yy.c noncompleti.tab.c interni.lex.yy.c interni.tab.c \
 				 util.o parser.o urn.o uscita.o config.o
 	$(CC) $(CFLAGS) -o xmLeges-Linker.exe \
-				 pre.lex.yy.c pre.tab.c riferimenti.lex.yy.c riferimenti.tab.c \
+				 pre.lex.yy.c pre.tab.c riferimenti.lex.yy.c riferimenti.tab.c levarif.lex.yy.c \
 				 ids.lex.yy.c noncompleti.lex.yy.c noncompleti.tab.c interni.lex.yy.c interni.tab.c \
 				 util.o parser.o urn.o uscita.o config.o $(LIBS)
 
@@ -42,6 +42,11 @@ ids.lex.yy.c: ids.lex urn.h
 	flex -i -8 -Ce -Pids -oids.lex.yy.c ids.lex		# produzione
 	# per debug
 	#flex -di8 -Ce -Pids -oids.lex.yy.c ids.lex
+
+levarif.lex.yy.c: levarif.lex parser.h
+	flex -i -8 -Ce -Plev -olevarif.lex.yy.c levarif.lex		# produzione
+	# per debug
+	#flex -d -i -8 -Ce -Plev -olevarif.lex.yy.c levarif.lex
 
 riferimenti.lex.yy.c: riferimenti.lex
 	flex -i -8 -CFe -oriferimenti.lex.yy.c riferimenti.lex		# produzione
@@ -86,7 +91,7 @@ config.o: config.c config.h
 	$(CC) $(CFLAGS) -c config.c
 
 clean:
-	rm -f *.o xmLeges-Linker.exe riferimenti.lex.yy.c riferimenti.tab.* \
+	rm -f *.o xmLeges-Linker.exe riferimenti.lex.yy.c riferimenti.tab.* levarif.lex.yy.c \
 			ids.lex.yy.c noncompleti.lex.yy.c noncompleti.tab.* \
 			interni.lex.yy.c interni.tab.* \
 			pre.lex.yy.c pre.tab.* \
