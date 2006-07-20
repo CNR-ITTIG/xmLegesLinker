@@ -115,6 +115,12 @@ char * urnStringa(urn u)
 	ret = utilConcatena(1, "");
 	if (u.tipo != 'i')		// riferimenti non interni
 	{
+		if (u.autorita) {						// converto ' ' e '-' in '.'
+			utilSostStr(u.autorita, "-", " ");
+			utilCompact(u.autorita);
+			utilSostStr(u.autorita, " ", ".");
+		}
+
 		if (u.autorita) 	ret = utilConcatena(5, "urn:nir:", u.autorita, ":", u.provvedimento, ":");
 		else 			ret = utilConcatena(3, "urn:nir::", u.provvedimento, ":");
 
