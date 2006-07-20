@@ -77,13 +77,25 @@ ORD	((prim|second|terz|quart|quint|sest|settim|ottav|non|decim|(undic|dodic|tred
 
 ROM	([ivx]+)
 
+GU		(gazzetta{SPA}ufficiale|g\.?{S}u\.?)
+REP		((della{SPA})?(repubblica|rep{PS}){SPA}(italiana|it{PS}))
+GUREP	({GU}({S}{REP})?)
+SUPO_E	((supplemento|suppl{PS}|s{PS}){S}(ordinario|ord{PS}|o{PS}))
+SUPO		({SUPO_E}|so{PS})
+SERG_E	((serie|s{PS}){S}(generale|gen{PS}|g{PS}))
+SERG		({SERG_E}|sg{PS})
+
 %s	sudd
 
 %%
 
-((gazzetta{SPA}+ufficiale|g\.?{S}u\.?){SPA}+{NUM}{S}{N})	intpos+=intleng; return BREAK;
-((protocollo|prot{PS}){S}{NUM}{S}{N})					intpos+=intleng; return BREAK;
-((registro|foglio){SPA}+{NUM}{S}{N})					intpos+=intleng; return BREAK;
+({GUREP}{S}{NUM}{S}{N})					intpos+=intleng; return BREAK;
+({GUREP}({ST}{SUPO})?{ST}+{NUM}{S}{N})		intpos+=intleng; return BREAK;
+({SUPO_E}{ST}{NUM}{S}{N})				intpos+=intleng; return BREAK;
+({GUREP}({ST}{SERG})?{ST}{NUM}{S}{N})		intpos+=intleng; return BREAK;
+({SERG_E}{ST}{NUM}{S}{N})				intpos+=intleng; return BREAK;
+((protocollo|prot{PS}){S}{NUM}{S}{N})		intpos+=intleng; return BREAK;
+((registro|foglio){SPA}+{NUM}{S}{N})		intpos+=intleng; return BREAK;
 
 {LIB}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaIntpos(); 
 							intlval=(int)strdup(utilConvRomanoDopo(inttext)); return LIBRO; }
