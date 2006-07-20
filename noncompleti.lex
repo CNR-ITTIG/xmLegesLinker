@@ -90,7 +90,7 @@ REGOLAM	(regolamento|reg{PS}|r\.)
 DIR		(direttiva|dir{PS}){SPA}
 DECI		(decisione|dec{PS})
 
-QLEG		(finanziaria|comunitaria|fallimentare|fall{PS})
+QLEG		(finanziaria|comunitaria|fallimentare|fall{PS}|urbanistica)
 COST		(costituzionale|cost{PS}|c{PS})
 RGN		(regionale|reg{PS}|r{PS})
 PROV		(provinciale|prov{PS}|p{PS})
@@ -106,6 +106,7 @@ CNR		(({CONS}{S}nazionale{S}(delle)?{S}ricerche)|(c{PS}?n{PS}?r{PS}?))
 DIRET	(direttore|dir{PS})
 GENER	(generale|gen{PS})
 DIRGEN	({DIRET}{S}{GENER}|d{PS}g{PS}|dg)
+COMSTR	(commissario({S}straordinario)?)
 
 LIB		(libro)
 PAR		(parte|pt{PS}|p{PS})
@@ -126,8 +127,10 @@ UEDEN	(dell[ae']{S}(unione|comunit.'?){S}europe[ea])
 UENUM_AN	(({N12}|{N4})\/{N}\/{UE}(({SVB}{UE}){1,2})?)
 UENUM_NA	({N}\/({N12}|{N4})\/{UE}(({SVB}{UE}){1,2})?)
 
-REGIONI	(abruzzo|basilicata|calabria|campania|lazio|liguria|lombardia|marche|molise|piemonte|puglia|sardegna|sicilia(na)?|toscana|umbria|veneto|v(\.|alle){S}d{S}'{S}aosta|(friuli(({ST}|{S}e{S})?{ST}venezia{ST}giulia)?))
-
+REGIONI1	(abruzzo|basilicata|calabria|campania|emilia{ST}romagna|lazio|liguria|lombardia|marche|molise)
+REGIONI2	(piemonte|puglia|sardegna|sicilia(na)?|toscana|umbria|veneto|v(\.|alle){S}d{S}'{S}aosta)
+REGIONI3	((friuli(({ST}|{S}e{S})?{ST}venezia{ST}giulia)?))
+REGIONI	({REGIONI1}|{REGIONI2}|{REGIONI3})
 
 MESI	(gennaio|gen|febbraio|feb|marzo|mar|aprile|apr|maggio|mag|giugno|giu|luglio|lug|agosto|ago|settembre|set|ottobre|ott|novembre|nov|dicembre|dic)
 
@@ -148,7 +151,7 @@ ROM	([ivx]+)
 ((effett[oi]|fin[ei]|norm[ae]){SPA}di{SPA}legge)				nocpos+=nocleng; return BREAK;
 (legge{SPA}(italiana|(dello{SPA}stato)))					nocpos+=nocleng; return BREAK;
 ((disposizion[ei]|valore){SPA}di{SPA}legge)					nocpos+=nocleng; return BREAK;
-((presente|seguente){SPA}(codice|legge|decreto|regolamento|testo{SPA}unico))	nocpos+=nocleng; return BREAK;
+((presente|seguente){SPA}(codice|legge|decreto|provvedimento|regolamento|testo{SPA}unico))	nocpos+=nocleng; return BREAK;
 ((u|ca)s[oi]{SPA}(consentit|indicat)[oi]{SPA}dalla{SPA}legge)	nocpos+=nocleng; return BREAK;
 ((decreto|provvedimento|regolamento){SPA}di{SPA}cui)			nocpos+=nocleng; return BREAK;
 
@@ -251,6 +254,9 @@ d[\.]?{ST}p[\.]?{ST}{CNR}					{ BEGIN(atto); salvaNocPos();
 d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}				{ BEGIN(atto); salvaNocPos();
 											return DECRETO_DIRETTORE_GENERALE_CNR; }
 
+{PRORD}({S}del)?{S}{COMSTR}({S}del)?{S}{CNR}		{ BEGIN(atto); salvaNocPos();
+											return PROVVEDIMENTO_ORDINAMENTALE_CNR; }
+
 {PRORD}({S}del)?{S}{CNR}						{ BEGIN(atto); salvaNocPos();
 											return PROVVEDIMENTO_ORDINAMENTALE_CNR; }
 
@@ -258,6 +264,9 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}				{ BEGIN(atto); salvaNocPos();
 											return PROVVEDIMENTO_ORDINAMENTALE; }
 
 {PRORD}(({S}del)?{S}{DIRGEN})?				{ BEGIN(atto); salvaNocPos();
+											return PROVVEDIMENTO_ORDINAMENTALE; }
+
+{PRORD}(({S}del)?{S}{COMSTR})?				{ BEGIN(atto); salvaNocPos();
 											return PROVVEDIMENTO_ORDINAMENTALE; }
 
 {DECRETO}({ST}del{ST})?{PRES}({ST}del{ST})?{CONS}({ST}dei{ST})?{MINIS}	{ BEGIN(atto); salvaNocPos();
@@ -310,10 +319,9 @@ r\.d\.l\.						BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGGE;
 
 {LEG}{ST}{RGN}				BEGIN(atto); salvaNocPos(); return LEGGE_REGIONALE;
 {REGOLAM}{ST}{RGN}			BEGIN(atto); salvaNocPos(); return REGOLAMENTO_REGIONALE;
-{REGIONI}					{ BEGIN(atto); salvaNocPos(); 
-							noclval=(int)strdup(noctext); return REGIONE; }
 
 {DECRETO}{ST}{LGS}			BEGIN(atto); salvaNocPos(); return DECRETO_LEGISLATIVO;
+d{LGS}					BEGIN(atto); salvaNocPos(); return DECRETO_LEGISLATIVO;
 {DECRETO}{ST}{LEG}			BEGIN(atto); salvaNocPos(); return DECRETO_LEGGE;
 {DISEG}{S}{LEG}			BEGIN(atto); salvaNocPos(); return DISEGNO_LEGGE;
 {LEG}{ST}{COST}			BEGIN(atto); salvaNocPos(); return LEGGE_COSTITUZIONALE;
@@ -335,10 +343,11 @@ r\.d\.l\.						BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGGE;
 {DELIB}({ST}del{ST})?{CONS}					{ BEGIN(atto); salvaNocPos();
 												return DELIBERA_CONSIGLIO; }
 
+{PROVD}			BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_GEN;
+
 {DELIB}			BEGIN(atto); salvaNocPos(); return DELIBERA_GEN;
 {DECRETO_E}		BEGIN(atto); salvaNocPos(); return DECRETO_GEN;
 {ODZ_E}			BEGIN(atto); salvaNocPos(); return ORDINANZA_GEN;
-{PROVD}			BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_GEN;
 {STATU}			BEGIN(atto); salvaNocPos(); return STATUTO_GEN;
 
 {COD_E}			BEGIN(0); salvaNocPos(); return CODICE_GEN;
@@ -358,6 +367,7 @@ r\.d\.l\.						BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGGE;
 <sudd,atto>del{SPA}			nocpos+=nocleng; return DEL;
 <atto>in{SPA}data			nocpos+=nocleng; return IN_DATA;
 <atto>regione{SPA}			nocpos+=nocleng; return PAROLA_REGIONE;
+<atto>{REGIONI}			salvaNocPos(); noclval=(int)strdup(yytext); return REGIONE;
 
 <atto>{N12}[/\.-]{N12}[/\.-]({N4}|{N12})/[^0-9]	{ salvaNocPos(); noclval=(int)utilConvDataNumerica(noctext); 
 											return DATA_GG_MM_AAAA; }
