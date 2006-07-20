@@ -80,7 +80,7 @@ REGOLAM	(regolamento|reg{PS}|r\.)
 DIR		(direttiva|dir{PS}){SPA}
 DECI		(decisione|dec{PS})
 
-QLEG		(finanziaria|comunitaria|fallimentare|fall{PS})
+QLEG		(finanziaria|comunitaria|fallimentare|fall{PS}|urbanistica)
 COST		(costituzionale|cost{PS}|c{PS})
 RGN		(regionale|reg{PS}|r{PS})
 PROV		(provinciale|prov{PS}|p{PS})
@@ -96,6 +96,7 @@ CNR		(({CONS}{S}nazionale{S}(delle)?{S}ricerche)|(c{PS}?n{PS}?r{PS}?))
 DIRET	(direttore|dir{PS})
 GENER	(generale|gen{PS})
 DIRGEN	({DIRET}{S}{GENER}|d{PS}g{PS}|dg)
+COMSTR	(commissario({S}straordinario)?)
 
 LIB		(libro)
 PAR		(parte|pt{PS}|p{PS})
@@ -117,7 +118,10 @@ UEDEN	(dell[ae']{S}(unione|comunit.'?){S}europe[ea])
 UENUM_AN	(({N12}|{N4})\/{N}\/{UE}(({SVB}{UE}){1,2})?)
 UENUM_NA	({N}\/({N12}|{N4})\/{UE}(({SVB}{UE}){1,2})?)
 
-REGIONI	(abruzzo|basilicata|calabria|campania|lazio|liguria|lombardia|marche|molise|piemonte|puglia|sardegna|sicilia(na)?|toscana|umbria|veneto|v(\.|alle){S}d{S}'{S}aosta|(friuli(({ST}|{S}e{S})?{ST}venezia{ST}giulia)?))
+REGIONI1	(abruzzo|basilicata|calabria|campania|emilia{ST}romagna|lazio|liguria|lombardia|marche|molise)
+REGIONI2	(piemonte|puglia|sardegna|sicilia(na)?|toscana|umbria|veneto|v(\.|alle){S}d{S}'{S}aosta)
+REGIONI3	((friuli(({ST}|{S}e{S})?{ST}venezia{ST}giulia)?))
+REGIONI	({REGIONI1}|{REGIONI2}|{REGIONI3})
 
 MESI	(gennaio|gen|febbraio|feb|marzo|mar|aprile|apr|maggio|mag|giugno|giu|luglio|lug|agosto|ago|settembre|set|ottobre|ott|novembre|nov|dicembre|dic)
 
@@ -232,6 +236,9 @@ d[\.]?{ST}p[\.]?{ST}{CNR}					{ BEGIN(atto); salvaPos();
 d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}				{ BEGIN(atto); salvaPos();
 											return DECRETO_DIRETTORE_GENERALE_CNR; }
 
+{PRORD}({S}del)?{S}{COMSTR}({S}del)?{S}{CNR}		{ BEGIN(atto); salvaPos();
+											return PROVVEDIMENTO_ORDINAMENTALE_CNR; }
+
 {PRORD}({S}del)?{S}{CNR}						{ BEGIN(atto); salvaPos();
 											return PROVVEDIMENTO_ORDINAMENTALE_CNR; }
 
@@ -279,10 +286,9 @@ r\.d\.l\.						BEGIN(atto); salvaPos(); return REGIO_DECRETO_LEGGE;
 
 {LEG}{ST}{RGN}				BEGIN(atto); salvaPos(); return LEGGE_REGIONALE;
 {REGOLAM}{ST}{RGN}			BEGIN(atto); salvaPos(); return REGOLAMENTO_REGIONALE;
-{REGIONI}					{ BEGIN(atto); salvaPos(); 
-							yylval=(int)strdup(yytext); return REGIONE; }
 
 {DECRETO}{ST}{LGS}			BEGIN(atto); salvaPos(); return DECRETO_LEGISLATIVO;
+d{LGS}					BEGIN(atto); salvaPos(); return DECRETO_LEGISLATIVO;
 {DECRETO}{ST}{LEG}			BEGIN(atto); salvaPos(); return DECRETO_LEGGE;
 {LEG}{ST}{COST}			BEGIN(atto); salvaPos(); return LEGGE_COSTITUZIONALE;
 {LEG}({S}{QLEG})?			BEGIN(atto); salvaPos(); return LEGGE;
@@ -303,6 +309,10 @@ r\.d\.l\.						BEGIN(atto); salvaPos(); return REGIO_DECRETO_LEGGE;
 {PRORD}(({S}del)?{S}{DIRGEN})?	{ if (configGetEmanante())
 								{ BEGIN(atto); salvaPos(); return PROVVEDIMENTO_ORDINAMENTALE; }
 							  else pos+=yyleng; }
+{PRORD}(({S}del)?{S}{COMSTR})?	{ if (configGetEmanante())
+								{ BEGIN(atto); salvaPos(); return PROVVEDIMENTO_ORDINAMENTALE; }
+							  else pos+=yyleng; }
+
 {DECRETO_E}					{  if (configGetEmanante())
 								{ BEGIN(atto); salvaPos(); return DECRETO_GEN; }
 							  else pos+=yyleng; }
@@ -327,6 +337,7 @@ r\.d\.l\.						BEGIN(atto); salvaPos(); return REGIO_DECRETO_LEGGE;
 <sudd,atto>del{SPA}			pos+=yyleng; return DEL;
 <atto>in{SPA}data			pos+=yyleng; return IN_DATA;
 <atto>regione{SPA}			pos+=yyleng; return PAROLA_REGIONE;
+<atto>{REGIONI}			salvaPos(); yylval=(int)strdup(yytext); return REGIONE;
 
 <atto>{N12}[/\.-]{N12}[/\.-]({N4}|{N12})/[^0-9]	{ salvaPos(); yylval=(int)utilConvDataNumerica(yytext); 
 											return DATA_GG_MM_AAAA; }
