@@ -39,19 +39,19 @@ pre.tab.c: pre.y
 	bison -td -ppre pre.y
 
 ids.lex.yy.c: ids.lex urn.h
-	flex -i -8 -Ce -Pids -oids.lex.yy.c ids.lex		# produzione
+	flex -i -8 -CFe -Pids -oids.lex.yy.c ids.lex		# produzione
 	# per debug
-	#flex -di8 -Ce -Pids -oids.lex.yy.c ids.lex
+	#flex -di8 -CFe -Pids -oids.lex.yy.c ids.lex
 
 levarif.lex.yy.c: levarif.lex parser.h
-	flex -i -8 -Ce -Plev -olevarif.lex.yy.c levarif.lex		# produzione
+	flex -i -8 -CFe -Plev -olevarif.lex.yy.c levarif.lex		# produzione
 	# per debug
-	#flex -d -i -8 -Ce -Plev -olevarif.lex.yy.c levarif.lex
+	#flex -d -i -8 -CFe -Plev -olevarif.lex.yy.c levarif.lex
 
 riferimenti.lex.yy.c: riferimenti.lex
-	flex -i -8 -CFe -oriferimenti.lex.yy.c riferimenti.lex		# produzione
+	flex -i -8 -Ce -oriferimenti.lex.yy.c riferimenti.lex		# produzione
 	# per debug
-	#flex -d -i -8 -CFe -oriferimenti.lex.yy.c riferimenti.lex
+	#flex -d -i -8 -Ce -oriferimenti.lex.yy.c riferimenti.lex
 
 riferimenti.tab.c: riferimenti.y
 	# per debug (con yydebug=1)
