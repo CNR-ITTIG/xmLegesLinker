@@ -104,6 +104,7 @@ int nocwrap() {
 
 %token LEGGE_REGIONALE
 %token REGOLAMENTO_REGIONALE
+%token STATUTO_REGIONALE
 %token REGIONE
 %token PAROLA_REGIONE
 
@@ -120,16 +121,8 @@ int nocwrap() {
 %token DATA_GG_MM_AAAA
 
 %token NUMERO_CARDINALE
-%token CITATO
-%token DEL
-%token DELL
-%token DELLA
-%token DELLO
-%token E
-%token IN_DATA
 %token BARRA
 
-%token PAROLA
 %token BREAK
 
 %%
@@ -274,43 +267,39 @@ attiRegi:
 /******************************************************************************/
 
 attiRegionali:
-	regionaleTipoRegionale regionaleConnettivo regioneParolaOpz regioneNomeOpz
-	| regionaleTipoGenerico regionaleConnettivo regioneParola regioneNomeOpz
-	| regionaleTipoGenerico regionaleConnettivo regioneParolaOpz regioneNome 
+	regionaleTipoRegionale regioneNomeOpz
+	| regionaleTipoGenerico regioneParolaNome
 	;
 
 regionaleTipoRegionale:
 	LEGGE_REGIONALE			{ urnTmp.provvedimento = strdup("legge"); }
 	| REGOLAMENTO_REGIONALE		{ urnTmp.provvedimento = strdup("regolamento"); }
+	| STATUTO_REGIONALE			{ urnTmp.provvedimento = strdup("statuto"); }
 	;
 
 regionaleTipoGenerico:
 	LEGGE					{ urnTmp.provvedimento = strdup("legge"); }
 	| REGOLAMENTO				{ urnTmp.provvedimento = strdup("regolamento"); }
+	| STATUTO_GEN				{ urnTmp.provvedimento = strdup("statuto"); }
 	;
 
-regioneParolaOpz:
-	regioneParola
-	| /* vuoto */
-	;
-
-regioneParola:
-	PAROLA_REGIONE
+regioneParolaNome:
+	PAROLA_REGIONE	regioneNome
+	| regioneNome
+	| PAROLA_REGIONE		{ if (configGetRegione()) 
+							  urnTmp.autorita = utilConcatena(2, "regione.", configGetRegione());
+					  	  else urnTmp.autorita = strdup("regione."); }
 	;
 
 regioneNomeOpz:
 	regioneNome
 	| /* vuoto */ 		{ if (configGetRegione()) 
 							urnTmp.autorita = utilConcatena(2, "regione.", configGetRegione());
-					  else	urnTmp.autorita = utilConcatena(1, "regione."); }
+					  else	urnTmp.autorita = strdup("regione."); }
 	;
 
 regioneNome:
 	REGIONE			{ urnTmp.autorita = utilConcatena(2, "regione.", $1); }
-	;
-
-regionaleConnettivo:
-	DEL | DELL | DELLA | /* vuoto */ 
 	;
 
 /******************************************************************************/
@@ -341,7 +330,7 @@ codiceTipo:
 /******************************************************************************/
 
 comunitario:
-	suddivisioneOpz comunitarioTipo estremiConnettivo dataOpz
+	suddivisioneOpz comunitarioTipo dataOpz
 	;
 
 comunitarioTipo:
@@ -360,24 +349,11 @@ comunitarioNumero:
 	;
 
 comunitarioEmanante:
-	comunitarioConnettivo comunitarioOrgano comunitarioEmananteAltri
-	;
-
-comunitarioConnettivo:
-	DEL | DELLA | /* vuoto */
+	comunitarioOrgano comunitarioOrgano
 	;
 
 comunitarioOrgano:
 	PARLAMENTO | CONSIGLIO | COMMISSIONE | /* vuoto */
-	;
-
-comunitarioEmananteAltri:
-	comunitarioAltri comunitarioConnettivo comunitarioOrgano comunitarioEmananteAltri
-	| /* vuoto */
-	;
-
-comunitarioAltri:
-	E | /* vuoto */
 	;
 
 /******************************************************************************/
@@ -454,21 +430,8 @@ suddivisioneOpz:
 	;
 
 suddivisione:
-	suddivisioni connettivoAtto
-	;
-
-suddivisioni:
 	suddivisionePartizioneSupArt
 	| suddivisioneArticolo
-	;
-
-connettivoAtto:
-	CITATO | DEL | DELL | DELLA | DELLO | /* vuoto */ 
-	;
-
-
-suddivisioneConnettivo:
-	connettivoAtto
 	;
 
 suddivisionePartizioneSupArtOpz:
@@ -499,80 +462,59 @@ suddivisionePartizioneInfArt:
 	;
 
 suddivisioneLibro:
-	LIBRO suddivisioneConnettivo suddivisionePartizioneSupArtOpz
-				{ urnTmp.lib = (char *)$1; }
+	LIBRO suddivisionePartizioneSupArtOpz			{ urnTmp.lib = (char *)$1; }
 	;
 
 suddivisioneParte:
-	PARTE suddivisioneConnettivo suddivisionePartizioneSupArtOpz
-				{ urnTmp.prt = (char *)$1; }
+	PARTE suddivisionePartizioneSupArtOpz			{ urnTmp.prt = (char *)$1; }
 	;
 
 suddivisioneTitolo:
-	TITOLO suddivisioneConnettivo suddivisionePartizioneSupArtOpz
-				{ urnTmp.tit = (char *)$1; }
+	TITOLO suddivisionePartizioneSupArtOpz			{ urnTmp.tit = (char *)$1; }
 	;
 
 suddivisioneCapo:
-	CAPO suddivisioneConnettivo suddivisionePartizioneSupArtOpz
-				{ urnTmp.cap = (char *)$1; }
+	CAPO suddivisionePartizioneSupArtOpz			{ urnTmp.cap = (char *)$1; }
 	;
 
 suddivisioneSezione:
-	SEZIONE suddivisioneConnettivo suddivisionePartizioneSupArtOpz
-				{ urnTmp.sez = (char *)$1; }
+	SEZIONE suddivisionePartizioneSupArtOpz			{ urnTmp.sez = (char *)$1; }
 	;
 
 suddivisioneArticolo:
-	ARTICOLO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
-				{ urnTmp.art = (char *)$1; }
-	| suddivisionePartizioneInfArtOpz suddivisioneConnettivo ARTICOLO 
-				{ urnTmp.art = (char *)$3; }
+	ARTICOLO suddivisionePartizioneInfArtOpz		{ urnTmp.art = (char *)$1; }
+	| suddivisionePartizioneInfArtOpz ARTICOLO		{ urnTmp.art = (char *)$2; }
 	;
 
 suddivisioneComma:
-	COMMA suddivisioneConnettivo suddivisionePartizioneInfArtOpz
-				{ urnTmp.com = (char *)$1; }
+	COMMA suddivisionePartizioneInfArtOpz			{ urnTmp.com = (char *)$1; }
 	;
 
 suddivisioneCapoverso:
-	CAPOVERSO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
-				{ urnTmp.com = (char *)$1; }
+	CAPOVERSO suddivisionePartizioneInfArtOpz		{ urnTmp.com = (char *)$1; }
 	;
 
 suddivisioneLettera:
-	LETTERA suddivisioneConnettivo suddivisionePartizioneInfArtOpz
-				{ urnTmp.let = (char *)$1; }
+	LETTERA suddivisionePartizioneInfArtOpz			{ urnTmp.let = (char *)$1; }
 	;
 
 suddivisioneNumero:
-	NUMERO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
-				{ urnTmp.num = (char *)$1; }
+	NUMERO suddivisionePartizioneInfArtOpz			{ urnTmp.num = (char *)$1; }
 	;
 
 suddivisioneParagrafo:
-	PARAGRAFO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
-				{ urnTmp.prg = (char *)$1; }
+	PARAGRAFO suddivisionePartizioneInfArtOpz		{ urnTmp.prg = (char *)$1; }
 	;
 
 suddivisionePeriodo:
-	PERIODO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
+	PERIODO suddivisionePartizioneInfArtOpz
 	;
 
 /******************************************************************************/
 /****************************************************************** ESTREMI ***/
 /******************************************************************************/
 
-//estremi:
-//	estremiConnettivo estremiEstesi
-//	| estremiAbbreviati
-//	;
-
 estremi:
-	estremiConnettivo estremiTipo
-	;
-
-estremiTipo:
 	estremiEstesi
 	| estremiAbbreviati
 	| /* vuoto */
@@ -580,14 +522,14 @@ estremiTipo:
 	
 estremiEstesi:
 	data estremiNumero
-	| estremiNumero estremiConnettivo data
+	| estremiNumero data
 	| data
 	;
 
 estremiAbbreviati:
 	estremiNumero
 	| estremiNumero BARRA NUMERO_CARDINALE				{ urnTmp.data = (char *) $3; }
-	| estremiNumero estremiConnettivo NUMERO_CARDINALE	{ urnTmp.data = (char *) $3; }
+	| estremiNumero NUMERO_CARDINALE					{ urnTmp.data = (char *) $2; }
 	| NUMERO_CARDINALE NUMERO						{ urnTmp.data = (char *) $1; urnTmp.numero = (char *) $2;}
 /*	| NUMERO_CARDINALE estremiNumero */
 	;
@@ -595,10 +537,6 @@ estremiAbbreviati:
 estremiNumero:
 	NUMERO			{ urnTmp.numero = (char *) $1; }
 	| NUMERO_CARDINALE	{ urnTmp.numero = (char *) $1; }
-	;
-
-estremiConnettivo:
-	DEL | DELL | IN_DATA | /* vuoto */
 	;
 
 /******************************************************************************/
