@@ -62,12 +62,6 @@ void intInit()
 %token LETTERA
 %token NUMERO
 
-%token CITATO
-%token DEL
-%token DELL
-%token DELLA
-
-%token PAROLA
 %token BREAK
 
 %%
@@ -101,21 +95,8 @@ riferimento:
 /******************************************************************************/
 
 suddivisione:
-	suddivisioni
-	;
-
-suddivisioni:
 	suddivisionePartizioneSupArt
 	| suddivisioneArticolo
-	;
-
-connettivoAtto:
-	CITATO | DEL | DELL | DELLA | /* vuoto */ 
-	;
-
-
-suddivisioneConnettivo:
-	connettivoAtto
 	;
 
 suddivisionePartizioneSupArtOpz:
@@ -146,58 +127,49 @@ suddivisionePartizioneInfArt:
 */	;
 
 suddivisioneLibro:
-	LIBRO suddivisioneConnettivo suddivisionePartizioneSupArtOpz
-				{ urnTmp.lib = (char *)$1; }
+	LIBRO suddivisionePartizioneSupArtOpz			{ urnTmp.lib = (char *)$1; }
 	;
 
 suddivisioneParte:
-	PARTE suddivisioneConnettivo suddivisionePartizioneSupArtOpz
-				{ urnTmp.prt = (char *)$1; }
+	PARTE suddivisionePartizioneSupArtOpz			{ urnTmp.prt = (char *)$1; }
 	;
 
 suddivisioneTitolo:
-	TITOLO suddivisioneConnettivo suddivisionePartizioneSupArtOpz
-				{ urnTmp.tit = (char *)$1; }
+	TITOLO suddivisionePartizioneSupArtOpz			{ urnTmp.tit = (char *)$1; }
 	;
 
 suddivisioneCapo:
-	CAPO suddivisioneConnettivo suddivisionePartizioneSupArtOpz
-				{ urnTmp.cap = (char *)$1; }
+	CAPO suddivisionePartizioneSupArtOpz			{ urnTmp.cap = (char *)$1; }
 	;
 
 suddivisioneSezione:
-	SEZIONE suddivisioneConnettivo suddivisionePartizioneSupArtOpz
-				{ urnTmp.sez = (char *)$1; }
+	SEZIONE suddivisionePartizioneSupArtOpz			{ urnTmp.sez = (char *)$1; }
 	;
 
 suddivisioneArticolo:
-	articolo suddivisioneConnettivo suddivisionePartizioneInfArtOpz
-	| suddivisionePartizioneInfArtOpz suddivisioneConnettivo articolo 
+	articolo suddivisionePartizioneInfArtOpz
+	| suddivisionePartizioneInfArtOpz articolo 
 	;
 
 articolo:
-	ARTICOLO		{ urnTmp.art = (char *)$1; }
+	ARTICOLO									{ urnTmp.art = (char *)$1; }
 	| /* vuoto */
 	;
 
 suddivisioneComma:
-	COMMA suddivisioneConnettivo suddivisionePartizioneInfArtOpz
-				{ urnTmp.com = (char *)$1; }
+	COMMA suddivisionePartizioneInfArtOpz			{ urnTmp.com = (char *)$1; }
 	;
 
 suddivisioneCapoverso:
-	CAPOVERSO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
-				{ urnTmp.com = (char *)$1; }
+	CAPOVERSO suddivisionePartizioneInfArtOpz		{ urnTmp.com = (char *)$1; }
 	;
 
 suddivisioneLettera:
-	LETTERA suddivisioneConnettivo suddivisionePartizioneInfArtOpz
-				{ urnTmp.let = (char *)$1; }
+	LETTERA suddivisionePartizioneInfArtOpz			{ urnTmp.let = (char *)$1; }
 	;
 
 suddivisioneNumero:
-	NUMERO suddivisioneConnettivo suddivisionePartizioneInfArtOpz
-				{ urnTmp.num = (char *)$1; }
+	NUMERO suddivisionePartizioneInfArtOpz			{ urnTmp.num = (char *)$1; }
 	;
 
 /* ---
