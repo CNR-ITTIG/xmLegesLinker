@@ -60,6 +60,8 @@ N	([0-9]+)
 N12	([0-9]{1,2})
 N4	([0-9]{4})
 
+CONN		({S}del(la|lo|l)?{SPA})
+
 DECRETO_E	(decreto|decr{PS})
 PROVD	(provvedimento|provv{PS})
 STATU	(statuto)
@@ -89,6 +91,7 @@ PRES		(presidente|pres{PS}|p{PS})
 PARLAM	(parlamento({SPA}europeo)?)
 CONS		(consiglio|cons{PS}|c{PS})
 MINIS	(ministri|min{PS}|m{PS})
+COMIN	({CONS}({ST}dei)?{ST}{MINIS})
 COMMIS	(commissione|comm{PS})
 
 PRORD	(provvedimento{S}ordinamentale)
@@ -110,7 +113,6 @@ LET		(lettera|lett?{PS})
 NUM		(numero|num{PS}|nr?{PS}|n\.o)
 PARA		(paragrafo|par{PS})
 PERIO	(periodo|per{PS})
-
 
 UE		(cee?|euratom|ceea|ceca)
 UE_P		(\(?{UE}(({SVB}{UE}){1,2})?\)?)
@@ -137,86 +139,59 @@ ROM	([ivx]+)
 
 %%
 
-{LIB}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaPos(); 
-							yylval=(int)strdup(utilConvRomanoDopo(yytext)); return LIBRO; }
-{LIB}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return LIBRO; }
-{ROM}{S}{LIB}			{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvRomanoPrima(yytext)); return LIBRO; }
-{ORD}{S}{LIB}			{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return LIBRO; }
+{LIB}{S}{ROM}{LAT}?/{NOAN}	BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoDopo(yytext)); return LIBRO;
+{LIB}{S}{ORD}{LAT}?			BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return LIBRO;
+{ROM}{S}{LIB}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoPrima(yytext)); return LIBRO;
+{ORD}{S}{LIB}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return LIBRO;
 
-{PAR}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaPos(); 
-							yylval=(int)strdup(utilConvRomanoDopo(yytext)); return PARTE; }
-{PAR}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return PARTE; }
-{ROM}{S}{PAR}/{NOAN}	{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvRomanoPrima(yytext)); return PARTE; }
-{ORD}{S}{PAR}/{NOAN}	{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return PARTE; }
+{PAR}{S}{ROM}{LAT}?/{NOAN}	BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoDopo(yytext)); return PARTE;
+{PAR}{S}{ORD}{LAT}?			BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return PARTE;
+{ROM}{S}{PAR}/{NOAN}		BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoPrima(yytext)); return PARTE;
+{ORD}{S}{PAR}/{NOAN}		BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return PARTE;
 
-{TIT}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaPos(); 
-							yylval=(int)strdup(utilConvRomanoDopo(yytext)); return TITOLO; }
-{TIT}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return TITOLO; }
-{ROM}{S}{TIT}			{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvRomanoPrima(yytext)); return TITOLO; }
-{ORD}{S}{TIT}			{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return TITOLO; }
+{TIT}{S}{ROM}{LAT}?/{NOAN}	BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoDopo(yytext)); return TITOLO;
+{TIT}{S}{ORD}{LAT}?			BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return TITOLO;
+{ROM}{S}{TIT}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoPrima(yytext)); return TITOLO;
+{ORD}{S}{TIT}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return TITOLO;
 
 {CAPOV}{S}{N}{PTO}?{LAT}?/{NOAN}	{ BEGIN(sudd); salvaPos(); 
 								yylval=(int)strdup(utilConvCardinale(yytext,1)); return CAPOVERSO; }
-{CAPOV}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaPos(); 
-							yylval=(int)strdup(utilConvOrdinale(yytext,1)); return CAPOVERSO; }
-{N}{PTO}?{S}{CAPOV}			{ BEGIN(sudd); salvaPos(); 
-							yylval=(int)strdup(utilConvCardinale(yytext,1)); return CAPOVERSO; }
-{ORD}{LAT}?{S}{CAPOV}		{ BEGIN(sudd); salvaPos(); 
-							yylval=(int)strdup(utilConvOrdinale(yytext,1)); return CAPOVERSO; }
+{CAPOV}{S}{ORD}{LAT}?			{ BEGIN(sudd); salvaPos(); 
+								yylval=(int)strdup(utilConvOrdinale(yytext,1)); return CAPOVERSO; }
+{N}{PTO}?{S}{CAPOV}				{ BEGIN(sudd); salvaPos(); 
+								yylval=(int)strdup(utilConvCardinale(yytext,1)); return CAPOVERSO; }
+{ORD}{LAT}?{S}{CAPOV}			{ BEGIN(sudd); salvaPos(); 
+								yylval=(int)strdup(utilConvOrdinale(yytext,1)); return CAPOVERSO; }
 
-{CAP}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaPos(); 
-							yylval=(int)strdup(utilConvRomanoDopo(yytext)); return CAPO; }
-{CAP}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return CAPO; }
-{ROM}{S}{CAP}/{NOAN}	{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvRomanoPrima(yytext)); return CAPO; }
-{ORD}{S}{CAP}/{NOAN}	{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return CAPO; }
+{CAP}{S}{ROM}{LAT}?/{NOAN}	BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoDopo(yytext)); return CAPO;
+{CAP}{S}{ORD}{LAT}?			BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return CAPO;
+{ROM}{S}{CAP}/{NOAN}		BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoPrima(yytext)); return CAPO;
+{ORD}{S}{CAP}/{NOAN}		BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return CAPO;
 
-{SEZ}{S}{ROM}{LAT}?/{NOAN}	{ BEGIN(sudd); salvaPos(); 
-							yylval=(int)strdup(utilConvRomanoDopo(yytext)); return SEZIONE; }
-{SEZ}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return SEZIONE; }
-{ROM}{S}{SEZ}			{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvRomanoPrima(yytext)); return SEZIONE; }
-{ORD}{S}{SEZ}			{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return SEZIONE; }
+{SEZ}{S}{ROM}{LAT}?/{NOAN}	BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoDopo(yytext)); return SEZIONE;
+{SEZ}{S}{ORD}{LAT}?			BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return SEZIONE;
+{ROM}{S}{SEZ}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoPrima(yytext)); return SEZIONE;
+{ORD}{S}{SEZ}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return SEZIONE;
 
 {ART}{S}{N}{PTO}?{LAT}?/{NOAN}	{ BEGIN(sudd); salvaPos(); 
 								yylval=(int)strdup(utilConvCardinale(yytext,0)); return ARTICOLO; }
-{ART}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return ARTICOLO; }
-{N}{PTO}?{S}{ART}		{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvCardinale(yytext,0)); return ARTICOLO; }
-{ORD}{S}{ART}			{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return ARTICOLO; }
-{COM}{S}{N}{PTO}?{LAT}?/{NOAN}	{ BEGIN(sudd); salvaPos(); 
-								yylval=(int)strdup(utilConvCardinale(yytext,0)); return COMMA; }
-{COM}{S}{ORD}{LAT}?		{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return COMMA; }
-{N}{PTO}?{S}{COM}		{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvCardinale(yytext,0)); return COMMA; }
-{ORD}{S}{COM}			{ BEGIN(sudd); salvaPos(); 
-						yylval=(int)strdup(utilConvOrdinale(yytext,0)); return COMMA; }
+{ART}{S}{ORD}{LAT}?				{ BEGIN(sudd); salvaPos(); 
+								yylval=(int)strdup(utilConvOrdinale(yytext,0)); return ARTICOLO; }
+{N}{PTO}?{S}{ART}				{ BEGIN(sudd); salvaPos(); 
+								yylval=(int)strdup(utilConvCardinale(yytext,0)); return ARTICOLO; }
+{ORD}{S}{ART}					{ BEGIN(sudd); salvaPos(); 
+								yylval=(int)strdup(utilConvOrdinale(yytext,0)); return ARTICOLO; }
+{COM}{S}{N}{PTO}?{LAT}?/{NOAN}	BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return COMMA;
+{COM}{S}{ORD}{LAT}?				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return COMMA;
+{N}{PTO}?{S}{COM}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return COMMA;
+{ORD}{S}{COM}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return COMMA;
 
-{LET}{S}[a-z][a-z]?{LAT}?\)?		{ BEGIN(sudd); salvaPos(); 
-								yylval=(int)strdup(utilCalcLettera(yytext)); return LETTERA; }
+{LET}{S}[a-z][a-z]?{LAT}?\)?		BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilCalcLettera(yytext)); return LETTERA;
 
 {NUM}{S}{N}{PTO}?{LAT}?		salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO;
 {NUM}{S}{ORD}{LAT}?			salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return NUMERO;
-{N}{PTO}{S}{NUM}{SPA}		{ BEGIN(sudd); salvaPos(); 
-							yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO; }
-{ORD}{S}{NUM}				{ BEGIN(sudd); salvaPos(); 
-							yylval=(int)strdup(utilConvOrdinale(yytext,0)); return NUMERO; }
+{N}{PTO}{S}{NUM}{SPA}		BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO;
+{ORD}{S}{NUM}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return NUMERO;
 
 {PARA}{S}{N}			BEGIN(sudd); salvaPos(); yylval=(int)strdup(yytext); return PARAGRAFO;
 {ORD}{S}{PARA}			BEGIN(sudd); salvaPos(); yylval=(int)strdup(yytext); return PARAGRAFO;
@@ -224,72 +199,53 @@ ROM	([ivx]+)
 
 cost(\.|ituz(\.|ione))? 	BEGIN(0); salvaPos(); return COSTITUZIONE;
 
-{DECRETO}({S}del)?{S}{PRES}({S}del)?{S}{CNR}		{ BEGIN(atto); salvaPos();
-											return DECRETO_PRESIDENTE_CNR; }
+{DECRETO}({S}del)?{S}{PRES}({S}del)?{S}{CNR}		BEGIN(atto); salvaPos(); return DECRETO_PRESIDENTE_CNR;
+d[\.]?{ST}p[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_PRESIDENTE_CNR;
 
-d[\.]?{ST}p[\.]?{ST}{CNR}					{ BEGIN(atto); salvaPos();
-											return DECRETO_PRESIDENTE_CNR; }
+{DECRETO}({S}del)?{S}{DIRGEN}({S}del)?{S}{CNR}	BEGIN(atto); salvaPos(); return DECRETO_DIRETTORE_GENERALE_CNR;
+d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}				BEGIN(atto); salvaPos(); return DECRETO_DIRETTORE_GENERALE_CNR;
 
-{DECRETO}({S}del)?{S}{DIRGEN}({S}del)?{S}{CNR}	{ BEGIN(atto); salvaPos();
-											return DECRETO_DIRETTORE_GENERALE_CNR; }
+{PRORD}({S}del)?{S}{COMSTR}({S}del)?{S}{CNR}		BEGIN(atto); salvaPos(); return PROVVEDIMENTO_ORDINAMENTALE_CNR;
+{PRORD}({S}del)?{S}{CNR}						BEGIN(atto); salvaPos(); return PROVVEDIMENTO_ORDINAMENTALE_CNR;
 
-d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}				{ BEGIN(atto); salvaPos();
-											return DECRETO_DIRETTORE_GENERALE_CNR; }
+{DECRETO}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}	{ BEGIN(atto); salvaPos();
+												return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI; }
+d[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?				{ BEGIN(atto); salvaPos();
+												return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI; }
 
-{PRORD}({S}del)?{S}{COMSTR}({S}del)?{S}{CNR}		{ BEGIN(atto); salvaPos();
-											return PROVVEDIMENTO_ORDINAMENTALE_CNR; }
+{DIR}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}	{ BEGIN(atto); salvaPos();
+											return DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI; }
+dir[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?			{ BEGIN(atto); salvaPos();
+											return DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI; }
 
-{PRORD}({S}del)?{S}{CNR}						{ BEGIN(atto); salvaPos();
-											return PROVVEDIMENTO_ORDINAMENTALE_CNR; }
-
-{DECRETO}({ST}del{ST})?{PRES}({ST}del{ST})?{CONS}({ST}dei{ST})?{MINIS}	{ BEGIN(atto); salvaPos();
-										return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-{DECRETO}{ST}{PRES}{ST}{CONS}{ST}{MINIS}	{ BEGIN(atto); salvaPos(); 
-										return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-d[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?		{ BEGIN(atto); salvaPos();
-										return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-{DIR}({ST}del{ST})?{PRES}({ST}del{ST})?{CONS}({ST}dei{ST})?{MINIS}	{ BEGIN(atto); salvaPos(); 
-										return DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-{DIR}{ST}{PRES}{ST}{CONS}{ST}{MINIS}		{ BEGIN(atto); salvaPos();
-										return DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-dir[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?		{ BEGIN(atto); salvaPos();
-										return DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-{ODZ}({ST}del{ST})?{PRES}({ST}del{ST})?{CONS}({ST}dei{ST})?{MINIS}	{ BEGIN(atto); salvaPos(); 
-										return ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-{ODZ}{ST}{PRES}{ST}{CONS}{ST}{MINIS}		{ BEGIN(atto); salvaPos();
-										return ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-ord[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?		{ BEGIN(atto); salvaPos();
-										return ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-o[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?		{ BEGIN(atto); salvaPos();
-										return ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI; }
+{ODZ}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}	{ BEGIN(atto); salvaPos();
+											return ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI; }
+o(rd)?[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?		{ BEGIN(atto); salvaPos();
+											return ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI; }
 
 {DECRETO}{ST}(del{ST})?{PRES}{ST}(della{ST})?repubblica	{ BEGIN(atto); salvaPos(); 
 													return DECRETO_PRESIDENTE_REPUBBLICA; }
-
 d[\.]?{ST}p[\.]?{ST}r[\.]? 							{ BEGIN(atto); salvaPos(); 
 													return DECRETO_PRESIDENTE_REPUBBLICA; }
 
-{REGIO}{ST}{DECRETO}{ST}{LGS}		{ BEGIN(atto); salvaPos(); 
-								return REGIO_DECRETO_LEGISLATIVO; }
+{REGIO}{ST}{DECRETO}{ST}{LGS}		BEGIN(atto); salvaPos(); return REGIO_DECRETO_LEGISLATIVO;
 r\.d\.l\.						BEGIN(atto); salvaPos(); return REGIO_DECRETO_LEGGE;
 {REGIO}{ST}{DECRETO}{ST}{LEG}		BEGIN(atto); salvaPos(); return REGIO_DECRETO_LEGGE;
 {REGIO}{ST}{DECRETO}			BEGIN(atto); salvaPos(); return REGIO_DECRETO;
 
-{LEG}{ST}{RGN}				BEGIN(atto); salvaPos(); return LEGGE_REGIONALE;
-{REGOLAM}{ST}{RGN}			BEGIN(atto); salvaPos(); return REGOLAMENTO_REGIONALE;
-
 {DECRETO}{ST}{LGS}			BEGIN(atto); salvaPos(); return DECRETO_LEGISLATIVO;
 d{LGS}					BEGIN(atto); salvaPos(); return DECRETO_LEGISLATIVO;
 {DECRETO}{ST}{LEG}			BEGIN(atto); salvaPos(); return DECRETO_LEGGE;
+
+{LEG}({ST}{RGN})?{CONN}?{S}regione/{S}{REGIONI}	BEGIN(atto); salvaPos(); return LEGGE_REGIONALE;
+{LEG}({ST}{RGN})?{CONN}?{S}regione				{ if (configGetRegione()) 
+											{ BEGIN(atto); salvaPos(); return LEGGE_REGIONALE; }
+										  else pos+=yyleng; }
+{LEG}{ST}{RGN}/{CONN}?{S}{REGIONI}				BEGIN(atto); salvaPos(); return LEGGE_REGIONALE;
+{LEG}{ST}{RGN}								{ if (configGetRegione()) 
+											{ BEGIN(atto); salvaPos(); return LEGGE_REGIONALE; }
+										  else pos+=yyleng; }
+
 {LEG}{ST}{COST}			BEGIN(atto); salvaPos(); return LEGGE_COSTITUZIONALE;
 {LEG}({S}{QLEG})?			BEGIN(atto); salvaPos(); return LEGGE;
 
@@ -300,8 +256,17 @@ d{LGS}					BEGIN(atto); salvaPos(); return DECRETO_LEGISLATIVO;
 
 {DIR}					BEGIN(atto); salvaPos(); return DIRETTIVA;
 {DECI}					BEGIN(atto); salvaPos(); return DECISIONE;
-{REGOLAM}					BEGIN(atto); salvaPos(); return REGOLAMENTO;
-{REGOLAM}{S}{UE_P}			BEGIN(atto); salvaPos(); return REGOLAMENTO;
+
+{REGOLAM}({ST}{RGN})?{CONN}?{S}regione/{S}{REGIONI}	BEGIN(atto); salvaPos(); return REGOLAMENTO_REGIONALE;
+{REGOLAM}({ST}{RGN})?{CONN}?{S}regione			{ if (configGetRegione()) 
+											{ BEGIN(atto); salvaPos(); return REGOLAMENTO_REGIONALE; }
+								  	  	  else pos+=yyleng; }
+{REGOLAM}{ST}{RGN}/{CONN}?{S}{REGIONI}			BEGIN(atto); salvaPos(); return REGOLAMENTO_REGIONALE;
+{REGOLAM}{ST}{RGN}							{ if (configGetRegione()) 
+											{ BEGIN(atto); salvaPos(); return REGOLAMENTO_REGIONALE; }
+								  	  	  else pos+=yyleng; }
+{REGOLAM}{S}{UE_P}				BEGIN(atto); salvaPos(); return REGOLAMENTO;
+{REGOLAM}						BEGIN(atto); salvaPos(); return REGOLAMENTO;
 
 {PRORD}(({S}del)?{S}{PRES})?		{ if (configGetEmanante()) 
 								{ BEGIN(atto); salvaPos(); return PROVVEDIMENTO_ORDINAMENTALE; }
@@ -313,29 +278,33 @@ d{LGS}					BEGIN(atto); salvaPos(); return DECRETO_LEGISLATIVO;
 								{ BEGIN(atto); salvaPos(); return PROVVEDIMENTO_ORDINAMENTALE; }
 							  else pos+=yyleng; }
 
-{DECRETO_E}					{  if (configGetEmanante())
-								{ BEGIN(atto); salvaPos(); return DECRETO_GEN; }
+{DECRETO_E}					{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DECRETO_GEN; }
 							  else pos+=yyleng; }
-{PROVD}						{  if (configGetEmanante()) 
-								{ BEGIN(atto); salvaPos(); return PROVVEDIMENTO_GEN; }
-							  else pos+=yyleng; }
-{STATU}						{  if (configGetEmanante()) 
-								{ BEGIN(atto); salvaPos(); return STATUTO_GEN; }
+{PROVD}						{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return PROVVEDIMENTO_GEN; }
 							  else pos+=yyleng; }
 
-<atto>{NUM}?{S}({UENUM_NA}|{UENUM_AN})		{ salvaPos(); yylval=(int)strdup(yytext); return UE_NUM; }
-<atto>{UEDEN}				salvaPos(); return UE_DEN;
-<atto>{PARLAM}				salvaPos(); return PARLAMENTO;
-<atto>{CONS}				salvaPos(); return CONSIGLIO;
-<atto>{COMMIS}				salvaPos(); return COMMISSIONE;
+{STATU}({ST}{RGN})?{CONN}?{S}regione/{S}{REGIONI}	BEGIN(atto); salvaPos(); return STATUTO_REGIONALE;
+{STATU}({ST}{RGN})?{CONN}?{S}regione			{ if (configGetRegione()) 
+											{ BEGIN(atto); salvaPos(); return STATUTO_REGIONALE; }
+								  	  	  else pos+=yyleng; }
+{STATU}{ST}{RGN}/{CONN}?{S}{REGIONI}				BEGIN(atto); salvaPos(); return STATUTO_REGIONALE;
+{STATU}{ST}{RGN}							{ if (configGetRegione()) 
+											{ BEGIN(atto); salvaPos(); return STATUTO_REGIONALE; }
+								  	  	  else pos+=yyleng; }
+{STATU}									{ if (configGetEmanante()) 
+											{ BEGIN(atto); salvaPos(); return STATUTO_GEN; }
+							  			  else pos+=yyleng; }
 
-<sudd,atto>((del(la|lo)?{SPA})?(gi.'?{SPA})?(cit(\.|at[ao])|medesim[ao]|stess[ao]|predett[ao]))	{ pos+=yyleng; return CITATO; }
+<atto>{NUM}?{S}({UENUM_NA}|{UENUM_AN})		salvaPos(); yylval=(int)strdup(yytext); return UE_NUM;
+<atto>{UEDEN}							salvaPos(); return UE_DEN;
+<atto>{PARLAM}							salvaPos(); return PARLAMENTO;
+<atto>{CONS}							salvaPos(); return CONSIGLIO;
+<atto>{COMMIS}							salvaPos(); return COMMISSIONE;
 
-<sudd,atto>della{SPA}		pos+=yyleng; return DELLA;
-<sudd,atto>dello{SPA}		pos+=yyleng; return DELLO;
-<sudd,atto>dell{SPA}		pos+=yyleng; return DELL;
-<sudd,atto>del{SPA}			pos+=yyleng; return DEL;
-<atto>in{SPA}data			pos+=yyleng; return IN_DATA;
+<sudd,atto>((del(la|lo)?{SPA})?(gi.'?{SPA})?(cit(\.|at[ao])|medesim[ao]|stess[ao]|predett[ao]))	pos+=yyleng;
+
+<sudd,atto>{CONN}			pos+=yyleng;
+<atto>in{SPA}data			pos+=yyleng;
 <atto>regione{SPA}			pos+=yyleng; return PAROLA_REGIONE;
 <atto>{REGIONI}			salvaPos(); yylval=(int)strdup(yytext); return REGIONE;
 
@@ -349,7 +318,7 @@ d{LGS}					BEGIN(atto); salvaPos(); return DECRETO_LEGISLATIVO;
 
 <atto>[/]				pos++; yylval=(int)strdup(yytext); return BARRA;
 
-<atto>{SPA}e{SPA}		pos+=yyleng; return E;
+<atto>{SPA}e{SPA}		pos+=yyleng;
 
 [a-z0-9_]+			{ BEGIN(0); pos+=yyleng; yylval=(int)strdup(yytext); 
 						if (!salta) { salta = 1; return BREAK; } }
