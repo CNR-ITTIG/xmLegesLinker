@@ -23,6 +23,8 @@ extern int nSupIds;
 extern ids *tabSupIds[];
 extern int nInfIds;
 extern ids *tabInfIds[];
+extern int nVirPos;
+extern vir *tabVirPos[];
 
 int long idpos=0;
 
@@ -44,31 +46,55 @@ void salvaInfPos()
 	nInfIds++;
 }
 
+void salvaVirPos(int ini)
+{
+	if (ini)
+	{
+		vir *tab = (vir *) malloc (sizeof(vir));
+		tabVirPos[nVirPos] = tab;
+		tabVirPos[nVirPos] -> inizio = idpos;
+	}
+	else
+	{
+		tabVirPos[nVirPos] -> fine = idpos;
+		nVirPos++;
+	}
+}
+
+
 %}
 
 PARSUP		(libro|parte|titolo|capo|sezione)
 PARINF		(articolo|comma|el|en|ep)
-SP				([[:space:]])
+SP			([[:space:]])
 
-%x	supstart supend infstart infend
+%x	supstart supend infstart infend virgol
 
 %%
 
+(<virgolette[^>]*>)			BEGIN(virgol); idpos+=idsleng; salvaVirPos(1);
+
+<virgol>([a-z0-9]+)			idpos+=idsleng;
+
+<virgol>.|\n				idpos+=idsleng;
+
+<virgol>(<\/virgolette>)		BEGIN(0); salvaVirPos(0); idpos+=idsleng;
+
 (<{PARSUP}{SP}+[^>]*id=\"?)	BEGIN(supstart); idpos+=idsleng;
 
-<supstart>([^ "]+)		BEGIN(supend); idslval=strdup(idstext); idpos+=idsleng; salvaSupPos();
+<supstart>([^ "]+)			BEGIN(supend); idslval=strdup(idstext); idpos+=idsleng; salvaSupPos();
 
-<supend>(\"?[^>]*>)		BEGIN(0); idpos+=idsleng; 
+<supend>(\"?[^>]*>)			BEGIN(0); idpos+=idsleng; 
 
 (<{PARINF}{SP}+[^>]*id=\"?)	BEGIN(infstart); idpos+=idsleng;
 
-<infstart>([^ "]+)		BEGIN(infend); idslval=strdup(idstext); idpos+=idsleng; salvaInfPos();
+<infstart>([^ "]+)			BEGIN(infend); idslval=strdup(idstext); idpos+=idsleng; salvaInfPos();
 
-<infend>(\"?[^>]*>)		BEGIN(0); idpos+=idsleng; 
+<infend>(\"?[^>]*>)			BEGIN(0); idpos+=idsleng; 
 
-([a-z0-9]+)			idpos+=idsleng;
+([a-z0-9]+)				idpos+=idsleng;
 
-.|\n				idpos+=idsleng;
+.|\n						idpos+=idsleng;
 
 %%
 
