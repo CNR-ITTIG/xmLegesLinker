@@ -23,7 +23,7 @@
 #include "config.h"
 #include "urn.h"
 
-const char *versione = "1.6";
+const char *versione = "1.6.1";
 
 extern FILE * yyin;
 extern urn *urns[];
@@ -267,7 +267,10 @@ int main(int argc, char *argv[]) {
 // completa riferimenti interni e controlla esistenza id
 
 	if (paramRifInt)
+	{
+		urnCheckVirg();
 		urnCompletaId();
+	}
 
 	switch (paramUscita) 
 	{
