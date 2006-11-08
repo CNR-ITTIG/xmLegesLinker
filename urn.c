@@ -28,6 +28,9 @@ int nSupIds = 0;
 ids *tabInfIds[10000];
 int nInfIds = 0;
 
+vir *tabVirPos[10000];
+int nVirPos = 0;
+
 /******************************************************************************/
 /**************************************************************** IDS CLOSE ****/
 /******************************************************************************/
@@ -41,11 +44,17 @@ void urnCloseIds()
 	tabSupIds[nSupIds] -> value = strdup("zzzzz");
 	for (i=0; i<nSupIds; i++)
 			tabSupIds[i] -> posiz = tabSupIds[i+1] -> posiz;
+
 	tabInfIds[nInfIds] = tab;
 	tabInfIds[nInfIds] -> posiz = LONG_MAX;
 	tabInfIds[nInfIds] -> value = strdup("zzzzz");
 	for (i=0; i<nInfIds; i++)
 			tabInfIds[i] -> posiz = tabInfIds[i+1] -> posiz;
+
+	vir *tbv = (vir *) malloc (sizeof(vir));
+	tabVirPos[nVirPos] = tbv;
+	tabVirPos[nVirPos] -> inizio = LONG_MAX;
+	tabVirPos[nVirPos] -> fine = LONG_MAX;
 }
 
 /******************************************************************************/
@@ -223,6 +232,26 @@ void urnMemorizza(urn u)
 	loggerInfo("urn");
 	memcpy(t, &u, sizeof(urn));
 	urns[nurns++] = t;
+}
+
+
+/******************************************************************************/
+/********************************************************** URN CHECK VIRG ****/
+/******************************************************************************/
+void urnCheckVirg() 
+{
+	register int i=0, k=0;
+
+	for (i=0; i<nurns; i++)
+	{
+		if (urns[i]->tipo == 'i')
+		{
+			for ( ; urns[i]->inizio > tabVirPos[k]->fine; k++);	// sincronizza posizione
+			if (urns[i]->inizio > tabVirPos[k]->inizio &&
+			    urns[i]->fine   < tabVirPos[k]->fine)		// interno a virgolette
+				urns[i]->tipo = 'n';					// trasformo in rif. non completo
+		}
+	}
 }
 
 
