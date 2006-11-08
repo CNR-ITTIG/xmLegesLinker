@@ -16,6 +16,11 @@ typedef struct _ids {
 	char *value;
 } ids;
 
+typedef struct _vir {
+	long inizio;
+	long fine;
+} vir;
+
 typedef struct _urn {
 	long inizio;
 	long fine;
@@ -40,6 +45,7 @@ typedef struct _urn {
 
 void urnVisualizza(urn *u);
 void urnCompletaId();
+void urnCheckVirg();
 int  urnCercaId(ids *tab[], int nt, char str[]);
 void urnCloseIds();
 
