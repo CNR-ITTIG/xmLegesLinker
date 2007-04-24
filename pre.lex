@@ -35,10 +35,13 @@ puts(prelval);
 
 %}
 
-HTML2BL		(b|i|u|q|em|sup|span|font|basefont|strong|big|small|strike|s|tt)
+HTML2BL1		(b|i|u|q|em|sup|font|basefont|strong|big|small|strike|s|tt)
+HTML2BL2		(span)
+HTML2BL		({HTML2BL1}|{HTML2BL2})
 HTML2MASK		(head|a)
 
-XML2BL		(h:{HTML2BL})
+XML2BL		(h:{HTML2BL1})
+XML2BR		(h:{HTML2BL2})
 XML2MASK		(mrif|meta|inlinemeta|num|tipoDoc)
 XMLRIF		(rif)
 
@@ -89,6 +92,9 @@ S			[[:space:]]
 
 (<\/?{XML2BL}([ ][^>]*)?>)	{ if (configGetTipoInput() != xml) REJECT;
 							prelval=preleng; return SPACE; }
+
+(<\/?{XML2BR}([ ][^>]*)?>)	{ if (configGetTipoInput() != xml) REJECT;
+							prelval=preleng; return BREAK; }
 
 (<\/?{HTML2BL}([ ][^>]*)?>)	{ if (configGetTipoInput() != html) REJECT;
 							prelval=preleng; return SPACE; }
