@@ -1,10 +1,10 @@
 /******************************************************************************
-* Project:	xmLeges
+* Project:		xmLeges
 * Module:		Linker
-* File:		noncompleti.lex
+* File:			noncompleti.lex
 * Copyright:	ITTIG/CNR - Firenze - Italy (http://www.ittig.cnr.it)
-* Licence:	GNU/GPL (http://www.gnu.org/licenses/gpl.html)
-* Authors:	PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
+* Licence:		GNU/GPL (http://www.gnu.org/licenses/gpl.html)
+* Authors:		PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
 ******************************************************************************/
 
 %{
@@ -59,20 +59,22 @@ N	([0-9]+)
 N12	([0-9]{1,2})
 N4	([0-9]{4})
 
-CONN		({S}del(la|lo|l)?{SPA})
+CONN	({S}del(la|lo|l)?{SPA})
+INDAT	({S}in{SPA}data)
+CITAT	((del(la|lo)?{SPA})?(gi.'?{SPA})?(cit(\.|at[ao])|medesim[ao]|stess[ao]|predett[ao]))
 
-DELIB	(delibera(zione)?|delib{PS})
 PROVD	(provvedimento|provv{PS})
 STATU	(statuto)
+
 DISEG	((disegno|progetto|proposta){SPA}di)
 MIN		(ministeriale|ministero|ministro|min{PS})
-TU_E		(testo{SPA}unico|t{PS}u{PS})
-TU_1		(tu)
+TU_E	(testo{SPA}unico|t{PS}u{PS})
+TU_1	(tu)
 TU		({TU_E}|{TU_1})
 
-DECRETO_E	(decreto|decr{PS})
-DECRETO_1	(d{PS})
-DECRETO	({DECRETO_E}|{DECRETO_1})
+DECR_E	(decreto|decr{PS})
+DECR_1	(d{PS})
+DECRETO	({DECR_E}|{DECR_1})
 DECRMIN	(d{PS}m{PS}|dm)
 LEG		(legge|l{PS})
 LGS		(legislativo|legisl{PS}|lgs{PS}vo|lgs{PS}|lgvo?|l{PS}vo)
@@ -90,19 +92,24 @@ ODZ		({ODZ_E}|{ODZ_1})
 
 REGOLAM	(regolamento|reg{PS}|r\.)
 DIR		(direttiva|dir{PS}){SPA}
-DECI		(decisione|dec{PS})
+DECI	(decisione|dec{PS})
 
-QLEG		(finanziaria|comunitaria|fallimentare|fall{PS}|urbanistica)
-COST		(costituzionale|cost{PS}|c{PS})
+QLEG	(finanziaria|comunitaria|fallimentare|fall{PS}|urbanistica)
+COST	(costituzionale|cost{PS}|c{PS})
 RGN		(regionale|reg{PS}|r{PS})
-PROV		(provinciale|prov{PS}|p{PS})
+PROV	(provinciale|prov{PS}|p{PS})
 
-PRES		(presidente|pres{PS}|p{PS})
+PRES	(presidente|pres{PS}|p{PS})
+REPUB	(repubblica)
 PARLAM	(parlamento({SPA}europeo)?)
-CONS		(consiglio|cons{PS}|c{PS})
+CONS	(consiglio|cons{PS}|c{PS})
 MINIS	(ministri|min{PS}|m{PS})
 COMIN	({CONS}({ST}dei)?{ST}{MINIS})
 COMMIS	(commissione|comm{PS})
+
+DELIB	(delibera(zione)?|delib{PS})
+COMUNAL	(comunale|com({PS})
+CONSIL	(consiliare)
 
 PRORD	(provvedimento{S}ordinamentale)
 CNR		(({CONS}{S}nazionale{S}(delle)?{S}ricerche)|(c{PS}?n{PS}?r{PS}?))
@@ -121,225 +128,307 @@ COM		(comma|com{PS}|co?{PS})
 CAPOV	(capoverso|cpv{PS})
 LET		(lettera|lett?{PS})
 NUM		(numero|num{PS}|nr?{PS}|n\.o)
-PARA		(paragrafo|par{PS})
+PARA	(paragrafo|par{PS})
 PERIO	(periodo|per{PS})
 
-UE		(cee?|euratom|ceea|ceca)
+UE			(cee?|euratom|ceea|ceca)
 UE_P		(\(?{UE}(({SVB}{UE}){1,2})?\)?)
-UEDEN	(dell[ae']{S}(unione|comunit.'?){S}europe[ea])
+UEDEN		(dell[ae']{S}(unione|comunit.'?){S}europe[ea])
 UENUM_AN	(({N12}|{N4})\/{N}\/{UE}(({SVB}{UE}){1,2})?)
 UENUM_NA	({N}\/({N12}|{N4})\/{UE}(({SVB}{UE}){1,2})?)
 
 REGIONI1	(abruzzo|basilicata|calabria|campania|emilia{ST}romagna|lazio|liguria|lombardia|marche|molise)
 REGIONI2	(piemonte|puglia|sardegna|sicilia(na)?|toscana|umbria|veneto|v(\.|alle){S}d{S}'{S}aosta)
 REGIONI3	((friuli(({ST}|{S}e{S})?{ST}venezia{ST}giulia)?))
-REGIONI	({REGIONI1}|{REGIONI2}|{REGIONI3})
+REGIONI		({REGIONI1}|{REGIONI2}|{REGIONI3})
+CONNREG		({CONN}?{S}{REGIONI})
+SPAREG		({S}{REGIONI})
 
-MESI	(gennaio|gen|febbraio|feb|marzo|mar|aprile|apr|maggio|mag|giugno|giu|luglio|lug|agosto|ago|settembre|set|ottobre|ott|novembre|nov|dicembre|dic)
+MESI_E	(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)
+MESI_3	(gen|feb|mar|apr|mag|giu|lug|ago|set|ott|nov|dic)
+MESI	({MESI_E}|{MESI_3})
 
-LAT09	(un|bis|duo|ter|quater|quinquies|sexies|septies|octies|novies)
-LAT10	(decies|venies)
-LAT		({ST}{LAT09}({LAT10})?)
+LAT39	(ter|quater|quinquies|sexies|septies|octies|novies)
+LAT29	(bis|{LAT39})
+LAT12	(un|duo)
+LATX10	(decies|(de)?vicies)
+LAT1129	(({LAT12}|{LAT39})?{ST}{LATX10})
+LAT2129	(vicies{ST}(semel|{LAT29}))
+LAT		({ST}({LAT29}|{LAT1129}|{LAT2129}))
 
 ORD	((prim|second|terz|quart|quint|sest|settim|ottav|non|decim|(undic|dodic|tredic|quattordic|quindic|sedic|diciassett|diciott|diciannov|vent)esim)+[oa])
 
 ROM	([ivx]+)
 
 %s	sudd atto
+%x	data nume
 
 %%
 
-(codice{SPA}(binario|fiscale|identificativo|sorgente))			nocpos+=nocleng; return BREAK;
-((da|per){SPA}(legge|decreto|regolamento))					nocpos+=nocleng; return BREAK;
-((effett[oi]|fin[ei]|norm[ae]){SPA}di{SPA}legge)				nocpos+=nocleng; return BREAK;
-(legge{SPA}(italiana|(dello{SPA}stato)))					nocpos+=nocleng; return BREAK;
-((disposizion[ei]|valore){SPA}di{SPA}legge)					nocpos+=nocleng; return BREAK;
-((presente|seguente){SPA}(codice|legge|decreto|provvedimento|regolamento|testo{SPA}unico))	 { 
-													nocpos+=nocleng; return BREAK; }
-((u|ca)s[oi]{SPA}(consentit|indicat)[oi]{SPA}dalla{SPA}legge)	nocpos+=nocleng; return BREAK;
-((decreto|provvedimento|regolamento){SPA}di{SPA}cui)			nocpos+=nocleng; return BREAK;
+   /* =================================================== FALSI RIFERIMENTI ========================================== */
+(codice{SPA}(binario|fiscale|identificativo|sorgente))			|
+((da|per){SPA}(legge|decreto|regolamento))						|
+((effett[oi]|fin[ei]|norm[ae]){SPA}di{SPA}legge)				|
+(legge{SPA}(italiana|(dello{SPA}stato)))						|
+((disposizion[ei]|valore){SPA}di{SPA}legge)						|
+((u|ca)s[oi]{SPA}(consentit|indicat)[oi]{SPA}dalla{SPA}legge)	|
+((decreto|provvedimento|regolamento){SPA}di{SPA}cui)			|
+((presente|seguente){SPA}(codice|legge|decreto|provvedimento|regolamento|testo{SPA}unico))	 nocpos+=nocleng; return BREAK;
 
-{LIB}{S}{ROM}{LAT}?/{NOAN}	BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoDopo(noctext)); return LIBRO;
-{LIB}{S}{ORD}{LAT}?			BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return LIBRO;
-{ROM}{S}{LIB}				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoPrima(noctext)); return LIBRO;
-{ORD}{S}{LIB}				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return LIBRO;
+   /* =================================================== SUDDIVISIONI ========================================== */
+   /* ***********************
+    * LIBRO                 *
+    * ***********************/
+{LIB}{S}{ROM}{LAT}?/{NOAN}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoDopo(noctext)); return LIBRO;
+{ROM}{S}{LIB}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoPrima(noctext)); return LIBRO;
+{LIB}{S}{ORD}{LAT}?				|
+{ORD}{S}{LIB}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return LIBRO;
+   /* ***********************
+    * PARTE                 *
+    * ***********************/
+{PAR}{S}{ROM}{LAT}?/{NOAN}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoDopo(noctext)); return PARTE;
+{ROM}{S}{PAR}/{NOAN}			BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoPrima(noctext)); return PARTE;
+{ORD}{S}{PAR}/{NOAN}			|
+{PAR}{S}{ORD}{LAT}?				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return PARTE;
+   /* ***********************
+    * TITOLO                *
+    * ***********************/
+{TIT}{S}{ROM}{LAT}?/{NOAN}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoDopo(noctext)); return TITOLO;
+{ROM}{S}{TIT}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoPrima(noctext)); return TITOLO;
+{TIT}{S}{ORD}{LAT}?				|
+{ORD}{S}{TIT}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return TITOLO;
+   /* ***********************
+    * CAPOVERSO             *
+    * ***********************/
+{CAPOV}{S}{N}{PTO}?{LAT}?/{NOAN}	|
+{N}{PTO}?{S}{CAPOV}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,1)); return CAPOVERSO;
+{CAPOV}{S}{ORD}{LAT}?				|
+{ORD}{LAT}?{S}{CAPOV}				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,1)); return CAPOVERSO;
+   /* ***********************
+    * CAPO                  *
+    * ***********************/
+{CAP}{S}{ROM}{LAT}?/{NOAN}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoDopo(noctext)); return CAPO;
+{ROM}{S}{CAP}/{NOAN}			BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoPrima(noctext)); return CAPO;
+{ORD}{S}{CAP}/{NOAN}			|
+{CAP}{S}{ORD}{LAT}?				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return CAPO;
+   /* ***********************
+    * SEZIONE               *
+    * ***********************/
+{SEZ}{S}{ROM}{LAT}?/{NOAN}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoDopo(noctext)); return SEZIONE;
+{ROM}{S}{SEZ}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoPrima(noctext)); return SEZIONE;
+{SEZ}{S}{ORD}{LAT}?				|
+{ORD}{S}{SEZ}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return SEZIONE;
+   /* ***********************
+    * ARTICOLO              *
+    * ***********************/
+{ART}{S}{N}{PTO}?{LAT}?/{NOAN}	|
+{N}{PTO}?{S}{ART}				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return ARTICOLO;
+{ART}{S}{ORD}{LAT}?				|
+{ORD}{S}{ART}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return ARTICOLO;
+   /* ***********************
+    * COMMA                 *
+    * ***********************/
+{COM}{S}{N}{PTO}?{LAT}?/{NOAN}	|
+{N}{PTO}?{S}{COM}				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return COMMA;
+{COM}{S}{ORD}{LAT}?				|
+{ORD}{S}{COM}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return COMMA;
+   /* ***********************
+    * LETTERA               *
+    * ***********************/
+{LET}{S}[a-z][a-z]?{LAT}?\)?	BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilCalcLettera(noctext)); return LETTERA;
+   /* ***********************
+    * NUMERO                *
+    * ***********************/
+<INITIAL,sudd>{NUM}{S}{N}{PTO}?{LAT}?		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO;
+{N}{PTO}{S}{NUM}{SPA}				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO;
+{NUM}{S}{ORD}{LAT}?					|
+{ORD}{S}{NUM}						BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return NUMERO;
+   /* ***********************
+    * PARAGRAFO             *
+    * ***********************/
+{PARA}{S}{N}					|
+{ORD}{S}{PARA}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(noctext); return PARAGRAFO;
+   /* ***********************
+    * PERIODO               *
+    * ***********************/
+{ORD}{S}{PERIO}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(noctext); return PERIODO;
 
-{PAR}{S}{ROM}{LAT}?/{NOAN}	BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoDopo(noctext)); return PARTE;
-{PAR}{S}{ORD}{LAT}?			BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return PARTE;
-{ROM}{S}{PAR}/{NOAN}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoPrima(noctext)); return PARTE;
-{ORD}{S}{PAR}/{NOAN}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return PARTE;
+   /* =================================================== ATTI ========================================== */
 
-{TIT}{S}{ROM}{LAT}?/{NOAN}	BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoDopo(noctext)); return TITOLO;
-{TIT}{S}{ORD}{LAT}?			BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return TITOLO;
-{ROM}{S}{TIT}				{ BEGIN(sudd); salvaNocPos(); 
-							noclval=(int)strdup(utilConvRomanoPrima(noctext)); return TITOLO; }
-{ORD}{S}{TIT}				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return TITOLO;
+   /* ----------------------------- COSTITUZIONE E CODICI ---------------------------- */
 
-{CAPOV}{S}{N}{PTO}?{LAT}?/{NOAN}	{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvCardinale(noctext,1)); return CAPOVERSO; }
-{CAPOV}{S}{ORD}{LAT}?			{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvOrdinale(noctext,1)); return CAPOVERSO; }
-{N}{PTO}?{S}{CAPOV}				{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvCardinale(noctext,1)); return CAPOVERSO; }
-{ORD}{LAT}?{S}{CAPOV}			{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvOrdinale(noctext,1)); return CAPOVERSO; }
-
-{CAP}{S}{ROM}{LAT}?/{NOAN}	BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoDopo(noctext)); return CAPO;
-{CAP}{S}{ORD}{LAT}?			BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return CAPO;
-{ROM}{S}{CAP}/{NOAN}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoPrima(noctext)); return CAPO;
-{ORD}{S}{CAP}/{NOAN}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return CAPO;
-
-{SEZ}{S}{ROM}{LAT}?/{NOAN}	BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoDopo(noctext)); return SEZIONE;
-{SEZ}{S}{ORD}{LAT}?			BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return SEZIONE;
-{ROM}{S}{SEZ}				{ BEGIN(sudd); salvaNocPos(); 
-							noclval=(int)strdup(utilConvRomanoPrima(noctext)); return SEZIONE; }
-{ORD}{S}{SEZ}				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return SEZIONE;
-
-{ART}{S}{N}{PTO}?{LAT}?/{NOAN}	{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvCardinale(noctext,0)); return ARTICOLO; }
-{ART}{S}{ORD}{LAT}?				{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvOrdinale(noctext,0)); return ARTICOLO; }
-{N}{PTO}?{S}{ART}				{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvCardinale(noctext,0)); return ARTICOLO; }
-{ORD}{S}{ART}					{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvOrdinale(noctext,0)); return ARTICOLO; }
-
-{COM}{S}{N}{PTO}?{LAT}?/{NOAN}	{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvCardinale(noctext,0)); return COMMA; }
-{COM}{S}{ORD}{LAT}?				{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvOrdinale(noctext,0)); return COMMA; }
-{N}{PTO}?{S}{COM}				{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvCardinale(noctext,0)); return COMMA; }
-{ORD}{S}{COM}					{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilConvOrdinale(noctext,0)); return COMMA; }
-
-{LET}{S}[a-z][a-z]?{LAT}?\)?		{ BEGIN(sudd); salvaNocPos(); 
-								noclval=(int)strdup(utilCalcLettera(noctext)); return LETTERA; }
-
-{NUM}{S}{N}{PTO}?{LAT}?		salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO;
-{NUM}{S}{ORD}{LAT}?			salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return NUMERO;
-{N}{PTO}{S}{NUM}{SPA}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO;
-{ORD}{S}{NUM}				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvOrdinale(noctext,0)); return NUMERO;
-
-{PARA}{S}{N}			BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(noctext); return PARAGRAFO;
-{ORD}{S}{PARA}			BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(noctext); return PARAGRAFO;
-{ORD}{S}{PERIO}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(noctext); return PERIODO;
-
-cost(\.|ituz(\.|ione))? 						BEGIN(0); salvaNocPos(); return COSTITUZIONE;
-
-{DECRETO}({S}del)?{S}{PRES}({S}del)?{S}{CNR}		BEGIN(atto); salvaNocPos(); return DECRETO_PRESIDENTE_CNR;
-d[\.]?{ST}p[\.]?{ST}{CNR}					BEGIN(atto); salvaNocPos(); return DECRETO_PRESIDENTE_CNR;
-
-{DECRETO}({S}del)?{S}{DIRGEN}({S}del)?{S}{CNR}	BEGIN(atto); salvaNocPos(); return DECRETO_DIRETTORE_GENERALE_CNR;
-d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}				BEGIN(atto); salvaNocPos(); return DECRETO_DIRETTORE_GENERALE_CNR;
-
-{PRORD}({S}del)?{S}{COMSTR}({S}del)?{S}{CNR}		BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_ORDINAMENTALE_CNR;
-{PRORD}({S}del)?{S}{CNR}						BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_ORDINAMENTALE_CNR;
-
-{PRORD}(({S}del)?{S}{PRES})?					BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_ORDINAMENTALE;
-{PRORD}(({S}del)?{S}{DIRGEN})?				BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_ORDINAMENTALE;
-{PRORD}(({S}del)?{S}{COMSTR})?				BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_ORDINAMENTALE;
-
-{DECRETO}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}	{ BEGIN(atto); salvaNocPos();
-												return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI; }
-d[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?				{ BEGIN(atto); salvaNocPos();
-												return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-{DIR}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}	{ BEGIN(atto); salvaNocPos();
-											return DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI; }
-dir[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?			{ BEGIN(atto); salvaNocPos();
-											return DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-{ODZ}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}	{ BEGIN(atto); salvaNocPos();
-											return ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI; }
-o(rd)?[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?		{ BEGIN(atto); salvaNocPos();
-											return ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI; }
-
-{DECRETO}{ST}(del{ST})?{PRES}{ST}(della{ST})?repubblica	{ BEGIN(atto); salvaNocPos(); 													return DECRETO_PRESIDENTE_REPUBBLICA; }
-d[\.]?{ST}p[\.]?{ST}r[\.]? 							{ BEGIN(atto); salvaNocPos(); 
-													return DECRETO_PRESIDENTE_REPUBBLICA; }
-
-{DECRETO}{ST}(del{ST})?{MIN}			BEGIN(atto); salvaNocPos(); return DECRETO_MINISTERIALE;
-{DECRMIN}{ST}(del{ST})?{MIN}?			BEGIN(atto); salvaNocPos(); return DECRETO_MINISTERIALE;
-
-{REGIO}{ST}{DECRETO}{ST}{LGS}		BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGISLATIVO;
-r\.d\.l\.						BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGGE;
-{REGIO}{ST}{DECRETO}{ST}{LEG}		BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGGE;
-{REGIO}{ST}{DECRETO}			BEGIN(atto); salvaNocPos(); return REGIO_DECRETO;
-
-{DECRETO}{ST}{LGS}			BEGIN(atto); salvaNocPos(); return DECRETO_LEGISLATIVO;
-d{LGS}					BEGIN(atto); salvaNocPos(); return DECRETO_LEGISLATIVO;
-{DECRETO}{ST}{LEG}			BEGIN(atto); salvaNocPos(); return DECRETO_LEGGE;
-{DISEG}{S}{LEG}			BEGIN(atto); salvaNocPos(); return DISEGNO_LEGGE;
-
-{LEG}({ST}{RGN})?{S}regione	BEGIN(atto); salvaNocPos(); return LEGGE_REGIONALE;
-{LEG}{ST}{RGN}				BEGIN(atto); salvaNocPos(); return LEGGE_REGIONALE;
-{LEG}{ST}{COST}			BEGIN(atto); salvaNocPos(); return LEGGE_COSTITUZIONALE;
-{LEG}({S}{QLEG})?			BEGIN(atto); salvaNocPos(); return LEGGE;
-
+cost(\.|ituz(\.|ione))? 			BEGIN(0); salvaNocPos(); return COSTITUZIONE;
 {COD}{S}(di)?{S}{PRO}{S}{CIV}		BEGIN(0); salvaNocPos(); return CODICE_PROCEDURA_CIVILE;
 {COD}{S}(di)?{S}{PRO}{S}{PEN}		BEGIN(0); salvaNocPos(); return CODICE_PROCEDURA_PENALE;
-{COD}{S}{CIV}/{NOAN}			BEGIN(0); salvaNocPos(); return CODICE_CIVILE;
-{COD}{S}{PEN}/{NOAN}			BEGIN(0); salvaNocPos(); return CODICE_PENALE;
+{COD}{S}{CIV}/{NOAN}				BEGIN(0); salvaNocPos(); return CODICE_CIVILE;
+{COD}{S}{PEN}/{NOAN}				BEGIN(0); salvaNocPos(); return CODICE_PENALE;
 
-{DIR}					BEGIN(atto); salvaNocPos(); return DIRETTIVA;
-{DECI}					BEGIN(atto); salvaNocPos(); return DECISIONE;
+   /* ----------------------------- ATTI NORMATIVI -------------------------------- */
+   /* *******************************
+    * PRESIDENTE CONSIGLIO MINISTRI *
+    * *******************************/
+{DECRETO}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}	|
+d[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?				BEGIN(atto); salvaNocPos(); return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI;
 
-{REGOLAM}({ST}{RGN})?{S}regione	BEGIN(atto); salvaNocPos(); return REGOLAMENTO_REGIONALE;
-{REGOLAM}{ST}{RGN}				BEGIN(atto); salvaNocPos(); return REGOLAMENTO_REGIONALE;
-{REGOLAM}{S}{UE_P}				BEGIN(atto); salvaNocPos(); return REGOLAMENTO_UE;
-{REGOLAM}						BEGIN(atto); salvaNocPos(); return REGOLAMENTO;
+{DIR}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}		|
+dir[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?				BEGIN(atto); salvaNocPos(); return DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI;
 
-{DELIB}({ST}del)?{ST}{COMIN}		BEGIN(atto); salvaNocPos(); return DELIBERA_CONSIGLIO_MINISTRI;
-{DELIB}({ST}del)?{ST}{CONS}		BEGIN(atto); salvaNocPos(); return DELIBERA_CONSIGLIO;
+{ODZ}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}		|
+o(rd)?[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?			BEGIN(atto); salvaNocPos(); return ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI;
+   /* *******************************
+    * PRESIDENTE REPUBBLICA         *
+    * *******************************/
+{DECRETO}{ST}(del{ST})?{PRES}{ST}(della{ST})?{REPUB}	|
+d[\.]?{ST}p[\.]?{ST}r[\.]? 								BEGIN(atto); salvaNocPos(); return DECRETO_PRESIDENTE_REPUBBLICA;
+   /* *******************************
+    * DECRETI MINISTERIALI          *
+    * *******************************/
+{DECRETO}{ST}(del{ST})?{MIN}					|
+{DECRMIN}{ST}(del{ST})?{MIN}?					BEGIN(atto); salvaNocPos(); return DECRETO_MINISTERIALE;
+   /* *******************************
+    * ATTI REGI                     *
+    * *******************************/
+{REGIO}{ST}{DECRETO}{ST}{LGS}					BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGISLATIVO;
+r\.d\.l\.										|
+{REGIO}{ST}{DECRETO}{ST}{LEG}					BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGGE;
+{REGIO}{ST}{DECRETO}							|
+rd												BEGIN(atto); salvaNocPos(); return REGIO_DECRETO;
+   /* *******************************
+    * ATTI GOVERNO                  *
+    * *******************************/
+{DECRETO}{ST}{LGS}								|
+d{LGS}											BEGIN(atto); salvaNocPos(); return DECRETO_LEGISLATIVO;
+{DECRETO}{ST}{LEG}								BEGIN(atto); salvaNocPos(); return DECRETO_LEGGE;
+   /* *******************************
+    * ATTI REGIONI                  *
+    * *******************************/
+{LEG}({ST}{RGN})?{CONN}?{S}regione				|
+{LEG}{ST}{RGN}									BEGIN(atto); salvaNocPos(); return LEGGE_REGIONALE;
 
-{PROVD}			BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_GEN;
-{DELIB}			BEGIN(atto); salvaNocPos(); return DELIBERA_GEN;
-{DECRETO_E}		BEGIN(atto); salvaNocPos(); return DECRETO_GEN;
-{ODZ_E}			BEGIN(atto); salvaNocPos(); return ORDINANZA_GEN;
+{REGOLAM}({ST}{RGN})?{CONN}?{S}regione			|
+{REGOLAM}{ST}{RGN}								BEGIN(atto); salvaNocPos(); return REGOLAMENTO_REGIONALE;
+   /* *******************************
+    * LEGGI                         *
+    * *******************************/
+{LEG}{ST}{COST}									BEGIN(atto); salvaNocPos(); return LEGGE_COSTITUZIONALE;
+{LEG}({S}{QLEG})?								|
+{LEG}({S}della)?{S}{REPUB}						BEGIN(atto); salvaNocPos(); return LEGGE;
+{DISEG}{S}{LEG}									BEGIN(atto); salvaNocPos(); return DISEGNO_LEGGE;
+   /* *******************************
+    * ATTI COMUNITARI               *
+    * *******************************/
+{REGOLAM}{S}{UE_P}								BEGIN(atto); salvaNocPos(); return REGOLAMENTO_UE;
+{REGOLAM}										BEGIN(atto); salvaNocPos(); return REGOLAMENTO;
+{DIR}											BEGIN(atto); salvaNocPos(); return DIRETTIVA;
+{DECI}											BEGIN(atto); salvaNocPos(); return DECISIONE;
+   /* *******************************
+    * STATUTI                       *
+    * *******************************/
+{STATU}({ST}{RGN})?{CONN}?{S}regione			|
+{STATU}{ST}{RGN}								BEGIN(atto); salvaNocPos(); return STATUTO_REGIONALE;
+   /* ----------------------------- ATTI AMMINISTRATIVI ----------------------------- */
+   /* ***********************
+    * CNR                   *
+    * ***********************/
+{DECRETO}({S}del)?{S}{PRES}({S}del)?{S}{CNR}	|
+d[\.]?{ST}p[\.]?{ST}{CNR}						BEGIN(atto); salvaNocPos(); return DECRETO_PRESIDENTE_CNR;
 
-{STATU}({ST}{RGN})?{S}regione		BEGIN(atto); salvaNocPos(); return STATUTO_REGIONALE;
-{STATU}{ST}{RGN}				BEGIN(atto); salvaNocPos(); return STATUTO_REGIONALE;
-{STATU}						BEGIN(atto); salvaNocPos(); return STATUTO_GEN;
+{DECRETO}({S}del)?{S}{DIRGEN}({S}del)?{S}{CNR}	|
+d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaNocPos(); return DECRETO_DIRETTORE_GENERALE_CNR;
 
-{COD_E}			BEGIN(0); salvaNocPos(); return CODICE_GEN;
-{TU_E}			BEGIN(0); salvaNocPos(); return TESTO_UNICO_GEN;
+{PRORD}({S}del)?{S}{COMSTR}({S}del)?{S}{CNR}	|
+{PRORD}({S}del)?{S}{CNR}						BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_ORDINAMENTALE_CNR;
+   /* *******************************
+    * PROVVEDIMENTI                 *
+    * *******************************/
+{PRORD}(({S}del)?{S}{PRES})?					|
+{PRORD}(({S}del)?{S}{DIRGEN})?					|
+{PRORD}(({S}del)?{S}{COMSTR})?					BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_ORDINAMENTALE;
+   /* *******************************
+    * DELIBERE                      *
+    * *******************************/
+{DELIB}({ST}del)?{ST}{COMIN}					BEGIN(atto); salvaNocPos(); return DELIBERA_CONSIGLIO_MINISTRI;
+{DELIB}({ST}del)?{ST}{CONS}{S}{COMUNAL})		|
+{DELIB}{ST}{CONSIL}								BEGIN(atto); salvaNocPos(); return DELIBERA;
+{DELIB}({ST}del)?{ST}{CONS}						BEGIN(atto); salvaNocPos(); return DELIBERA_CONSIGLIO;
+   /* *******************************
+    * GENERICI                      *
+    * *******************************/
+{DELIB}											BEGIN(atto); salvaNocPos(); return DELIBERA_GEN;
+{DECR_E}										BEGIN(atto); salvaNocPos(); return DECRETO_GEN;
+{PROVD}											BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_GEN;
+{ODZ_E}											BEGIN(atto); salvaNocPos(); return ORDINANZA_GEN;
 
-<atto>{NUM}?{S}({UENUM_NA}|{UENUM_AN})		salvaNocPos(); noclval=(int)strdup(noctext); return UE_NUM;
-<atto>{UEDEN}							salvaNocPos(); return UE_DEN;
-<atto>{PARLAM}							salvaNocPos(); return PARLAMENTO;
-<atto>{CONS}							salvaNocPos(); return CONSIGLIO;
-<atto>{COMMIS}							salvaNocPos(); return COMMISSIONE;
+{COD_E}											BEGIN(0); salvaNocPos(); return CODICE_GEN;
+{STATU}											BEGIN(0); salvaNocPos(); return STATUTO_GEN;
+{TU_E}											BEGIN(0); salvaNocPos(); return TESTO_UNICO_GEN;
 
-<sudd,atto>((del(la|lo)?{SPA})?(gi.'?{SPA})?(cit(\.|at[ao])|medesim[ao]|stess[ao]|predett[ao]))	nocpos+=nocleng;
+   /* =================================================== ESTREMI ========================================== */
 
-<sudd,atto>{CONN}			nocpos+=nocleng;
-<atto>in{SPA}data			nocpos+=nocleng;
-<atto>regione{SPA}			nocpos+=nocleng; return PAROLA_REGIONE;
-<atto>{REGIONI}			salvaNocPos(); noclval=(int)strdup(yytext); return REGIONE;
+<*>{SPA}							nocpos+=nocleng;
+<sudd>{SPA}e{SPA}seguenti			nocpos+=nocleng;
+<sudd,atto>{CONN}					nocpos+=nocleng;
+<sudd,atto>{CITAT}					nocpos+=nocleng;
 
-<atto>{N12}[/\.-]{N12}[/\.-]({N4}|{N12})/[^0-9]	{ salvaNocPos(); noclval=(int)utilConvDataNumerica(noctext); 
-											return DATA_GG_MM_AAAA; }
+<atto>{
+{INDAT}								nocpos+=nocleng;
+{SPA}e{SPA}							nocpos+=nocleng;
+{REGIONI}							salvaNocPos(); noclval=(int)strdup(noctext); return REGIONE;
+regione{SPA}						nocpos+=nocleng; return PAROLA_REGIONE;
+}
+   /* *******************************
+    * COMUNITARI                    *
+    * *******************************/
+<atto>{
+{NUM}?{S}({UENUM_NA}|{UENUM_AN})	salvaNocPos(); noclval=(int)strdup(noctext); return UE_NUM;
+{UEDEN}								salvaNocPos(); return UE_DEN;
+{PARLAM}							salvaNocPos(); return PARLAMENTO;
+{CONS}								salvaNocPos(); return CONSIGLIO;
+{COMMIS}							salvaNocPos(); return COMMISSIONE;
+}
+   /* *******************************
+    * DATA PRIMA DI NUMERO          *
+    * *******************************/
+<atto>{
+{N12}[/\.-]{N12}[/\.-]({N4}|{N12})/[^0-9]	{ BEGIN(data); salvaNocPos(); 
+											  noclval=(int)utilConvDataNumerica(noctext); return DATA_GG_MM_AAAA; }
+{N12}{ST}{MESI}{ST}({N4}|{N12})/[^0-9]		{ BEGIN(data); salvaNocPos(); 
+											  noclval=(int)utilConvDataEstesa(noctext); return DATA_GG_MM_AAAA; }
+}
+   /* *******************************
+    * NUMERO DOPO DATA              *
+    * *******************************/
+<data>{
+{NUM}?{S}{N}({S}\/{S}{N}){0,2}				BEGIN(0); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO_ESTESO;
+.											BEGIN(0); unput(*noctext); return BREAK;
+}
+   /* *******************************
+    * NUMERO PRIMA DI DATA          *
+    * *******************************/
+<atto>{NUM}{S}{N}						BEGIN(nume); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO_ATTO;
+<nume>[/]{S}/{S}{N}						nocpos++; noclval=(int)strdup(noctext); return BARRA;
+<atto,nume>{N}							BEGIN(nume); salvaNocPos(); noclval=(int)strdup(noctext); return NUMERO_CARDINALE;
+   /* *******************************
+    * DATA DOPO NUMERO              *
+    * *******************************/
+<nume>{
+{N12}[/\.-]{N12}[/\.-]({N4}|{N12})/[^0-9]	{ BEGIN(0); salvaNocPos(); 
+											  noclval=(int)utilConvDataNumerica(noctext); return DATA_GG_MM_AAAA; }
+{N12}{ST}{MESI}{ST}({N4}|{N12})/[^0-9]		{ BEGIN(0); salvaNocPos(); 
+											  noclval=(int)utilConvDataEstesa(noctext); return DATA_GG_MM_AAAA; }
+{CONN}										nocpos+=nocleng;
+.											BEGIN(0); unput(*noctext); return BREAK;
+}
+   /* *******************************
+    * NON SIGNIFICATIVI             *
+    * *******************************/
+<INITIAL,sudd,atto>{
+[a-z0-9_]+							|
+[#]+								|
+\.									BEGIN(0); nocpos+=nocleng; if (!salti) { salti = 1; return BREAK; }
 
-<atto>{N12}{ST}{MESI}{ST}({N4}|{N12})/[^0-9]		{ salvaNocPos(); noclval=(int)utilConvDataEstesa(noctext); 
-											return DATA_GG_MM_AAAA; }
-
-<atto>{N}			salvaNocPos(); noclval=(int)strdup(noctext); return NUMERO_CARDINALE;
-
-<atto>[/]			nocpos++; noclval=(int)strdup(noctext); return BARRA;
-
-<atto>{SPA}e{SPA}	nocpos+=nocleng;
-
-[a-z0-9_]+		{ BEGIN(0); nocpos+=nocleng; noclval=(int)strdup(noctext); 
-					if (!salti) { salti = 1; return BREAK; } }
-[#]+				{ BEGIN(0); nocpos+=nocleng; noclval=(int)strdup(noctext); 
-					if (!salti) { salti = 1; return BREAK; } }
-
-{SPA}			nocpos+=nocleng;
-\.				{ BEGIN(0); nocpos++; noclval=(int)strdup(noctext); 
-					if (!salti) { salti = 1; return BREAK; } }
-
-.				nocpos++;
+.									nocpos++;
+}
 
 %%
 
