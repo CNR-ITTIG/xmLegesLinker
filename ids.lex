@@ -71,29 +71,36 @@ SP			([[:space:]])
 %x	supstart supend infstart infend virgol
 
 %%
-
+   /* ***********************
+    * TAG VIRGOLETTE        *
+    * ***********************/
 (<virgolette[^>]*>)			BEGIN(virgol); idpos+=idsleng; salvaVirPos(1);
 
-<virgol>([a-z0-9]+)			idpos+=idsleng;
-
+<virgol>[a-z0-9]+			|
 <virgol>.|\n				idpos+=idsleng;
-
-<virgol>(<\/virgolette>)		BEGIN(0); salvaVirPos(0); idpos+=idsleng;
-
+<virgol>(<\/virgolette>)	BEGIN(0); salvaVirPos(0); idpos+=idsleng;
+   /* *******************************
+    * PARTIZIONI SUPERIORI ARTICOLO *
+    * *******************************/
 (<{PARSUP}{SP}+[^>]*id=\"?)	BEGIN(supstart); idpos+=idsleng;
 
-<supstart>([^ "]+)			BEGIN(supend); idslval=strdup(idstext); idpos+=idsleng; salvaSupPos();
+<supstart>([^ ">]+)			BEGIN(supend); idslval=strdup(idstext); idpos+=idsleng; salvaSupPos();
+<supstart>[ ">]				BEGIN(supend); unput(*idstext);
 
-<supend>(\"?[^>]*>)			BEGIN(0); idpos+=idsleng; 
-
+<supend>([^>]*>)			BEGIN(0); idpos+=idsleng; 
+   /* *******************************
+    * PARTIZIONI INFERIORI ARTICOLO *
+    * *******************************/
 (<{PARINF}{SP}+[^>]*id=\"?)	BEGIN(infstart); idpos+=idsleng;
 
-<infstart>([^ "]+)			BEGIN(infend); idslval=strdup(idstext); idpos+=idsleng; salvaInfPos();
+<infstart>([^ ">]+)			BEGIN(infend); idslval=strdup(idstext); idpos+=idsleng; salvaInfPos();
+<infstart>[ ">]				BEGIN(infend); unput(*idstext);
 
-<infend>(\"?[^>]*>)			BEGIN(0); idpos+=idsleng; 
-
-([a-z0-9]+)				idpos+=idsleng;
-
+<infend>([^>]*>)			BEGIN(0); idpos+=idsleng; 
+   /* *******************************
+    * NON SIGNIFICATIVI             *
+    * *******************************/
+[a-z0-9]+					|
 .|\n						idpos+=idsleng;
 
 %%
