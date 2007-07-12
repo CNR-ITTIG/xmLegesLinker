@@ -1,10 +1,10 @@
 /******************************************************************************
-* Project:	xmLeges
-* Module:	Linker
-* File:		interni.y
+* Project:		xmLeges
+* Module:		Linker
+* File:			interni.y
 * Copyright:	ITTIG/CNR - Firenze - Italy (http://www.ittig.cnr.it)
-* Licence:	GNU/GPL (http://www.gnu.org/licenses/gpl.html)
-* Authors:	PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
+* Licence:		GNU/GPL (http://www.gnu.org/licenses/gpl.html)
+* Authors:		PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
 ******************************************************************************/
 
 %{
@@ -73,8 +73,8 @@ void intInit()
 documento:
 	documento blocco	
 	| error			{ urnFree(&urnTmp); urnShift(&urnTmp); 
-				// loggerDebug(utilConcatena(2, "GRAM: documento=", $1)); 
-				}
+					// loggerDebug(utilConcatena(2, "GRAM: documento=", $1)); 
+					}
 	;
 
 blocco:
@@ -152,7 +152,7 @@ suddivisioneArticolo:
 	;
 
 articolo:
-	ARTICOLO									{ urnTmp.art = (char *)$1; }
+	ARTICOLO										{ urnTmp.art = (char *)$1; }
 	| /* vuoto */
 	;
 
