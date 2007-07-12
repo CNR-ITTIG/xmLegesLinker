@@ -30,6 +30,10 @@ void levAppendString(char *s)
 	}
 }
 
+// <txtrif>(\<\/rif)			BEGIN(finrif); 			/* escludo */
+// <finrif>(\?\>)				BEGIN(0); 				/* escludo */
+// <finrif>[ a-z0-9]+			 						/* escludo */
+// <finrif>(.|\n)				 						/* escludo */
 
 %}
 
@@ -43,13 +47,9 @@ void levAppendString(char *s)
 <inirif>[ a-z0-9]+			 						/* escludo */
 <inirif>(.|\n)				 						/* escludo */
 
-<txtrif>(\<\/rif)			BEGIN(finrif); 			/* escludo */
+<txtrif>(\<\/rif>[ ]*\?>)	BEGIN(0); 				/* escludo */
 <txtrif>[ a-z0-9]+			levAppendString(levtext);  	/* copio */
 <txtrif>(.|\n)				levAppendString(levtext);  	/* copio */
-
-<finrif>(\?\>)				BEGIN(0); 				/* escludo */
-<finrif>[ a-z0-9]+			 						/* escludo */
-<finrif>(.|\n)				 						/* escludo */
 
 [ a-z0-9]+				levAppendString(levtext);  	/* copio */
 
