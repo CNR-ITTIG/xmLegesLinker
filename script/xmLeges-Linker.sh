@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # ******************************************************************************
 # Project:	xmLeges
@@ -9,19 +9,21 @@
 # Authors:	PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
 # ******************************************************************************
 # ------------------------------------------------------------------------------ default x personalizzazione
-declare d_path="$HOME/xmLegesLinker"		# path del programma
-declare d_dinp="$HOME/Testi"				# directory input
-declare d_dout='linker'					# directory output
-declare d_tipo='html'					# tipo file
-declare d_crdi='si'						# creazione directory
-declare d_inte='si'						# riferimenti interni
-declare d_elen='si'						# elenco file
-declare d_elab='si'						# elaborazione
+d_path="$HOME/xmLegesLinker"			# path del programma
+d_dinp="$HOME/Testi"				# directory input
+d_dout='linker'					# directory output
+d_tipo='html'						# tipo file
+d_crdi='si'						# creazione directory
+d_inte='si'						# riferimenti interni
+d_regn='umbria'					# regione
+d_eman='consiglio.nazionale.ricerche'	# emanante
+d_elen='si'						# elenco file
+d_elab='si'						# elaborazione
 printf "***********************************************************************\n"
 printf "*                         xmLeges-Linker.sh                           *\n"
 printf "*       Trasforma i riferimenti normativi in link ipertestuali        *\n"  
 printf "*                      per gruppi di file                             *\n"  
-printf "*        ITTIG / CNR - Firenze (ver. 1.1 - 03 lug 2006)               *\n"
+printf "*        ITTIG / CNR - Firenze (ver. 1.2 - 11 lug 2007)               *\n"
 printf "***********************************************************************\n"
 # ------------------------------------------------------------------------------ directory programma
 printf "Cartella dove risiede il programma xmLeges-Linker:[$d_path]"
@@ -37,7 +39,7 @@ if [ ! -f "$prpath/xmLeges-Linker.exe" ]; then
 	printf "*** ELABORAZIONE FERMATA ***\n"
 	exit
 fi
-declare car1=$(expr substr "$prpath" 1 1)
+car1=$(expr substr "$prpath" 1 1)
 if [ "$car1" != '/' ]; then prpath="$PWD/$prpath"; fi
 # ------------------------------------------------------------------------------ directory input
 printf "Cartella di lettura dei file da elaborare:[$d_dinp]"
@@ -85,17 +87,27 @@ if [ "$extens" != 'html' -a "$extens" != 'xml' ]; then
 fi
 if [ "$extens" == 'html' ]; then extens='htm*'; fi
 # ------------------------------------------------------------------------------ rif interni
-declare inter='no'
+inter='no'
 if [ $extens == 'xml' ]; then
 	printf "Trasformare anche i riferimenti interni? (si|no):[$d_inte]"
 	read inter
 	if [ -z "$inter" ]; then inter=$d_inte; fi
 fi
+# ------------------------------------------------------------------------------ regione
+regio=''
+printf "Regione sottintesa negli atti regionali (leggi, regolamenti, ecc.)? (no|<nome>):[$d_regn]"
+read regio
+if [ -z "$regio" ]; then regio=$d_regn; fi
+# ------------------------------------------------------------------------------ emanante
+eman=''
+printf "Emanante sottinteso negli atti amministrativi (decreti, delibere, ecc.)? (no|<nome>):[$d_eman]"
+read eman
+if [ -z "$eman" ]; then eman=$d_eman; fi
 # ------------------------------------------------------------------------------ nomi files
 printf "Nomi dei file da trasformare (nome*):[*]" 
 read names
 if [ -z "$names" ]; then names='*'; fi
-declare numfil=$(find "$dirinp" -maxdepth 1 -iname "$names.$extens" -printf "%f\n" | wc -l)
+numfil=$(find "$dirinp" -maxdepth 1 -iname "$names.$extens" -printf "%f\n" | wc -l)
 if [ $numfil == 0 ]; then
 	printf "*** ERRORE: nessun file ($names.$extens) trovato nella cartella ($dirinp) ***\n"
 	printf "*** ELABORAZIONE FERMATA ***\n"
@@ -122,6 +134,8 @@ printf "Estensione dei file da elaborare = $extens\n"
 if [ $extens == 'xml' ]; then
 printf "Riferimenti interni              = $inter\n"
 fi
+printf "Regione sottintesa               = $regio\n"
+printf "Emanante sottinteso              = $eman\n"
 printf "Nomi dei file da elaborare       = $names.$extens\n"
 printf "Numero dei file da elaborare     = $numfil\n" 
 printf "***********************************************************************\n"
@@ -132,13 +146,19 @@ if [ "$sino" != 'si' ]; then
 	printf "*** ELABORAZIONE FERMATA ***\n"
 	exit
 fi
-declare param
+param=''
 if [ "$extens" == 'xml' ]; 
 	then param="-i xml -m dtdnir"
 	else param="-i html -m htmlnir"
 fi
 if [ "$inter" == 'si' ]; then 
 	param="$param -r i"
+fi
+if [ "$regio" != 'no' ]; then 
+	param="$param -R $regio"
+fi
+if [ "$eman" != 'no' ]; then 
+	param="$param -E $eman"
 fi
 printf "*** Inizia l'elaborazione ....\n"
 
