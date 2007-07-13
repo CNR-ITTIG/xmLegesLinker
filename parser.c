@@ -23,7 +23,7 @@
 #include "config.h"
 #include "urn.h"
 
-const char *versione = "1.6.2";
+const char *versione = "1.7";
 
 extern FILE * yyin;
 extern urn *urns[];
@@ -330,14 +330,14 @@ void erroreParserToLog(char *str, char *text)
 void help(void) 
 {
 	puts("SINTASSI:");
-	puts("xmLeges-Link [opzioni] [-f file] [-F file] ...");
+	puts("xmLeges-Linker [opzioni] [-f file] [-F file] ...");
 	puts("");
 	puts("DESCRIZIONE:");
 	puts("Il programma riconosce i riferimenti all'interno di un testo, costruisce il nome uniforme (URN) del provvedimento citato ed effettua la richiesta marcatura (es. link ipertestuale in Html) del riferimento stesso con la URN calcolata.");
 	puts("Il programma si comporta come un filtro: legge da standard input e scrive su standard output.");
 	puts("E' possibile effettuare una qualsiasi marcatura dei riferimenti, utilizzando la keyword \"__URN__\" per l'inserimento delle URN calcolate.");
 	puts("Esempio:");
-	puts("xmLeges-Link -b \"<norma urn=\"__URN__\">\" -a \"</norma>\" <legge.txt >legge.out");
+	puts("xmLeges-Linker -b \"<norma urn=\"__URN__\">\" -a \"</norma>\" <legge.txt >legge.out");
 	puts("");
 	puts("OPZIONI:        [N.B. il primo elemento delle liste e' il valore default]");
 	puts("-f <file>: legge da file invece che da standard input");
