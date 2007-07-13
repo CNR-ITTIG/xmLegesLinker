@@ -7,7 +7,7 @@
 # Authors:	Mirco Taddei (m.taddei@ittig.cnr.it)
 #*****************************************************************************/
 
-PREFIX=/usr/local/
+PREFIX=../compile
 BINDIR=$(PREFIX)/bin
 ETCDIR=$(PREFIX)/etc
 LIBDIR=$(PREFIX)/lib
@@ -41,7 +41,7 @@ pre.tab.c: pre.y
 ids.lex.yy.c: ids.lex urn.h
 	flex -i -8 -CFe -Pids -oids.lex.yy.c ids.lex		# produzione
 	# per debug
-	#flex -di8 -CFe -Pids -oids.lex.yy.c ids.lex
+	#flex -d -i -8 -CFe -Pids -oids.lex.yy.c ids.lex
 
 levarif.lex.yy.c: levarif.lex parser.h
 	flex -i -8 -CFe -Plev -olevarif.lex.yy.c levarif.lex		# produzione
@@ -54,13 +54,13 @@ riferimenti.lex.yy.c: riferimenti.lex
 	#flex -d -i -8 -Ce -oriferimenti.lex.yy.c riferimenti.lex
 
 riferimenti.tab.c: riferimenti.y
-	# per debug (con yydebug=1)
 	bison -g -v -td riferimenti.y
+	# per debug yydebug=1
 
 noncompleti.lex.yy.c: noncompleti.lex
-	flex -i -8 -CFe -Pnoc -ononcompleti.lex.yy.c noncompleti.lex		# produzione
+	flex -i -8 -Ce -Pnoc -ononcompleti.lex.yy.c noncompleti.lex		# produzione
 	# per debug
-	#flex -d -i -8 -CFe -Pnoc -ononcompleti.lex.yy.c noncompleti.lex
+	#flex -d -i -8 -Ce -Pnoc -ononcompleti.lex.yy.c noncompleti.lex
 
 noncompleti.tab.c: noncompleti.y
 	# per debug (con yydebug=1)
