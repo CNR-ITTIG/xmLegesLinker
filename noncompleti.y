@@ -1,10 +1,10 @@
 /******************************************************************************
-* Project:	xmLeges
+* Project:		xmLeges
 * Module:		Linker
-* File:		noncompleti.y
+* File:			noncompleti.y
 * Copyright:	ITTIG/CNR - Firenze - Italy (http://www.ittig.cnr.it)
-* Licence:	GNU/GPL (http://www.gnu.org/licenses/gpl.html)
-* Authors:	PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
+* Licence:		GNU/GPL (http://www.gnu.org/licenses/gpl.html)
+* Authors:		PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
 ******************************************************************************/
 
 %{
@@ -66,9 +66,9 @@ int nocwrap() {
 %token PERIODO
 
 %token CODICE_GEN
-%token DECRETO_GEN
 %token DELIBERA_GEN
 %token ORDINANZA_GEN
+%token DECRETO_GEN
 %token PROVVEDIMENTO_GEN
 %token PROVVEDIMENTO_ORDINAMENTALE
 %token STATUTO_GEN
@@ -88,6 +88,9 @@ int nocwrap() {
 %token DECRETO_LEGGE
 %token DECRETO_LEGISLATIVO
 %token DISEGNO_LEGGE
+
+%token DELIBERA_CONSIGLIO_COMUNALE
+%token DELIBERA
 
 %token DECRETO_PRESIDENTE_CNR
 %token DECRETO_DIRETTORE_GENERALE_CNR
@@ -120,7 +123,9 @@ int nocwrap() {
 
 %token DATA_GG_MM_AAAA
 
+%token NUMERO_ATTO
 %token NUMERO_CARDINALE
+%token NUMERO_ESTESO
 %token BARRA
 
 %token BREAK
@@ -140,7 +145,7 @@ documento:
 
 blocco:
 	riferimento	{ urnMemorizza(urnTmp); urnInit(&urnTmp); }
-	| BREAK		{ urnFree(&urnTmp); urnShift(&urnTmp);}
+	| BREAK		{ urnFree(&urnTmp); urnShift(&urnTmp); }
 	;
 
 /******************************************************************************/
@@ -163,8 +168,8 @@ riferimento:
 
 costituzione:
 	suddivisione COSTITUZIONE	{ urnTmp.autorita = strdup("stato"); 
-	  				urnTmp.provvedimento = strdup("costituzione"); 
-	  				urnTmp.data = strdup("1947-12-27"); }
+	  							urnTmp.provvedimento = strdup("costituzione"); 
+	  							urnTmp.data = strdup("1947-12-27"); }
 	;
 
 /******************************************************************************/
@@ -178,8 +183,8 @@ normativo:
 normativoTipo:
 	leggiOrdinarie						{ urnTmp.autorita = strdup("stato"); }
 	| attiPresidenteRepubblica			{ urnTmp.autorita = strdup("presidente.repubblica"); }
-	| attiPresidenteConsiglioMinistri		{ urnTmp.autorita = strdup("presidente.consiglio.ministri"); }
-	| attiRegi						{ urnTmp.autorita = strdup("stato"); }
+	| attiPresidenteConsiglioMinistri	{ urnTmp.autorita = strdup("presidente.consiglio.ministri"); }
+	| attiRegi							{ urnTmp.autorita = strdup("stato"); }
 	| attiRegionali
 	| attiGenerali
 	| attiGenerici						{ if (configGetEmanante()) 
@@ -195,18 +200,18 @@ normativoTipo:
 /******************************************************************************/
 
 attiGenerali:
-	CODICE_GEN			{ urnTmp.autorita = strdup("stato"); 
-							urnTmp.provvedimento = strdup("codice"); }
-	| DECRETO_MINISTERIALE	{ urnTmp.autorita = strdup("ministero."); 
-							urnTmp.provvedimento = strdup("decreto"); }
-	| DELIBERA_CONSIGLIO_MINISTRI		{ urnTmp.autorita = strdup("consiglio.ministri"); 
+	CODICE_GEN						{ urnTmp.autorita = strdup("stato"); 
+									urnTmp.provvedimento = strdup("codice"); }
+	| DECRETO_MINISTERIALE			{ urnTmp.autorita = strdup("ministero."); 
+									urnTmp.provvedimento = strdup("decreto"); }
+	| DELIBERA_CONSIGLIO_MINISTRI	{ urnTmp.autorita = strdup("consiglio.ministri"); 
 									urnTmp.provvedimento = strdup("delibera"); }
-	| DELIBERA_CONSIGLIO	{ urnTmp.autorita = strdup(";consiglio"); 
+	| DELIBERA_CONSIGLIO			{ urnTmp.autorita = strdup(";consiglio"); 
 									urnTmp.provvedimento = strdup("delibera"); }
-	| DISEGNO_LEGGE		{ urnTmp.autorita = strdup("senato.repubblica"); 
-							urnTmp.provvedimento = strdup("disegno.legge"); }
-	| TESTO_UNICO_GEN		{ urnTmp.autorita = strdup("stato"); 
-							urnTmp.provvedimento = strdup("testo.unico"); }
+	| DISEGNO_LEGGE					{ urnTmp.autorita = strdup("senato.repubblica"); 
+									urnTmp.provvedimento = strdup("disegno.legge"); }
+	| TESTO_UNICO_GEN				{ urnTmp.autorita = strdup("stato"); 
+									urnTmp.provvedimento = strdup("testo.unico"); }
 	;
 
 /******************************************************************************/
@@ -217,8 +222,8 @@ attiGenerici:
 	DECISIONE				{ urnTmp.provvedimento = strdup("decisione"); }
 	| DECRETO_GEN			{ urnTmp.provvedimento = strdup("decreto"); }
 	| DELIBERA_GEN			{ urnTmp.provvedimento = strdup("delibera"); }
-	| DIRETTIVA			{ urnTmp.provvedimento = strdup("direttiva"); }
-	| ORDINANZA_GEN		{ urnTmp.provvedimento = strdup("ordinanza"); }
+	| DIRETTIVA				{ urnTmp.provvedimento = strdup("direttiva"); }
+	| ORDINANZA_GEN			{ urnTmp.provvedimento = strdup("ordinanza"); }
 	| PROVVEDIMENTO_GEN		{ urnTmp.provvedimento = strdup("provvedimento"); }
 	| STATUTO_GEN			{ urnTmp.provvedimento = strdup("statuto"); }
 	;
@@ -247,8 +252,8 @@ attiPresidenteConsiglioMinistri:
 
 leggiOrdinarie:
 	LEGGE_COSTITUZIONALE	{ urnTmp.provvedimento = strdup("legge.costituzionale"); }
-	| LEGGE				{ urnTmp.provvedimento = strdup("legge"); }
-	| DECRETO_LEGGE		{ urnTmp.provvedimento = strdup("decreto.legge"); }
+	| LEGGE					{ urnTmp.provvedimento = strdup("legge"); }
+	| DECRETO_LEGGE			{ urnTmp.provvedimento = strdup("decreto.legge"); }
 	| DECRETO_LEGISLATIVO	{ urnTmp.provvedimento = strdup("decreto.legislativo"); }
 	;
 
@@ -272,34 +277,34 @@ attiRegionali:
 	;
 
 regionaleTipoRegionale:
-	LEGGE_REGIONALE			{ urnTmp.provvedimento = strdup("legge"); }
+	LEGGE_REGIONALE				{ urnTmp.provvedimento = strdup("legge"); }
 	| REGOLAMENTO_REGIONALE		{ urnTmp.provvedimento = strdup("regolamento"); }
 	| STATUTO_REGIONALE			{ urnTmp.provvedimento = strdup("statuto"); }
 	;
 
 regionaleTipoGenerico:
-	LEGGE					{ urnTmp.provvedimento = strdup("legge"); }
+	LEGGE						{ urnTmp.provvedimento = strdup("legge"); }
 	| REGOLAMENTO				{ urnTmp.provvedimento = strdup("regolamento"); }
 	| STATUTO_GEN				{ urnTmp.provvedimento = strdup("statuto"); }
 	;
 
 regioneParolaNome:
-	PAROLA_REGIONE	regioneNome
+	PAROLA_REGIONE regioneNome
 	| regioneNome
 	| PAROLA_REGIONE		{ if (configGetRegione()) 
 							  urnTmp.autorita = utilConcatena(2, "regione.", configGetRegione());
-					  	  else urnTmp.autorita = strdup("regione."); }
+					  	  	else urnTmp.autorita = strdup("regione."); }
 	;
 
 regioneNomeOpz:
 	regioneNome
-	| /* vuoto */ 		{ if (configGetRegione()) 
+	| /* vuoto */ 			{ if (configGetRegione()) 
 							urnTmp.autorita = utilConcatena(2, "regione.", configGetRegione());
-					  else	urnTmp.autorita = strdup("regione."); }
+					 		else urnTmp.autorita = strdup("regione."); }
 	;
 
 regioneNome:
-	REGIONE			{ urnTmp.autorita = utilConcatena(2, "regione.", $1); }
+	REGIONE					{ urnTmp.autorita = utilConcatena(2, "regione.", $1); }
 	;
 
 /******************************************************************************/
@@ -317,7 +322,7 @@ codiceTipo:
 	| CODICE_PROCEDURA_CIVILE	{ urnTmp.provvedimento = strdup("codice.procedura.civile"); 
 					  			urnTmp.data = strdup("1940-10-28");
 					  			urnTmp.numero = strdup("1443"); }
-	| CODICE_PENALE			{ urnTmp.provvedimento = strdup("codice.penale"); 
+	| CODICE_PENALE				{ urnTmp.provvedimento = strdup("codice.penale"); 
 					  			urnTmp.data = strdup("1930-10-19");
 					  			urnTmp.numero = strdup("1398"); }
 	| CODICE_PROCEDURA_PENALE	{ urnTmp.provvedimento = strdup("codice.procedura.penale"); 
@@ -340,12 +345,12 @@ comunitarioTipo:
 	| comunitarioDecisione		{ urnTmp.autorita = strdup("comunita.europee"); 
 								urnTmp.provvedimento = strdup("decisione"); }
 
-	| comunitarioRegolamento		{ urnTmp.autorita = strdup("comunita.europee"); 
+	| comunitarioRegolamento	{ urnTmp.autorita = strdup("comunita.europee"); 
 								urnTmp.provvedimento = strdup("regolamento"); }
 	;
 
 comunitarioNumero:
-	UE_NUM					{ urnTmp.numero = (char *) $1; }
+	UE_NUM						{ urnTmp.numero = (char *) $1; }
 	;
 
 comunitarioEmanante:
@@ -392,7 +397,6 @@ comunitarioRegolamento:
 	| REGOLAMENTO comunitarioDenominazione comunitarioNumero
 	;
 	
-	
 /******************************************************************************/
 /********************************************************** AMMINISTRATIVO ****/
 /******************************************************************************/
@@ -402,12 +406,15 @@ amministrativo:
 	;
 
 amministrativoTipo:
-	decretoCnr					{ urnTmp.provvedimento = strdup("decreto"); }
+	decretoCnr							{ urnTmp.provvedimento = strdup("decreto"); }
 	| PROVVEDIMENTO_ORDINAMENTALE_CNR	{ urnTmp.provvedimento = strdup("provvedimento"); 
-									urnTmp.autorita = strdup("consiglio.nazionale.ricerche"); }
+										urnTmp.autorita = strdup("consiglio.nazionale.ricerche"); }
 	| PROVVEDIMENTO_ORDINAMENTALE		{ urnTmp.provvedimento = strdup("provvedimento"); 
-									if (configGetEmanante()) 
-									urnTmp.autorita = strdup(configGetEmanante()); }
+										if (configGetEmanante()) urnTmp.autorita = strdup(configGetEmanante()); }
+	| DELIBERA_CONSIGLIO_COMUNALE		{ urnTmp.provvedimento = strdup("delibera"); 
+										if (configGetEmanante()) urnTmp.autorita = strdup(configGetEmanante()); }
+	| DELIBERA							{ urnTmp.provvedimento = strdup("delibera"); 
+										if (configGetEmanante()) urnTmp.autorita = strdup(configGetEmanante()); }
 	;
 
 /******************************************************************************/
@@ -417,7 +424,7 @@ amministrativoTipo:
 decretoCnr:
 	DECRETO_PRESIDENTE_CNR		{ urnTmp.autorita = strdup("consiglio.nazionale.ricerche;presidente"); }
 	| DECRETO_DIRETTORE_GENERALE_CNR	
-					{ urnTmp.autorita = strdup("consiglio.nazionale.ricerche;direttore.generale"); }
+						{ urnTmp.autorita = strdup("consiglio.nazionale.ricerche;direttore.generale"); }
 	;
 
 /******************************************************************************/
@@ -462,48 +469,48 @@ suddivisionePartizioneInfArt:
 	;
 
 suddivisioneLibro:
-	LIBRO suddivisionePartizioneSupArtOpz			{ urnTmp.lib = (char *)$1; }
+	LIBRO suddivisionePartizioneSupArtOpz		{ urnTmp.lib = (char *)$1; }
 	;
 
 suddivisioneParte:
-	PARTE suddivisionePartizioneSupArtOpz			{ urnTmp.prt = (char *)$1; }
+	PARTE suddivisionePartizioneSupArtOpz		{ urnTmp.prt = (char *)$1; }
 	;
 
 suddivisioneTitolo:
-	TITOLO suddivisionePartizioneSupArtOpz			{ urnTmp.tit = (char *)$1; }
+	TITOLO suddivisionePartizioneSupArtOpz		{ urnTmp.tit = (char *)$1; }
 	;
 
 suddivisioneCapo:
-	CAPO suddivisionePartizioneSupArtOpz			{ urnTmp.cap = (char *)$1; }
+	CAPO suddivisionePartizioneSupArtOpz		{ urnTmp.cap = (char *)$1; }
 	;
 
 suddivisioneSezione:
-	SEZIONE suddivisionePartizioneSupArtOpz			{ urnTmp.sez = (char *)$1; }
+	SEZIONE suddivisionePartizioneSupArtOpz		{ urnTmp.sez = (char *)$1; }
 	;
 
 suddivisioneArticolo:
-	ARTICOLO suddivisionePartizioneInfArtOpz		{ urnTmp.art = (char *)$1; }
-	| suddivisionePartizioneInfArtOpz ARTICOLO		{ urnTmp.art = (char *)$2; }
+	ARTICOLO suddivisionePartizioneInfArtOpz	{ urnTmp.art = (char *)$1; }
+	| suddivisionePartizioneInfArtOpz ARTICOLO	{ urnTmp.art = (char *)$2; }
 	;
 
 suddivisioneComma:
-	COMMA suddivisionePartizioneInfArtOpz			{ urnTmp.com = (char *)$1; }
+	COMMA suddivisionePartizioneInfArtOpz		{ urnTmp.com = (char *)$1; }
 	;
 
 suddivisioneCapoverso:
-	CAPOVERSO suddivisionePartizioneInfArtOpz		{ urnTmp.com = (char *)$1; }
+	CAPOVERSO suddivisionePartizioneInfArtOpz	{ urnTmp.com = (char *)$1; }
 	;
 
 suddivisioneLettera:
-	LETTERA suddivisionePartizioneInfArtOpz			{ urnTmp.let = (char *)$1; }
+	LETTERA suddivisionePartizioneInfArtOpz		{ urnTmp.let = (char *)$1; }
 	;
 
 suddivisioneNumero:
-	NUMERO suddivisionePartizioneInfArtOpz			{ urnTmp.num = (char *)$1; }
+	NUMERO suddivisionePartizioneInfArtOpz		{ urnTmp.num = (char *)$1; }
 	;
 
 suddivisioneParagrafo:
-	PARAGRAFO suddivisionePartizioneInfArtOpz		{ urnTmp.prg = (char *)$1; }
+	PARAGRAFO suddivisionePartizioneInfArtOpz	{ urnTmp.prg = (char *)$1; }
 	;
 
 suddivisionePeriodo:
@@ -521,22 +528,39 @@ estremi:
 	;
 	
 estremiEstesi:
-	data estremiNumero
-	| estremiNumero data
-	| data
+	data estremiNumeroEstesoOpz
+	| estremiNumeroEsteso data
 	;
 
 estremiAbbreviati:
-	estremiNumero
-	| estremiNumero BARRA NUMERO_CARDINALE				{ urnTmp.data = (char *) $3; }
-	| estremiNumero NUMERO_CARDINALE					{ urnTmp.data = (char *) $2; }
-	| NUMERO_CARDINALE NUMERO						{ urnTmp.data = (char *) $1; urnTmp.numero = (char *) $2;}
+	estremiNumero BARRA estremiAnno
+	| estremiNumero estremiAnno
+	| estremiAnno NUMERO_ATTO				{ urnTmp.numero = (char *) $2;}
+	| estremiNumeroEsteso
 /*	| NUMERO_CARDINALE estremiNumero */
 	;
 
+estremiNumeroEstesoOpz:
+	NUMERO_ESTESO							{ urnTmp.numero = (char *) $1; }
+	| /* vuoto */
+	;
+
+estremiNumeroEsteso:
+	estremiNumero estremiNumeroBarraOpz
+	;
+
+estremiNumeroBarraOpz:
+	BARRA NUMERO_CARDINALE					{ strcat(urnTmp.numero, (char *) $1); strcat(urnTmp.numero, (char *) $2);}
+	| /* vuoto */
+	;
+
 estremiNumero:
-	NUMERO			{ urnTmp.numero = (char *) $1; }
-	| NUMERO_CARDINALE	{ urnTmp.numero = (char *) $1; }
+	NUMERO_ATTO								{ urnTmp.numero = (char *) $1; }
+	| NUMERO_CARDINALE						{ urnTmp.numero = (char *) $1; }
+	;
+
+estremiAnno:
+	NUMERO_CARDINALE						{ urnTmp.data = (char *) $1; }
 	;
 
 /******************************************************************************/
@@ -549,11 +573,7 @@ dataOpz:
 	;
 
 data:
-	dataTipo	{ urnTmp.data = (char *) $1; }
-	;
-
-dataTipo:
-	DATA_GG_MM_AAAA				{ $$ = $1; }
+	DATA_GG_MM_AAAA							{ urnTmp.data = (char *) $1; }
 	;
 
 %%
