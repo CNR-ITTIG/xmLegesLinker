@@ -101,19 +101,19 @@ if %extens%==xml goto tok
 if %extens%==html set extens=htm*
 REM -------------------------------------------------------------------------- rif interni
 set inter=
-if %extens% NEQ xml goto nam
+if %extens% NEQ xml goto reg
 set /P inter=Trasformare anche i riferimenti interni? ^(si^|no^):[%d_inte%]
 if [%inter%]==[] set inter=%d_inte%
 REM -------------------------------------------------------------------------- regione
+:reg
 set regio=
-set /P regio=Regione sottintesa negli atti regionali ^(leggi, regolamenti, ecc.^)? ^(no|<nome>^):[%d_regn%]
+set /P regio=Regione sottintesa negli atti regionali ^(leggi, regolamenti, ecc.^)? ^(no^|^<nome^>^):[%d_regn%]
 if [%regio%]==[] set regio=%d_regn%
 REM -------------------------------------------------------------------------- emanante
 set eman=
-set /P eman=Emanante sottinteso negli atti amministrativi ^(decreti, delibere, ecc.^)? ^(no|<nome>^):[%d_eman%]
-if [%eman%]=[] set eman=%d_eman%
+set /P eman=Emanante sottinteso negli atti amministrativi ^(decreti, delibere, ecc.^)? ^(no^|^<nome^>^):[%d_eman%]
+if [%eman%]==[] set eman=%d_eman%
 REM -------------------------------------------------------------------------- nomi files
-:nam
 set /P names=Nomi dei file da trasformare ^(nome*^):[*]
 if "%names%"=="" set names=*
 set /A numfil=0
