@@ -10,15 +10,15 @@
 # ******************************************************************************
 # ------------------------------------------------------------------------------ default x personalizzazione
 d_path="$HOME/xmLegesLinker"			# path del programma
-d_dinp="$HOME/Testi"				# directory input
-d_dout='linker'					# directory output
-d_tipo='html'						# tipo file
-d_crdi='si'						# creazione directory
-d_inte='si'						# riferimenti interni
-d_regn='umbria'					# regione
+d_dinp="$HOME/Testi"					# directory input
+d_dout='linker'							# directory output
+d_tipo='html'							# tipo file
+d_crdi='si'								# creazione directory
+d_inte='si'								# riferimenti interni
+d_regn='umbria'							# regione
 d_eman='consiglio.nazionale.ricerche'	# emanante
-d_elen='si'						# elenco file
-d_elab='si'						# elaborazione
+d_elen='si'								# elenco file
+d_elab='si'								# elaborazione
 printf "***********************************************************************\n"
 printf "*                         xmLeges-Linker.sh                           *\n"
 printf "*       Trasforma i riferimenti normativi in link ipertestuali        *\n"  
