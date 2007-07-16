@@ -9,27 +9,31 @@ REM Authors:	PierLuigi Spinosa (pierluigi.spinosa@ittig.cnr.it)
 REM ******************************************************************************
 setlocal
 REM -------------------------------------------------- default x personalizzazione
-REM 						path del programma
+REM 							path del programma
 set d_path=\programmi\xmleges
-REM 						directory input
+REM 							directory input
 set d_dinp=\dati\testi
-REM 						directory output
+REM 							directory output
 set d_dout=linker
-REM 						tipo file
+REM 							tipo file
 set d_tipo=html
-REM 						creazione directory output
+REM 							creazione directory output
 set d_crdi=si
-REM 						riferimenti interni
+REM 							riferimenti interni
 set d_inte=si
-REM 						elenco file
+REM 							regione
+set d_regn=umbria
+REM								emanante
+set d_eman=consiglio.nazionale.ricerche
+REM 							elenco file
 set d_elen=no
-REM 						elaborazione
+REM 							elaborazione
 set d_elab=no
 echo ***********************************************************************
 echo *                         xmLeges-Linker.bat                          *
 echo *       Trasforma i riferimenti normativi in link ipertestuali        * 
 echo *                         per gruppi di file                          *
-echo *           ITTIG / CNR - Firenze (ver. 1.1 - 30 giu 2006)            *
+echo *           ITTIG / CNR - Firenze (ver. 1.2 - 11 lug 2007)            *
 echo ***********************************************************************
 REM ------------------------------------------------------------------------ directory programma
 set prpath=
@@ -100,6 +104,14 @@ set inter=
 if %extens% NEQ xml goto nam
 set /P inter=Trasformare anche i riferimenti interni? ^(si^|no^):[%d_inte%]
 if [%inter%]==[] set inter=%d_inte%
+REM -------------------------------------------------------------------------- regione
+set regio=
+set /P regio=Regione sottintesa negli atti regionali ^(leggi, regolamenti, ecc.^)? ^(no|<nome>^):[%d_regn%]
+if [%regio%]==[] set regio=%d_regn%
+REM -------------------------------------------------------------------------- emanante
+set eman=
+set /P eman=Emanante sottinteso negli atti amministrativi ^(decreti, delibere, ecc.^)? ^(no|<nome>^):[%d_eman%]
+if [%eman%]=[] set eman=%d_eman%
 REM -------------------------------------------------------------------------- nomi files
 :nam
 set /P names=Nomi dei file da trasformare ^(nome*^):[*]
@@ -131,6 +143,8 @@ echo Estensione dei file da elaborare = %extens%
 if %extens%==xml (
 echo Riferimenti interni              = %inter%
 )
+echo Regione sottintesa               = %regio%
+echo Emanante sottinteso              = %eman%
 echo Nomi dei file da elaborare       = %names%.%extens%
 echo Numero dei file da elaborare     = %numfil%
 echo ***********************************************************************
@@ -143,10 +157,16 @@ if %sino% NEQ si (
 )
 if %extens% NEQ xml (
 	set param=-i html -m htmlnir
-	goto run
+	goto rg
 )
 if %extens%==xml set param=-i xml -m dtdnir
 if %inter%==si set param=%param% -r i
+:rg
+if %regio%==no goto em 
+set param=%param% -R %regio%
+:em
+if %eman%==no' goto run
+set param=%param% -E %eman%
 REM -------------------------------------------------------------------------- esecuzione
 :run
 echo *** Inizia l'elaborazione ....
