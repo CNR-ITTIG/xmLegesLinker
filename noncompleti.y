@@ -66,12 +66,11 @@ int nocwrap() {
 %token PERIODO
 
 %token CODICE_GEN
-%token DELIBERA_GEN
 %token ORDINANZA_GEN
 %token DECRETO_GEN
 %token PROVVEDIMENTO_GEN
 %token PROVVEDIMENTO_ORDINAMENTALE
-%token STATUTO_GEN
+%token STATUTO
 %token TESTO_UNICO_GEN
 
 %token DELIBERA_CONSIGLIO_MINISTRI
@@ -91,6 +90,7 @@ int nocwrap() {
 
 %token DELIBERA_CONSIGLIO_COMUNALE
 %token DELIBERA
+%token PROPOSTA_DELIBERA
 
 %token DECRETO_PRESIDENTE_CNR
 %token DECRETO_DIRETTORE_GENERALE_CNR
@@ -109,7 +109,6 @@ int nocwrap() {
 %token REGOLAMENTO_REGIONALE
 %token STATUTO_REGIONALE
 %token REGIONE
-%token PAROLA_REGIONE
 
 %token UE_NUM
 %token UE_DEN
@@ -157,6 +156,7 @@ riferimento:
 	| costituzione
 	| codice
 	| comunitario
+	| statuto
 	| amministrativo
 
 /*	| giurisprudenziale
@@ -192,7 +192,6 @@ normativoTipo:
 
 /*	| leggeProvinciale					{ $autorita = "provincia.$provincia"; }
 	| regolamento
-	| statuto
 */	;
 
 /******************************************************************************/
@@ -221,11 +220,10 @@ attiGenerali:
 attiGenerici:
 	DECISIONE				{ urnTmp.provvedimento = strdup("decisione"); }
 	| DECRETO_GEN			{ urnTmp.provvedimento = strdup("decreto"); }
-	| DELIBERA_GEN			{ urnTmp.provvedimento = strdup("delibera"); }
 	| DIRETTIVA				{ urnTmp.provvedimento = strdup("direttiva"); }
 	| ORDINANZA_GEN			{ urnTmp.provvedimento = strdup("ordinanza"); }
 	| PROVVEDIMENTO_GEN		{ urnTmp.provvedimento = strdup("provvedimento"); }
-	| STATUTO_GEN			{ urnTmp.provvedimento = strdup("statuto"); }
+	| REGOLAMENTO			{ urnTmp.provvedimento = strdup("regolamento"); }
 	;
 
 /******************************************************************************/
@@ -268,38 +266,47 @@ attiRegi:
 	;
 
 /******************************************************************************/
+/***************************************************************** STATUTO ****/
+/******************************************************************************/
+
+statuto:
+	suddivisioneOpz statutoTipo			{ urnTmp.provvedimento = strdup("statuto"); }
+	;
+	
+statutoTipo:
+	statutoRegionale
+	| statutoGenerico
+	;
+	
+statutoRegionale:
+	STATUTO_REGIONALE regioneNomeOpz
+	;
+	
+statutoGenerico:
+	STATUTO								{ if (configGetEmanante()) 
+											{ urnTmp.autorita = strdup(configGetEmanante());
+											utilEstrai(urnTmp.autorita,strdup(configGetEmanante()),"",";"); } // solo 1.o livello
+										else 
+											{ if (configGetRegione()) urnTmp.autorita = strdup(configGetRegione()); }
+										}
+	;
+
+/******************************************************************************/
 /*************************************************************** REGIONALE ****/
 /******************************************************************************/
 
 attiRegionali:
-	regionaleTipoRegionale regioneNomeOpz
-	| regionaleTipoGenerico regioneParolaNome
+	regionaleTipo regioneNomeOpz
 	;
 
-regionaleTipoRegionale:
+regionaleTipo:
 	LEGGE_REGIONALE				{ urnTmp.provvedimento = strdup("legge"); }
 	| REGOLAMENTO_REGIONALE		{ urnTmp.provvedimento = strdup("regolamento"); }
-	| STATUTO_REGIONALE			{ urnTmp.provvedimento = strdup("statuto"); }
-	;
-
-regionaleTipoGenerico:
-	LEGGE						{ urnTmp.provvedimento = strdup("legge"); }
-	| REGOLAMENTO				{ urnTmp.provvedimento = strdup("regolamento"); }
-	| STATUTO_GEN				{ urnTmp.provvedimento = strdup("statuto"); }
-	;
-
-regioneParolaNome:
-	PAROLA_REGIONE regioneNome
-	| regioneNome
-	| PAROLA_REGIONE		{ if (configGetRegione()) 
-							  urnTmp.autorita = utilConcatena(2, "regione.", configGetRegione());
-					  	  	else urnTmp.autorita = strdup("regione."); }
 	;
 
 regioneNomeOpz:
 	regioneNome
-	| /* vuoto */ 			{ if (configGetRegione()) 
-							urnTmp.autorita = utilConcatena(2, "regione.", configGetRegione());
+	| /* vuoto */ 			{ if (configGetRegione()) urnTmp.autorita = strdup(configGetRegione());
 					 		else urnTmp.autorita = strdup("regione."); }
 	;
 
@@ -371,7 +378,8 @@ comunitarioDirettiva:
 	;
 
 comunitarioDenominazione:
-	UE_DEN | /* vuoto */
+	UE_DEN
+	| /* vuoto */
 	;
 
 comunitarioEstremi:
@@ -415,6 +423,8 @@ amministrativoTipo:
 										if (configGetEmanante()) urnTmp.autorita = strdup(configGetEmanante()); }
 	| DELIBERA							{ urnTmp.provvedimento = strdup("delibera"); 
 										if (configGetEmanante()) urnTmp.autorita = strdup(configGetEmanante()); }
+	| PROPOSTA_DELIBERA					{ urnTmp.provvedimento = strdup("proposta.delibera"); 
+										if (configGetEmanante()) urnTmp.autorita = strdup(configGetEmanante()); }
 	;
 
 /******************************************************************************/
@@ -422,9 +432,9 @@ amministrativoTipo:
 /******************************************************************************/
 
 decretoCnr:
-	DECRETO_PRESIDENTE_CNR		{ urnTmp.autorita = strdup("consiglio.nazionale.ricerche;presidente"); }
+	DECRETO_PRESIDENTE_CNR				{ urnTmp.autorita = strdup("consiglio.nazionale.ricerche;presidente"); }
 	| DECRETO_DIRETTORE_GENERALE_CNR	
-						{ urnTmp.autorita = strdup("consiglio.nazionale.ricerche;direttore.generale"); }
+										{ urnTmp.autorita = strdup("consiglio.nazionale.ricerche;direttore.generale"); }
 	;
 
 /******************************************************************************/
