@@ -25,6 +25,7 @@ extern urn urnTmp;
 extern YYSTYPE intlval;
 
 int salto = 1;
+char* token;
 
 void salvaIntpos() {
 	salto = 0;
@@ -34,6 +35,14 @@ void salvaIntpos() {
 	intpos += intleng;
 	if (intpos > urnTmp.fine)
 		urnTmp.fine = intpos;
+}
+
+void levaPrec() {
+	token = strdup(inttext);
+	utilCompact(token);
+	utilSostStr(token, "precedente ","");
+	utilSostStr(token, "successivo ","");
+	utilSostStr(token, "successiva ","");
 }
 
 /*----------------------------------------- pattern tolti
@@ -47,20 +56,20 @@ PERIO			(periodo|per{PS})
 %}
 
 NOAN	([^a-z0-9])
-SPA	([ ]+)
-PS	(\.|{SPA})
-S	({SPA}*)
-ST	({S}([\-]?){S})
-SVB	({S}([\-,\/]?){S})
-PTO	(\^|(\.?[oa]))
+SPA		([ ]+)
+PS		(\.|{SPA})
+S		({SPA}*)
+ST		({S}([\-]?){S})
+SVB		({S}([\-,\/]?){S})
+PTO		(\^|(\.?[oa]))
 
-N	([0-9]+)
-N12	([0-9]{1,2})
-N4	([0-9]{4})
+N		([0-9]+)
+N12		([0-9]{1,2})
+N4		([0-9]{4})
 
 CONN	({S}del(la|lo|l)?{SPA})
-CITAT_I	(precedente|seguente)
-CITAT	((del(la|lo)?{SPA})?(gi.'?{SPA})?(cit(\.|at[ao])|medesim[ao]|stess[ao]|predett[ao]|{CITAT_I}))
+PRSU	(precedente|successiv[oa])
+CITAT	((gi.'?{SPA})?(cit(\.|at[ao])|medesim[ao]|stess[ao]|predett[ao]|{PRSU}))
 
 LIB		(libro)
 PAR		(parte|pt{PS}|p{PS})
@@ -68,7 +77,7 @@ TIT		(titolo|tit{PS})
 CAP		(capo)
 SEZ		(sezione|sez{PS})
 ART		(articolo|art{PS})
-COM		(comma|com{PS}|co?{PS})
+COM		(comma|com{PS}|co?\.)
 CAPOV	(capoverso|cpv{PS})
 LET		(lettera|lett?{PS})
 NUM		(numero|num{PS}|nr?{PS}|n\.o)
@@ -153,21 +162,30 @@ SERG	({SERG_E}|sg{PS})
    /* ***********************
     * ARTICOLO              *
     * ***********************/
-{ART}{S}{N}{PTO}?{LAT}?/{NOAN}	|
-{N}{PTO}?{S}{ART}				BEGIN(sudd); salvaIntpos(); intlval=(int)strdup(utilConvCardinale(inttext,0)); return ARTICOLO;
-{ART}{S}{ORD}{LAT}?				|
-{ORD}{S}{ART}					BEGIN(sudd); salvaIntpos(); intlval=(int)strdup(utilConvOrdinale(inttext,0)); return ARTICOLO;
+({PRSU}{S})?{ART}{S}{N}{PTO}?{LAT}?/{NOAN}	|
+({PRSU}{S})?{N}{PTO}?{S}{ART}				BEGIN(sudd); salvaIntpos(); levaPrec(); intlval=(int)strdup(utilConvCardinale(token,0)); return ARTICOLO;
+({PRSU}{S})?{ART}{S}{ORD}{LAT}?				|
+({PRSU}{S})?{ORD}{S}{ART}					BEGIN(sudd); salvaIntpos(); levaPrec(); intlval=(int)strdup(utilConvOrdinale(token,0)); return ARTICOLO;
+{ART}{S}{PRSU}								|
+{PRSU}{S}{ART}								BEGIN(sudd); salvaIntpos(); intlval=(int)"0"; return ARTICOLO;
    /* ***********************
     * COMMA                 *
     * ***********************/
-{COM}{S}{N}{PTO}?{LAT}?/{NOAN}	|
-{N}{PTO}?{S}{COM}				BEGIN(sudd); salvaIntpos(); intlval=(int)strdup(utilConvCardinale(inttext,0)); return COMMA;
-{COM}{S}{ORD}{LAT}?				|
-{ORD}{S}{COM}					BEGIN(sudd); salvaIntpos(); intlval=(int)strdup(utilConvOrdinale(inttext,0)); return COMMA;
+{PRSU}{S}{COM}/{S}i{SPA}					BEGIN(sudd); salvaIntpos(); intlval=(int)"0"; return COMMA;	// falso rif.
+({PRSU}{S})?{COM}{S}{ROM}{LAT}?/{NOAN}		BEGIN(sudd); salvaIntpos(); levaPrec(); intlval=(int)strdup(utilConvRomanoDopo(token)); return COMMA;
+({PRSU}{S})?{ROM}{S}{COM}					BEGIN(sudd); salvaIntpos(); levaPrec(); intlval=(int)strdup(utilConvRomanoPrima(token)); return COMMA;
+({PRSU}{S})?{COM}{S}{N}{PTO}?{LAT}?/{NOAN}	|
+({PRSU}{S})?{N}{PTO}?{S}{COM}				BEGIN(sudd); salvaIntpos(); levaPrec(); intlval=(int)strdup(utilConvCardinale(token,0)); return COMMA;
+({PRSU}{S})?{COM}{S}{ORD}{LAT}?				|
+({PRSU}{S})?{ORD}{S}{COM}					BEGIN(sudd); salvaIntpos(); levaPrec(); intlval=(int)strdup(utilConvOrdinale(token,0)); return COMMA;
+{COM}{S}{PRSU}								|
+{PRSU}{S}{COM}								BEGIN(sudd); salvaIntpos(); intlval=(int)"0"; return COMMA;
    /* ***********************
     * LETTERA               *
     * ***********************/
-{LET}{S}[a-z][a-z]?{LAT}?\)?	BEGIN(sudd); salvaIntpos(); intlval=(int)strdup(utilCalcLettera(inttext)); return LETTERA;
+({PRSU}{S})?{LET}{S}[a-z][a-z]?{LAT}?\)?	BEGIN(sudd); salvaIntpos(); levaPrec(); intlval=(int)strdup(utilCalcLettera(token)); return LETTERA;
+{PRSU}{S}{LET}								|
+{LET}{S}{PRSU}								BEGIN(sudd); salvaIntpos(); intlval=(int)"0"; return LETTERA;
    /* ***********************
     * NUMERO                *
     * ***********************/
