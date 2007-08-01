@@ -67,9 +67,9 @@ noncompleti.tab.c: noncompleti.y
 	bison -g -v -td -pnoc noncompleti.y
 
 interni.lex.yy.c: interni.lex
-	flex -i -8 -CFe -Pint -ointerni.lex.yy.c interni.lex		# produzione
+	flex -i -8 -Ce -Pint -ointerni.lex.yy.c interni.lex		# produzione
 	# per debug
-	# flex -d -i -8 -CFe -Pint -ointerni.lex.yy.c interni.lex
+	# flex -d -i -8 -Ce -Pint -ointerni.lex.yy.c interni.lex
 
 interni.tab.c: interni.y
 	# per debug (con yydebug=1)
