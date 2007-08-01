@@ -95,6 +95,7 @@ DIR		(direttiva|dir{PS}){SPA}
 DECI	(decisione|dec{PS})
 
 QLEG	(finanziaria|comunitaria|fallimentare|fall{PS}|urbanistica)
+STATO	(statale|(dello{SPA})?stato)
 COST	(costituzionale|cost{PS}|c{PS})
 RGN		(regionale|reg{PS}|r{PS})
 PROV	(provinciale|prov{PS}|p{PS})
@@ -107,6 +108,7 @@ MINIS	(ministri|min{PS}|m{PS})
 COMIN	({CONS}({ST}dei)?{ST}{MINIS})
 COMMIS	(commissione|comm{PS})
 
+PROP	(proposta{SPA}di)
 DELIB	(delibera(zione)?|delib{PS})
 COMUNAL	(comunale|com({PS})
 CONSIL	(consiliare)
@@ -166,14 +168,15 @@ ROM	([ivx]+)
 %%
 
    /* =================================================== FALSI RIFERIMENTI ========================================== */
-(codice{SPA}(binario|fiscale|identificativo|sorgente))			|
-((da|per){SPA}(legge|decreto|regolamento))						|
-((effett[oi]|fin[ei]|norm[ae]){SPA}di{SPA}legge)				|
-(legge{SPA}(italiana|(dello{SPA}stato)))						|
-((disposizion[ei]|valore){SPA}di{SPA}legge)						|
-((u|ca)s[oi]{SPA}(consentit|indicat)[oi]{SPA}dalla{SPA}legge)	|
-((decreto|provvedimento|regolamento){SPA}di{SPA}cui)			|
-((presente|seguente){SPA}(codice|legge|decreto|provvedimento|regolamento|testo{SPA}unico))	 nocpos+=nocleng; return BREAK;
+(codice{SPA}(binario|fiscale|identificativo|sorgente))										|
+((da|per){SPA}(legge({SPA}o{SPA}regolamento)?|decreto|regolamento))							|
+((effett[oi]|fin[ei]|norm[ae]){SPA}di{SPA}legge)											|
+(legge{SPA}(italiana|(dello{SPA}stato)))													|
+((disposizion[ei]|valore){SPA}di{SPA}legge({SPA}[eo]{SPA}di{SPA}regolamento)?)				|
+((u|ca)s[oi]{SPA}(consentit|indicat)[oi]{SPA}dalla{SPA}legge)								|
+((con|adotta(re)?({SPA}un)?){SPA}apposito{SPA}regolamento)									|
+((decreto|provvedimento|regolamento)({SPA}((del{SPA}governo)|governativo))?{SPA}di{SPA}cui)	|
+((presente|seguente){SPA}(codice|legge|decreto|provvedimento|regolamento|testo{SPA}unico))	nocpos+=nocleng; return BREAK;
 
    /* =================================================== SUDDIVISIONI ========================================== */
    /* ***********************
@@ -228,6 +231,8 @@ ROM	([ivx]+)
    /* ***********************
     * COMMA                 *
     * ***********************/
+{COM}{S}{ROM}{LAT}?/{NOAN}		BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoDopo(noctext)); return COMMA;
+{ROM}{S}{COM}					BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvRomanoPrima(noctext)); return COMMA;
 {COM}{S}{N}{PTO}?{LAT}?/{NOAN}	|
 {N}{PTO}?{S}{COM}				BEGIN(sudd); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return COMMA;
 {COM}{S}{ORD}{LAT}?				|
@@ -290,6 +295,7 @@ d[\.]?{ST}p[\.]?{ST}r[\.]? 								BEGIN(atto); salvaNocPos(); return DECRETO_PR
     * *******************************/
 {REGIO}{ST}{DECRETO}{ST}{LGS}					BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGISLATIVO;
 r\.d\.l\.										|
+rdl												|
 {REGIO}{ST}{DECRETO}{ST}{LEG}					BEGIN(atto); salvaNocPos(); return REGIO_DECRETO_LEGGE;
 {REGIO}{ST}{DECRETO}							|
 rd												BEGIN(atto); salvaNocPos(); return REGIO_DECRETO;
@@ -312,6 +318,7 @@ d{LGS}											BEGIN(atto); salvaNocPos(); return DECRETO_LEGISLATIVO;
     * *******************************/
 {LEG}{ST}{COST}									BEGIN(atto); salvaNocPos(); return LEGGE_COSTITUZIONALE;
 {LEG}({S}{QLEG})?								|
+{LEG}{S}{STATO}									|
 {LEG}({S}della)?{S}{REPUB}						BEGIN(atto); salvaNocPos(); return LEGGE;
 {DISEG}{S}{LEG}									BEGIN(atto); salvaNocPos(); return DISEGNO_LEGGE;
    /* *******************************
@@ -326,6 +333,8 @@ d{LGS}											BEGIN(atto); salvaNocPos(); return DECRETO_LEGISLATIVO;
     * *******************************/
 {STATU}({ST}{RGN})?{CONN}?{S}regione			|
 {STATU}{ST}{RGN}								BEGIN(atto); salvaNocPos(); return STATUTO_REGIONALE;
+{STATU}											BEGIN(atto); salvaNocPos(); return STATUTO;
+
    /* ----------------------------- ATTI AMMINISTRATIVI ----------------------------- */
    /* ***********************
     * CNR                   *
@@ -347,20 +356,20 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaNocPos(); return DECRETO_D
    /* *******************************
     * DELIBERE                      *
     * *******************************/
+{PROP}{SPA}{DELIB}								BEGIN(atto); salvaNocPos(); return PROPOSTA_DELIBERA;
 {DELIB}({ST}del)?{ST}{COMIN}					BEGIN(atto); salvaNocPos(); return DELIBERA_CONSIGLIO_MINISTRI;
-{DELIB}({ST}del)?{ST}{CONS}{S}{COMUNAL})		|
-{DELIB}{ST}{CONSIL}								BEGIN(atto); salvaNocPos(); return DELIBERA;
 {DELIB}({ST}del)?{ST}{CONS}						BEGIN(atto); salvaNocPos(); return DELIBERA_CONSIGLIO;
+{DELIB}({ST}del)?{ST}{CONS}{S}{COMUNAL})		|
+{DELIB}{ST}{CONSIL}								|
+{DELIB}											BEGIN(atto); salvaNocPos(); return DELIBERA;
    /* *******************************
     * GENERICI                      *
     * *******************************/
-{DELIB}											BEGIN(atto); salvaNocPos(); return DELIBERA_GEN;
 {DECR_E}										BEGIN(atto); salvaNocPos(); return DECRETO_GEN;
 {PROVD}											BEGIN(atto); salvaNocPos(); return PROVVEDIMENTO_GEN;
 {ODZ_E}											BEGIN(atto); salvaNocPos(); return ORDINANZA_GEN;
 
 {COD_E}											BEGIN(0); salvaNocPos(); return CODICE_GEN;
-{STATU}											BEGIN(0); salvaNocPos(); return STATUTO_GEN;
 {TU_E}											BEGIN(0); salvaNocPos(); return TESTO_UNICO_GEN;
 
    /* =================================================== ESTREMI ========================================== */
@@ -371,10 +380,9 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaNocPos(); return DECRETO_D
 <sudd,atto>{CITAT}					nocpos+=nocleng;
 
 <atto>{
-{INDAT}								nocpos+=nocleng;
+{INDAT}								|
 {SPA}e{SPA}							nocpos+=nocleng;
 {REGIONI}							salvaNocPos(); noclval=(int)strdup(noctext); return REGIONE;
-regione{SPA}						nocpos+=nocleng; return PAROLA_REGIONE;
 }
    /* *******************************
     * COMUNITARI                    *
@@ -416,7 +424,8 @@ regione{SPA}						nocpos+=nocleng; return PAROLA_REGIONE;
 											  noclval=(int)utilConvDataNumerica(noctext); return DATA_GG_MM_AAAA; }
 {N12}{ST}{MESI}{ST}({N4}|{N12})/[^0-9]		{ BEGIN(0); salvaNocPos(); 
 											  noclval=(int)utilConvDataEstesa(noctext); return DATA_GG_MM_AAAA; }
-{CONN}										nocpos+=nocleng;
+{CONN}										|
+{INDAT}										nocpos+=nocleng;
 .											BEGIN(0); unput(*noctext); return BREAK;
 }
    /* *******************************
