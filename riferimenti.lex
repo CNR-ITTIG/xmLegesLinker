@@ -80,11 +80,12 @@ PEN		(penale|pen{PS}|p{PS})
 PRO		(procedura|proc{PS}|p{PS})
 ODZ		(ordinanza|ord{PS}|o{PS})
 
-REGOLAM	(regolamento|reg{PS}|r\.)
+REGOLAM	(regol({PS}|amento)|reg{PS}|r\.)
 DIR		(direttiva|dir{PS}){SPA}
 DECI	(decisione|dec{PS})
 
 QLEG	(finanziaria|comunitaria|fallimentare|fall{PS}|urbanistica)
+STATO	(statale|(dello{SPA})?stato)
 COST	(costituzionale|cost{PS}|c{PS})
 RGN		(regionale|reg{PS}|r{PS})
 PROV	(provinciale|prov{PS}|p{PS})
@@ -97,6 +98,7 @@ MINIS	(ministri|min{PS}|m{PS})
 COMIN	({CONS}({ST}dei)?{ST}{MINIS})
 COMMIS	(commissione|comm{PS})
 
+PROP	(proposta{SPA}di)
 DELIB	(delibera(zione)?|delib{PS})
 COMUNAL	(comunale|com({PS})
 CONSIL	(consiliare)
@@ -132,7 +134,6 @@ REGIONI2	(piemonte|puglia|sardegna|sicilia(na)?|toscana|umbria|veneto|v(\.|alle)
 REGIONI3	((friuli(({ST}|{S}e{S})?{ST}venezia{ST}giulia)?))
 REGIONI		({REGIONI1}|{REGIONI2}|{REGIONI3})
 CONNREG		({CONN}?{S}{REGIONI})
-SPAREG		({S}{REGIONI})
 
 MESI_E	(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)
 MESI_3	(gen|feb|mar|apr|mag|giu|lug|ago|set|ott|nov|dic)
@@ -208,6 +209,8 @@ ROM	([ivx]+)
    /* ***********************
     * COMMA                 *
     * ***********************/
+{COM}{S}{ROM}{LAT}?/{NOAN}		BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoDopo(yytext)); return COMMA;
+{ROM}{S}{COM}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoPrima(yytext)); return COMMA;
 {COM}{S}{N}{PTO}?{LAT}?/{NOAN}	|
 {N}{PTO}?{S}{COM}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return COMMA;
 {COM}{S}{ORD}{LAT}?				|
@@ -265,6 +268,7 @@ d[\.]?{ST}p[\.]?{ST}r[\.]? 								BEGIN(atto); salvaPos(); return DECRETO_PRESI
     * *******************************/
 {REGIO}{ST}{DECRETO}{ST}{LGS}					BEGIN(atto); salvaPos(); return REGIO_DECRETO_LEGISLATIVO;
 r\.d\.l\.										|
+rdl												|
 {REGIO}{ST}{DECRETO}{ST}{LEG}					BEGIN(atto); salvaPos(); return REGIO_DECRETO_LEGGE;
 {REGIO}{ST}{DECRETO}							|
 rd												BEGIN(atto); salvaPos(); return REGIO_DECRETO;
@@ -277,38 +281,45 @@ d{LGS}											BEGIN(atto); salvaPos(); return DECRETO_LEGISLATIVO;
    /* *******************************
     * ATTI REGIONI                  *
     * *******************************/
-{LEG}({ST}{RGN})?{CONN}?{S}regione/{SPAREG}		|
-{LEG}{ST}{RGN}/{CONNREG}						BEGIN(atto); salvaPos(); return LEGGE_REGIONALE;
+{LEG}({ST}{RGN})?{CONN}?{S}regione/{CONNREG}	|
+{LEG}({ST}{RGN})?/{CONNREG}						BEGIN(atto); salvaPos(); return LEGGE_REGIONE;
 {LEG}({ST}{RGN})?{CONN}?{S}regione				|
 {LEG}{ST}{RGN}									{ if (configGetRegione()) { BEGIN(atto); salvaPos(); return LEGGE_REGIONALE; }
 										  		else { BEGIN(0); pos+=yyleng; return BREAK; } }
 
-{REGOLAM}({ST}{RGN})?{CONN}?{S}regione/{SPAREG}			|
-{REGOLAM}{ST}{RGN}/{CONNREG}							BEGIN(atto); salvaPos(); return REGOLAMENTO_REGIONALE;
-{REGOLAM}({ST}{RGN})?{CONN}?{S}regione					|
-{REGOLAM}{ST}{RGN}										{ if (configGetRegione()) { BEGIN(atto); salvaPos(); return REGOLAMENTO_REGIONALE; }
-								  	  	  				else { BEGIN(0); pos+=yyleng; return BREAK; } }
+{REGOLAM}({ST}{RGN})?{CONN}?{S}regione/{CONNREG}	|
+{REGOLAM}({ST}{RGN})?/{CONNREG}						BEGIN(atto); salvaPos(); return REGOLAMENTO_REGIONE;
+{REGOLAM}({ST}{RGN})?{CONN}?{S}regione				|
+{REGOLAM}{ST}{RGN}									{ if (configGetRegione()) { BEGIN(atto); salvaPos(); return REGOLAMENTO_REGIONALE; }
+								  	  	  			else { BEGIN(0); pos+=yyleng; return BREAK; } }
    /* *******************************
     * LEGGI                         *
     * *******************************/
 {LEG}{ST}{COST}									BEGIN(atto); salvaPos(); return LEGGE_COSTITUZIONALE;
 {LEG}({S}{QLEG})?								|
+{LEG}{S}{STATO}									|
 {LEG}({S}della)?{S}{REPUB}						BEGIN(atto); salvaPos(); return LEGGE;
    /* *******************************
     * ATTI COMUNITARI               *
     * *******************************/
-{REGOLAM}{S}{UE_P}								|
+{REGOLAM}{S}{UE_P}								BEGIN(atto); salvaPos(); return REGOLAMENTO_UE;
 {REGOLAM}										BEGIN(atto); salvaPos(); return REGOLAMENTO;
 {DIR}											BEGIN(atto); salvaPos(); return DIRETTIVA;
 {DECI}											BEGIN(atto); salvaPos(); return DECISIONE;
    /* *******************************
-    * STATUTI                       *
+    * STATUTI             			*
     * *******************************/
-{STATU}({ST}{RGN})?{CONN}?{S}regione/{SPAREG}		|
-{STATU}{ST}{RGN}/{CONNREG}							BEGIN(atto); salvaPos(); return STATUTO_REGIONALE;
+presente{SPA}{STATU}												|
+{STATU}{CONN}(associazione|centro|comunit|consorzio|ente|istituto)	|
+{STATU}(tipo|ordinario|speciale)									BEGIN(0); pos+=yyleng; return BREAK;
+{STATU}({ST}{RGN})?{CONN}?{S}regione/{CONNREG}		|
+{STATU}({ST}{RGN})?/{CONNREG}						BEGIN(atto); salvaPos(); return STATUTO_REGIONE;
 {STATU}({ST}{RGN})?{CONN}?{S}regione				|
 {STATU}{ST}{RGN}									{ if (configGetRegione()) { BEGIN(atto); salvaPos(); return STATUTO_REGIONALE; }
 								  	  	  			else { BEGIN(0); pos+=yyleng; return BREAK; } }
+{STATU}												{ if (configGetEmanante()||configGetRegione()) { BEGIN(atto); salvaPos(); return STATUTO; }
+													else { BEGIN(0); pos+=yyleng; return BREAK; } }
+								  	  	  			
    /* ----------------------------- ATTI AMMINISTRATIVI ----------------------------- */
    /* ***********************
     * CNR                   *
@@ -331,6 +342,8 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
    /* *******************************
     * DELIBERE                      *
     * *******************************/
+{PROP}{SPA}{DELIB}								{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return PROPOSTA_DELIBERA; }
+							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
 {DELIB}({ST}del)?{ST}{CONS}{S}{COMUNAL})		|
 {DELIB}{ST}{CONSIL}								|
 {DELIB}											{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DELIBERA; }
@@ -342,9 +355,7 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
 									else { BEGIN(0); pos+=yyleng; return BREAK; } }
 {PROVD}								{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return PROVVEDIMENTO_GEN; }
 									else { BEGIN(0); pos+=yyleng; return BREAK; } }
-{STATU}								{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return STATUTO_GEN; }
-									else { BEGIN(0); pos+=yyleng; return BREAK; } }
-
+									
    /* =================================================== ESTREMI ========================================== */
 
 <*>{SPA}							pos+=yyleng;
@@ -353,10 +364,9 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
 <sudd,atto>{CITAT}					pos+=yyleng;
 
 <atto>{
-{INDAT}								pos+=yyleng;
+{INDAT}								|
 {SPA}e{SPA}							pos+=yyleng;
 {REGIONI}							salvaPos(); yylval=(int)strdup(yytext); return REGIONE;
-regione{SPA}						pos+=yyleng; return PAROLA_REGIONE;
 }
    /* *******************************
     * COMUNITARI                    *
@@ -398,7 +408,8 @@ regione{SPA}						pos+=yyleng; return PAROLA_REGIONE;
 											  yylval=(int)utilConvDataNumerica(yytext); return DATA_GG_MM_AAAA; }
 {N12}{ST}{MESI}{ST}({N4}|{N12})/[^0-9]		{ BEGIN(0); salvaPos(); 
 											  yylval=(int)utilConvDataEstesa(yytext); return DATA_GG_MM_AAAA; }
-{CONN}										pos+=yyleng;
+{CONN}										|
+{INDAT}										pos+=yyleng;
 .											BEGIN(0); unput(*yytext); return BREAK;
 }
    /* *******************************
