@@ -23,7 +23,7 @@
 #include "config.h"
 #include "urn.h"
 
-const char *versione = "1.7";
+const char *versione = "1.8";
 
 extern FILE * yyin;
 extern urn *urns[];
