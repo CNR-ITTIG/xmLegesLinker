@@ -109,7 +109,7 @@ char* configGetRegione(void) {
 /****************************************************** CONFIG SET REGIONE ****/
 /******************************************************************************/
 void configSetRegione(char* regione) {
-	_configRegione = strdup(regione);
+	_configRegione = utilConcatena(2, "regione.", regione);		// strdup(regione);
 }
 
 
