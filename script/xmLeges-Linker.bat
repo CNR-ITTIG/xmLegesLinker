@@ -15,10 +15,12 @@ REM 							directory input
 set d_dinp=\dati\testi
 REM 							directory output
 set d_dout=linker
-REM 							tipo file
-set d_tipo=html
 REM 							creazione directory output
 set d_crdi=si
+REM 							tipo file
+set d_tipo=html
+REM 							ignorare primo riferimento
+set d_rif1=no
 REM 							riferimenti interni
 set d_inte=si
 REM 							regione
@@ -33,7 +35,7 @@ echo ***********************************************************************
 echo *                         xmLeges-Linker.bat                          *
 echo *       Trasforma i riferimenti normativi in link ipertestuali        * 
 echo *                         per gruppi di file                          *
-echo *           ITTIG / CNR - Firenze (ver. 1.2 - 11 lug 2007)            *
+echo *           ITTIG / CNR - Firenze (ver. 1.3 - 08 ott 2007)            *
 echo ***********************************************************************
 REM ------------------------------------------------------------------------ directory programma
 set prpath=
@@ -101,9 +103,15 @@ if %extens%==xml goto tok
 if %extens%==html set extens=htm*
 REM -------------------------------------------------------------------------- rif interni
 set inter=
-if %extens% NEQ xml goto reg
+if %extens% NEQ xml goto fir
 set /P inter=Trasformare anche i riferimenti interni? ^(si^|no^):[%d_inte%]
 if [%inter%]==[] set inter=%d_inte%
+goto reg
+REM -------------------------------------------------------------------------- primo rif.
+:fir
+set rif1=
+set /P rif1=Ignorare primo riferimento trovato ^(intestazione^)? ^(si^|no^):[%d_rif1%]
+if [%rif1%]==[] set rif1=%d_rif1%
 REM -------------------------------------------------------------------------- regione
 :reg
 set regio=
@@ -143,6 +151,9 @@ echo Estensione dei file da elaborare = %extens%
 if %extens%==xml (
 echo Riferimenti interni              = %inter%
 )
+if %extens% NEQ xml (
+echo Ignorare primo riferimento       = %rif1%
+)
 echo Regione sottintesa               = %regio%
 echo Emanante sottinteso              = %eman%
 echo Nomi dei file da elaborare       = %names%.%extens%
@@ -157,6 +168,7 @@ if %sino% NEQ si (
 )
 if %extens% NEQ xml (
 	set param=-i html -m htmlnir
+	if %rif1%==si set param=%param% -1
 	goto rg
 )
 if %extens%==xml set param=-i xml -m dtdnir
@@ -165,7 +177,7 @@ if %inter%==si set param=%param% -r i
 if %regio%==no goto em 
 set param=%param% -R %regio%
 :em
-if %eman%==no' goto run
+if %eman%==no goto run
 set param=%param% -E %eman%
 REM -------------------------------------------------------------------------- esecuzione
 :run
