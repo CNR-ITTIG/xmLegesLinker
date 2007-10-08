@@ -23,7 +23,7 @@
 #include "config.h"
 #include "urn.h"
 
-const char *versione = "1.8";
+const char *versione = "1.9";
 
 extern FILE * yyin;
 extern urn *urns[];
@@ -55,6 +55,7 @@ int main(int argc, char *argv[]) {
 	char *paramNocDopo = "</rif>?>";
 	int paramRifNoc = 0; 	// riferimenti non completi = no
 	int paramRifInt = 0; 	// riferimenti interni = no
+	int param1stRif = 0; 	// ignora primo riferimento = no
 	int markDtdNir = 0;		// marcatura con dtd nir
 
 	tipoUscita paramUscita = doc;
@@ -68,7 +69,7 @@ int main(int argc, char *argv[]) {
 	int fpTmpInc = 1000000;
 
 	opterr = 0;
-	while ((c = getopt (argc, argv, "i:l:b:a:m:o:r:R:E:L:M:f:F:v:hc:g")) != -1)
+	while ((c = getopt (argc, argv, "i:l:b:a:m:o:r:R:E:L:M:f:F:v:h1c:g")) != -1)
 		switch (c) 
 		{
 			case 'i':	// TIPO DI INPUT
@@ -77,6 +78,9 @@ int main(int argc, char *argv[]) {
 				else if (!strcmp(optarg, "xml")) 	paramInput = xml;
 				else help();
 				configSetTipoInput(paramInput);
+				break;
+			case '1':	// IGNORA PRIMO RIFERIMENTO TROVATO
+				param1stRif = 1;
 				break;
 			case 'l':	// TIPO TRATTAMENTO LINK
 				if (!strcmp(optarg, "keep")) 		paramLink = keep;
@@ -183,6 +187,9 @@ int main(int argc, char *argv[]) {
 		if (!markDtdNir || paramInput != xml)	paramRifNoc, paramRifInt = 0;
 	}
 
+	if (paramInput == xml)	// non ignora primo riferimento 
+		param1stRif = 0;
+	
 	//loggerImpostaLivello(none);
 	loggerInfo("-------------------------------------------");
 	loggerInfo("START");
@@ -275,13 +282,13 @@ int main(int argc, char *argv[]) {
 	switch (paramUscita) 
 	{
 		case doc:
-			uscitaInserimento(fpTmpMem, urns, nurns, paramPrima, paramDopo, paramRifNoc, paramNocPrima, paramNocDopo);
+			uscitaInserimento(fpTmpMem, urns, param1stRif, nurns, paramPrima, paramDopo, paramRifNoc, paramNocPrima, paramNocDopo);
 			break;
 		case rif:
-			uscitaListaConTesto(fpTmpMem, urns, nurns, paramRifNoc, paramNocPrima, paramNocDopo);
+			uscitaListaConTesto(fpTmpMem, urns, param1stRif, nurns, paramRifNoc, paramNocPrima, paramNocDopo);
 			break;
 		case list:
-			uscitaLista(urns, nurns);
+			uscitaLista(urns, param1stRif, nurns);
 			break;
 	}
 	loggerInfo("END");
@@ -346,6 +353,7 @@ void help(void)
 	puts("                     - txt:  testo ascii, senza nessuna marcatura");
 	puts("                     - html: testo marcato in HTML");
 	puts("                     - xml:  testo marcato in XML, secondo il DTD-NIR");
+	puts("-1: se input non xml, ignora il primo riferimento trovato (intestazione)");
 	puts("-b <str>: tag di inizio marcatura del riferimento");
 	puts("-a <str>: tag di fine marcatura del riferimento");
 	puts("-m <htmlnir|dtdnir|urn>: marcatura richiesta (impostazione automatica di -a -b):");
@@ -381,6 +389,7 @@ void help(void)
 	puts("");
 	puts("Software sviluppato dall'ITTIG/CNR sugli standard del progetto \"Norme in Rete\".");
 	puts("Copyright: ITTIG/CNR - Firenze - Italy.");
+	puts("Licence: GNU/GPL (http://www.gnu.org/licenses/gpl.html)");
 	printf("Versione %s\n",versione);
 
 	exit(1);
