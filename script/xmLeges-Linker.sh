@@ -12,8 +12,9 @@
 d_path="$HOME/xmLegesLinker"			# path del programma
 d_dinp="$HOME/Testi"					# directory input
 d_dout='linker'							# directory output
-d_tipo='html'							# tipo file
 d_crdi='si'								# creazione directory
+d_tipo='html'							# tipo file
+d_rif1='no'								# ignora primo riferimento
 d_inte='si'								# riferimenti interni
 d_regn='umbria'							# regione
 d_eman='consiglio.nazionale.ricerche'	# emanante
@@ -86,6 +87,13 @@ if [ "$extens" != 'html' -a "$extens" != 'xml' ]; then
 	exit
 fi
 if [ "$extens" == 'html' ]; then extens='htm*'; fi
+# ------------------------------------------------------------------------------ primo rif
+rif1='no'
+if [ $extens != 'xml' ]; then
+	printf "Ignorare primo riferimento trovato? (si|no):[$d_rif1]"
+	read rif1
+	if [ -z "$rif1" ]; then rif1=$d_rif1; fi
+fi
 # ------------------------------------------------------------------------------ rif interni
 inter='no'
 if [ $extens == 'xml' ]; then
@@ -131,6 +139,9 @@ printf "***********************************************************************\
 printf "Cartella di lettura dei file     = $dirinp\n" 
 printf "Cartella di scrittura dei file   = $dirout\n" 
 printf "Estensione dei file da elaborare = $extens\n" 
+if [ $extens != 'xml' ]; then
+printf "Ignorare primo riferimento       = $rif1\n"
+fi
 if [ $extens == 'xml' ]; then
 printf "Riferimenti interni              = $inter\n"
 fi
@@ -150,6 +161,9 @@ param=''
 if [ "$extens" == 'xml' ]; 
 	then param="-i xml -m dtdnir"
 	else param="-i html -m htmlnir"
+fi
+if [ "$rif1" == 'si' ]; then 
+	param="$param -1"
 fi
 if [ "$inter" == 'si' ]; then 
 	param="$param -r i"
