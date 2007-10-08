@@ -12,9 +12,9 @@
 
 #include "urn.h"
 
-void uscitaLista(urn *u[], int n);
-void uscitaListaConTesto(char *buf, urn *u[], int n, int noc, char *nocprima, char *nocdopo );
-void uscitaInserimento(char *buf, urn *u[], int n, char *prima, char *dopo, int noc, char *nocprima, char *nocdopo);
+void uscitaLista(urn *u[], int first, int n);
+void uscitaListaConTesto(char *buf, urn *u[], int first, int n, int noc, char *nocprima, char *nocdopo );
+void uscitaInserimento(char *buf, urn *u[], int first, int n, char *prima, char *dopo, int noc, char *nocprima, char *nocdopo);
 void uscitaMascheraRif(char *buf, urn *u[], int n);
 
 #endif /* __USCITA_H__ */
