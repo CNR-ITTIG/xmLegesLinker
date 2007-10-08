@@ -281,11 +281,11 @@ d{LGS}											BEGIN(atto); salvaPos(); return DECRETO_LEGISLATIVO;
    /* *******************************
     * ATTI REGIONI                  *
     * *******************************/
-{LEG}({ST}{RGN})?{CONN}?{S}regione/{CONNREG}	|
-{LEG}({ST}{RGN})?/{CONNREG}						BEGIN(atto); salvaPos(); return LEGGE_REGIONE;
-{LEG}({ST}{RGN})?{CONN}?{S}regione				|
-{LEG}{ST}{RGN}									{ if (configGetRegione()) { BEGIN(atto); salvaPos(); return LEGGE_REGIONALE; }
-										  		else { BEGIN(0); pos+=yyleng; return BREAK; } }
+(lr|({LEG}({ST}{RGN})?)){CONN}?{S}regione/{CONNREG}	|
+(lr|({LEG}({ST}{RGN})?))/{CONNREG}					BEGIN(atto); salvaPos(); return LEGGE_REGIONE;
+(lr|({LEG}({ST}{RGN})?)){CONN}?{S}regione			|
+(lr|({LEG}{ST}{RGN}))								{ if (configGetRegione()) { BEGIN(atto); salvaPos(); return LEGGE_REGIONALE; }
+										  			else { BEGIN(0); pos+=yyleng; return BREAK; } }
 
 {REGOLAM}({ST}{RGN})?{CONN}?{S}regione/{CONNREG}	|
 {REGOLAM}({ST}{RGN})?/{CONNREG}						BEGIN(atto); salvaPos(); return REGOLAMENTO_REGIONE;
@@ -398,7 +398,7 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * NUMERO PRIMA DI DATA          *
     * *******************************/
 <atto>{NUM}{S}{N}						BEGIN(nume); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_ATTO;
-<nume>[/]{S}/{S}{N}						pos++; yylval=(int)strdup(yytext); return BARRA;
+<nume>[/]{S}/{N}						pos+=yyleng; yylval=(int)strdup(yytext); return BARRA;
 <atto,nume>{N}							BEGIN(nume); salvaPos(); yylval=(int)strdup(yytext); return NUMERO_CARDINALE;
    /* *******************************
     * DATA DOPO NUMERO              *
