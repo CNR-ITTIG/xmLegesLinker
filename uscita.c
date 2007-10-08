@@ -54,10 +54,10 @@ void uscitaMascheraRif(char *buf, urn *u[], int n)
 
 
 
-void uscitaDaFile(char *buf, urn *u[], int n, char *prima, char *dopo, int tutto, int nl, int noc, char* nocprima, char* nocdopo) 
+void uscitaDaFile(char *buf, urn *u[], int first, int n, char *prima, char *dopo, int tutto, int nl, int noc, char* nocprima, char* nocdopo) 
 {
 	register int i = 0;
-	register int j = 0;
+	register int j = first;
 	register int blocco = 0;
 	int spazio = 1;
 	int tag = 0;
@@ -117,25 +117,25 @@ void uscitaOneSpace(int c, int *spazio)
 
 
 
-void uscitaLista(urn *u[], int n) 
+void uscitaLista(urn *u[], int first, int n) 
 {
 	register int i;
 
-	for (i=0; i < n; i++)
+	for (i=first; i < n; i++)
 		printf("%s1 %-60s\t%6ld\t%6ld\n", u[i]->tipo, urnStringa(*(u[i])), u[i]->inizio, u[i]->fine);
 }
 
 
 
-void uscitaListaConTesto(char *buf, urn *u[], int n, int noc, char *nocprima, char *nocdopo ) 
+void uscitaListaConTesto(char *buf, urn *u[], int first, int n, int noc, char *nocprima, char *nocdopo ) 
 {
-	uscitaDaFile(buf, u, n, "__URN__\t", "\n", 0, 0, noc, "?__URN__?\t", "\n");
+	uscitaDaFile(buf, u, first, n, "__URN__\t", "\n", 0, 0, noc, "?__URN__?\t", "\n");
 }
 
 
 
-void uscitaInserimento(char *buf, urn *u[], int n, char *prima, char *dopo, int noc, char *nocprima, char *nocdopo ) 
+void uscitaInserimento(char *buf, urn *u[], int first, int n, char *prima, char *dopo, int noc, char *nocprima, char *nocdopo ) 
 {
-	uscitaDaFile(buf, u, n, prima, dopo, 1, 1, noc, nocprima, nocdopo);
+	uscitaDaFile(buf, u, first, n, prima, dopo, 1, 1, noc, nocprima, nocdopo);
 }
 
