@@ -308,8 +308,8 @@ d{LGS}											BEGIN(atto); salvaNocPos(); return DECRETO_LEGISLATIVO;
    /* *******************************
     * ATTI REGIONI                  *
     * *******************************/
-{LEG}({ST}{RGN})?{CONN}?{S}regione				|
-{LEG}{ST}{RGN}									BEGIN(atto); salvaNocPos(); return LEGGE_REGIONALE;
+(lr|({LEG}({ST}{RGN})?)){CONN}?{S}regione		|
+(lr|({LEG}{ST}{RGN}))							BEGIN(atto); salvaNocPos(); return LEGGE_REGIONALE;
 
 {REGOLAM}({ST}{RGN})?{CONN}?{S}regione			|
 {REGOLAM}{ST}{RGN}								BEGIN(atto); salvaNocPos(); return REGOLAMENTO_REGIONALE;
@@ -414,7 +414,7 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaNocPos(); return DECRETO_D
     * NUMERO PRIMA DI DATA          *
     * *******************************/
 <atto>{NUM}{S}{N}						BEGIN(nume); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO_ATTO;
-<nume>[/]{S}/{S}{N}						nocpos++; noclval=(int)strdup(noctext); return BARRA;
+<nume>[/]{S}/{N}						nocpos+=nocleng; noclval=(int)strdup(noctext); return BARRA;
 <atto,nume>{N}							BEGIN(nume); salvaNocPos(); noclval=(int)strdup(noctext); return NUMERO_CARDINALE;
    /* *******************************
     * DATA DOPO NUMERO              *
