@@ -24,7 +24,7 @@ printf "***********************************************************************\
 printf "*                         xmLeges-Linker.sh                           *\n"
 printf "*       Trasforma i riferimenti normativi in link ipertestuali        *\n"  
 printf "*                      per gruppi di file                             *\n"  
-printf "*        ITTIG / CNR - Firenze (ver. 1.2 - 11 lug 2007)               *\n"
+printf "*        ITTIG / CNR - Firenze (ver. 1.3 - 08 ott 2007)               *\n"
 printf "***********************************************************************\n"
 # ------------------------------------------------------------------------------ directory programma
 printf "Cartella dove risiede il programma xmLeges-Linker:[$d_path]"
