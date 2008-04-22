@@ -433,7 +433,7 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaNocPos(); return DECRETO_D
     * *******************************/
 <INITIAL,sudd,atto>{
 [a-z0-9_]+							|
-[#]+								|
+([#]{1,256})						|
 \.									BEGIN(0); nocpos+=nocleng; if (!salti) { salti = 1; return BREAK; }
 
 .									nocpos++;

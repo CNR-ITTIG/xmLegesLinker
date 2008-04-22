@@ -417,7 +417,7 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * *******************************/
 <INITIAL,sudd,atto>{
 [a-z0-9_]+							|
-[#]+								|
+([#]{1,256})						|
 \.									BEGIN(0); pos+=yyleng; if (!salta) { salta = 1; return BREAK; }
 
 .									pos++;

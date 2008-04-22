@@ -202,7 +202,7 @@ SERG	({SERG_E}|sg{PS})
     * NON SIGNIFICATIVI             *
     * *******************************/
 [a-z0-9_]+						|
-[#]+							|
+([#]{1,256})					|
 \.								BEGIN(0); intpos+=intleng; if (!salto) { salto = 1; return BREAK; }
 
 .								intpos++;
