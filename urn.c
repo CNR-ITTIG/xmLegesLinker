@@ -247,9 +247,9 @@ void urnCheckVirg()
 		if (urns[i]->tipo == 'i')
 		{
 			for ( ; urns[i]->inizio > tabVirPos[k]->fine; k++);	// sincronizza posizione
-			if (urns[i]->inizio > tabVirPos[k]->inizio &&
-			    urns[i]->fine   < tabVirPos[k]->fine)		// interno a virgolette
-				urns[i]->tipo = 'n';					// trasformo in rif. non completo
+			if (urns[i]->inizio >= tabVirPos[k]->inizio &&
+			    urns[i]->fine   <= tabVirPos[k]->fine)			// interno a virgolette
+				urns[i]->tipo = 'n';							// trasformo in rif. non completo
 		}
 	}
 }
