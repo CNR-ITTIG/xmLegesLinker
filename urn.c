@@ -135,7 +135,7 @@ char * urnStringa(urn u)
 
 		if (u.numero) {
 			if (u.autorita && !strcmp(u.autorita,"comunita.europee")) {
-				if (!strncasecmp(u.numero,"n",1) || 
+				if ( /*!strncasecmp(u.numero,"n",1) || */
 				    (u.provvedimento && !strcmp(u.provvedimento,"regolamento")))
 					len = 1;
 				pun = utilCercaCifra(u.numero);
@@ -152,7 +152,7 @@ char * urnStringa(urn u)
 					u.data = strdup(cdc);
 				}
 			}			
-			for (pun = u.numero; pun = strpbrk(pun,"/#%:;,+@*"); *pun = '-');	// converto car. non ammessi
+			for (pun = u.numero; pun = strpbrk(pun," /#%:;,+@*"); *pun = '-');	// converto car. non ammessi
 
 			for (i = 0; u.numero[i] == '0'; i++);		// tolgo zeri iniziali
 			if (i) strcpy(u.numero, u.numero + 1);
