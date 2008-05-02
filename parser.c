@@ -23,7 +23,7 @@
 #include "config.h"
 #include "urn.h"
 
-const char *versione = "1.9a";
+const char *versione = "1.10";
 
 extern FILE * yyin;
 extern urn *urns[];
@@ -236,7 +236,7 @@ int main(int argc, char *argv[]) {
 	
 	utilPercNumBlockSet(0);
 	utilPercBlockSetLen(fpPreSize);
-
+	
 // riconoscimento dei riferimenti esterni completi
 
 	rifInit();
