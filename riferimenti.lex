@@ -44,6 +44,8 @@ void salvaPos()
 UE	(cee|c\.e\.e\.|u\.?e\.?|unione{S}europea|comunita{S}economica{S}europea|e\.c\.c\.)
 ROM	([ivxlcdm]+)	con 'l' riconosce "il capo"
 NUM	(numero|num{PS}|n\.?o?)
+CONTAB	(contabilit(\xc3\xa0|\&agrave;|\xe0))
+CONTAB	(contabilit((a\'?)|(\xe0)|(\xc3\xa0)))
 
 ------------------------------------------------ */
 %}
@@ -60,7 +62,9 @@ N	([0-9]+)
 N12	([0-9]{1,2})
 N4	([0-9]{4})
 
-CONN	({S}del(la|lo|l)?{SPA})
+CONN1	({S}del(la|lo|l)?{SPA})
+CONN2	({S}d(i|ei|gli){SPA})
+CONN	({CONN1}|{CONN2})
 INDAT	({S}in{SPA}data)
 CITAT	((del(la|lo)?{SPA})?(gi.'?{SPA})?(cit(\.|at[ao])|medesim[ao]|stess[ao]|predett[ao]))
 
@@ -100,8 +104,9 @@ COMMIS	(commissione|comm{PS})
 
 PROP	(proposta{SPA}di)
 DELIB	(delibera(zione)?|delib{PS})
-COMUNAL	(comunale|com({PS})
+COMUNAL	(comunale|com{PS}|municipale)
 CONSIL	(consiliare)
+GIUNTA	(giunta)
 
 PRORD	(provvedimento{S}ordinamentale)
 CNR		(({CONS}{S}nazionale{S}(delle)?{S}ricerche)|(c{PS}?n{PS}?r{PS}?))
@@ -109,6 +114,11 @@ DIRET	(direttore|dir{PS})
 GENER	(generale|gen{PS})
 DIRGEN	({DIRET}{S}{GENER}|d{PS}g{PS}|dg)
 COMSTR	(commissario({S}straordinario)?)
+
+EDILIZ	(edilizi(o|a))
+POLIZ	((polizia({S}municipale)?)|(p\.?m\.?))
+QUARTI	((consiglio?({S}di)?{S}quartiere)|(c\.?d\.?q\.?))
+CONTAB	(contabilit..)
 
 LIB		(libro)
 PAR		(parte|pt{PS}|p{PS})
@@ -126,8 +136,10 @@ PERIO	(periodo|per{PS})
 UE			(cee?|euratom|ceea|ceca)
 UE_P		(\(?{UE}(({SVB}{UE}){1,2})?\)?)
 UEDEN		(dell[ae']{S}(unione|comunit.'?){S}europe[ea])
-UENUM_AN	(({N12}|{N4})\/{N}\/{UE}(({SVB}{UE}){1,2})?)
-UENUM_NA	({N}\/({N12}|{N4})\/{UE}(({SVB}{UE}){1,2})?)
+EUROP		(europe[ao])
+UENUM_AN	(({N12}|{N4})\/{N}(\/|{S}){UE}(({SVB}{UE}){1,2})?)
+UENUM_NA	({N}\/({N12}|{N4})(\/|{S}){UE}(({SVB}{UE}){1,2})?)
+UENUM		({NUM}?{S}({UENUM_NA}|{UENUM_AN}))	
 
 REGIONI1	(abruzzo|basilicata|calabria|campania|emilia{ST}romagna|lazio|liguria|lombardia|marche|molise)
 REGIONI2	(piemonte|puglia|sardegna|sicilia(na)?|toscana|umbria|veneto|v(\.|alle){S}d{S}'{S}aosta)
@@ -300,12 +312,37 @@ d{LGS}											BEGIN(atto); salvaPos(); return DECRETO_LEGISLATIVO;
 {LEG}{S}{STATO}									|
 {LEG}({S}della)?{S}{REPUB}						BEGIN(atto); salvaPos(); return LEGGE;
    /* *******************************
+    * REGOLAMENTI COMUNALI          *
+    * *******************************/
+{REGOLAM}{CONN}?{S}{EDILIZ}						{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return REGOLAMENTO_EDILIZIO; }
+							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
+{REGOLAM}{CONN}?{S}{POLIZ}						{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return REGOLAMENTO_POLIZIA; }
+							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
+{REGOLAM}{CONN}?{S}{QUARTI}						{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return REGOLAMENTO_QUARTIERE; }
+							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
+{REGOLAM}{CONN}?{S}{CONS}{S}{COMUNAL}			{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return REGOLAMENTO_CONSIGLIO; }
+							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
+{REGOLAM}{CONN}?{S}{CONTAB}						{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return REGOLAMENTO_CONTABILITA; }
+							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
+   /* *******************************
     * ATTI COMUNITARI               *
     * *******************************/
-{REGOLAM}{S}{UE_P}								BEGIN(atto); salvaPos(); return REGOLAMENTO_UE;
-{REGOLAM}										BEGIN(atto); salvaPos(); return REGOLAMENTO;
-{DIR}											BEGIN(atto); salvaPos(); return DIRETTIVA;
-{DECI}											BEGIN(atto); salvaPos(); return DECISIONE;
+{REGOLAM}{S}{UE_P}								|
+{REGOLAM}{S}({UEDEN}|{EUROP})					|
+{REGOLAM}/{S}{UENUM}							BEGIN(atto); salvaPos(); return REGOLAMENTO_UE;
+{REGOLAM}										{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return REGOLAMENTO; }
+							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
+{DIR}{S}({UEDEN}|{EUROP})								|
+{DIR}/{CONN}({PARLAM}|{CONS}|{COMMIS})({S}{EUROP})?		|
+{DIR}/{S}{UENUM}										BEGIN(atto); salvaPos(); return DIRETTIVA_UE;
+{DIR}													{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DIRETTIVA; }
+							  							else { BEGIN(0); pos+=yyleng; return BREAK; } }
+
+{DECI}{S}({UEDEN}|{EUROP})								|
+{DECI}/{CONN}({PARLAM}|{CONS}|{COMMIS})({S}{EUROP})?	|
+{DECI}/{S}{UENUM}										BEGIN(atto); salvaPos(); return DECISIONE_UE;
+{DECI}													{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DECISIONE; }
+							  							else { BEGIN(0); pos+=yyleng; return BREAK; } }
    /* *******************************
     * STATUTI             			*
     * *******************************/
@@ -344,8 +381,13 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * *******************************/
 {PROP}{SPA}{DELIB}								{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return PROPOSTA_DELIBERA; }
 							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
-{DELIB}({ST}del)?{ST}{CONS}{S}{COMUNAL})		|
-{DELIB}{ST}{CONSIL}								|
+{DELIB}({PS}(di|del))?{PS}{CONS}({S}{COMUNAL})?	|
+{DELIB}{PS}{CONSIL}								|
+{DELIB}({PS}(di|del))?{PS}c{PS}c{PS}			{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DELIBERA_CONSIGLIO_COMUNALE; }
+							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
+{DELIB}({PS}(di|della))?{PS}{GIUNTA}({S}{COMUNAL})?		|
+{DELIB}({PS}(di|della))?{PS}g{PS}m{PS}					{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DELIBERA_GIUNTA_COMUNALE; }
+							  							else { BEGIN(0); pos+=yyleng; return BREAK; } }
 {DELIB}											{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DELIBERA; }
 							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
    /* *******************************
@@ -372,11 +414,11 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * COMUNITARI                    *
     * *******************************/
 <atto>{
-{NUM}?{S}({UENUM_NA}|{UENUM_AN})	salvaPos(); yylval=(int)strdup(yytext); return UE_NUM;
+{UENUM}								salvaPos(); yylval=(int)strdup(yytext); return UE_NUM;
 {UEDEN}								salvaPos(); return UE_DEN;
-{PARLAM}							salvaPos(); return PARLAMENTO;
-{CONS}								salvaPos(); return CONSIGLIO;
-{COMMIS}							salvaPos(); return COMMISSIONE;
+{PARLAM}({S}{EUROP})?				salvaPos(); return PARLAMENTO;
+{CONS}({S}{EUROP})?					salvaPos(); return CONSIGLIO;
+{COMMIS}({S}{EUROP})?				salvaPos(); return COMMISSIONE;
 }
    /* *******************************
     * DATA PRIMA DI NUMERO          *
@@ -392,11 +434,15 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * *******************************/
 <data>{
 {NUM}?{S}{N}({S}\/{S}{N}){0,2}				BEGIN(0); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_ESTESO;
+{NUM}?{S}{N}{S}\/c\/{S}{N}					BEGIN(0); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_CONSIGLIO;
+{NUM}?{S}{N}{S}\/g\/{S}{N}					BEGIN(0); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_GIUNTA;
 .											BEGIN(0); unput(*yytext); return BREAK;
 }
    /* *******************************
     * NUMERO PRIMA DI DATA          *
     * *******************************/
+<atto>{NUM}?{S}{N}{S}\/c\/{S}{N}		BEGIN(nume); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_CONSIGLIO;
+<atto>{NUM}?{S}{N}{S}\/g\/{S}{N}		BEGIN(nume); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_GIUNTA;
 <atto>{NUM}{S}{N}						BEGIN(nume); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_ATTO;
 <nume>[/]{S}/{N}						pos+=yyleng; yylval=(int)strdup(yytext); return BARRA;
 <atto,nume>{N}							BEGIN(nume); salvaPos(); yylval=(int)strdup(yytext); return NUMERO_CARDINALE;
@@ -417,7 +463,7 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * *******************************/
 <INITIAL,sudd,atto>{
 [a-z0-9_]+							|
-([#]{1,256})						|
+([#]{1,256})							|
 \.									BEGIN(0); pos+=yyleng; if (!salta) { salta = 1; return BREAK; }
 
 .									pos++;
