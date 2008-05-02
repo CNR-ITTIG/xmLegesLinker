@@ -59,7 +59,9 @@ N	([0-9]+)
 N12	([0-9]{1,2})
 N4	([0-9]{4})
 
-CONN	({S}del(la|lo|l)?{SPA})
+CONN1	({S}del(la|lo|l)?{SPA})
+CONN2	({S}d(i|ei|gli){SPA})
+CONN	({CONN1}|{CONN2})
 INDAT	({S}in{SPA}data)
 CITAT	((del(la|lo)?{SPA})?(gi.'?{SPA})?(cit(\.|at[ao])|medesim[ao]|stess[ao]|predett[ao]))
 
@@ -90,7 +92,7 @@ ODZ_E	(ordinanza|ord{PS})
 ODZ_1	(o{PS})
 ODZ		({ODZ_E}|{ODZ_1})
 
-REGOLAM	(regolamento|reg{PS}|r\.)
+REGOLAM	(regol({PS}|amento)|reg{PS}|r\.)
 DIR		(direttiva|dir{PS}){SPA}
 DECI	(decisione|dec{PS})
 
@@ -110,8 +112,9 @@ COMMIS	(commissione|comm{PS})
 
 PROP	(proposta{SPA}di)
 DELIB	(delibera(zione)?|delib{PS})
-COMUNAL	(comunale|com({PS})
+COMUNAL	(comunale|com{PS}|municipale)
 CONSIL	(consiliare)
+GIUNTA	(giunta)
 
 PRORD	(provvedimento{S}ordinamentale)
 CNR		(({CONS}{S}nazionale{S}(delle)?{S}ricerche)|(c{PS}?n{PS}?r{PS}?))
@@ -119,6 +122,11 @@ DIRET	(direttore|dir{PS})
 GENER	(generale|gen{PS})
 DIRGEN	({DIRET}{S}{GENER}|d{PS}g{PS}|dg)
 COMSTR	(commissario({S}straordinario)?)
+
+EDILIZ	(edilizi(o|a))
+POLIZ	((polizia({S}municipale)?)|(p\.?m\.?))
+QUARTI	((consiglio?({S}di)?{S}quartiere)|(c\.?d\.?q\.?))
+CONTAB	(contabilit..)
 
 LIB		(libro)
 PAR		(parte|pt{PS}|p{PS})
@@ -136,8 +144,10 @@ PERIO	(periodo|per{PS})
 UE			(cee?|euratom|ceea|ceca)
 UE_P		(\(?{UE}(({SVB}{UE}){1,2})?\)?)
 UEDEN		(dell[ae']{S}(unione|comunit.'?){S}europe[ea])
+EUROP		(europe[ao])
 UENUM_AN	(({N12}|{N4})\/{N}\/{UE}(({SVB}{UE}){1,2})?)
 UENUM_NA	({N}\/({N12}|{N4})\/{UE}(({SVB}{UE}){1,2})?)
+UENUM		({NUM}?{S}({UENUM_NA}|{UENUM_AN}))	
 
 REGIONI1	(abruzzo|basilicata|calabria|campania|emilia{ST}romagna|lazio|liguria|lombardia|marche|molise)
 REGIONI2	(piemonte|puglia|sardegna|sicilia(na)?|toscana|umbria|veneto|v(\.|alle){S}d{S}'{S}aosta)
@@ -322,12 +332,30 @@ d{LGS}											BEGIN(atto); salvaNocPos(); return DECRETO_LEGISLATIVO;
 {LEG}({S}della)?{S}{REPUB}						BEGIN(atto); salvaNocPos(); return LEGGE;
 {DISEG}{S}{LEG}									BEGIN(atto); salvaNocPos(); return DISEGNO_LEGGE;
    /* *******************************
+    * REGOLAMENTI COMUNALI          *
+    * *******************************/
+{REGOLAM}{CONN}?{S}{EDILIZ}						{ BEGIN(atto); salvaNocPos(); return REGOLAMENTO_EDILIZIO; }
+{REGOLAM}{CONN}?{S}{POLIZ}						{ BEGIN(atto); salvaNocPos(); return REGOLAMENTO_POLIZIA; }
+{REGOLAM}{CONN}?{S}{QUARTI}						{ BEGIN(atto); salvaNocPos(); return REGOLAMENTO_QUARTIERE; }
+{REGOLAM}{CONN}?{S}{CONS}{S}{COMUNAL}			{ BEGIN(atto); salvaNocPos(); return REGOLAMENTO_CONSIGLIO; }
+{REGOLAM}{CONN}?{S}{CONTAB}						{ BEGIN(atto); salvaNocPos(); return REGOLAMENTO_CONTABILITA; }
+   /* *******************************
     * ATTI COMUNITARI               *
     * *******************************/
-{REGOLAM}{S}{UE_P}								BEGIN(atto); salvaNocPos(); return REGOLAMENTO_UE;
-{REGOLAM}										BEGIN(atto); salvaNocPos(); return REGOLAMENTO;
-{DIR}											BEGIN(atto); salvaNocPos(); return DIRETTIVA;
-{DECI}											BEGIN(atto); salvaNocPos(); return DECISIONE;
+{REGOLAM}{S}{UE_P}								|
+{REGOLAM}{S}({UEDEN}|{EUROP})					|
+{REGOLAM}/{S}{UENUM}							BEGIN(atto); salvaNocPos(); return REGOLAMENTO_UE;
+{REGOLAM}										{ BEGIN(atto); salvaNocPos(); return REGOLAMENTO; }
+
+{DIR}{S}({UEDEN}|{EUROP})								|
+{DIR}/{CONN}({PARLAM}|{CONS}|{COMMIS})({S}{EUROP})?		|
+{DIR}/{S}{UENUM}										BEGIN(atto); salvaNocPos(); return DIRETTIVA_UE;
+{DIR}													{ BEGIN(atto); salvaNocPos(); return DIRETTIVA; }
+
+{DECI}{S}({UEDEN}|{EUROP})								|
+{DECI}/{CONN}({PARLAM}|{CONS}|{COMMIS})({S}{EUROP})?	|
+{DECI}/{S}{UENUM}										BEGIN(atto); salvaNocPos(); return DECISIONE_UE;
+{DECI}													{ BEGIN(atto); salvaNocPos(); return DECISIONE; }
    /* *******************************
     * STATUTI                       *
     * *******************************/
@@ -357,10 +385,12 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaNocPos(); return DECRETO_D
     * DELIBERE                      *
     * *******************************/
 {PROP}{SPA}{DELIB}								BEGIN(atto); salvaNocPos(); return PROPOSTA_DELIBERA;
-{DELIB}({ST}del)?{ST}{COMIN}					BEGIN(atto); salvaNocPos(); return DELIBERA_CONSIGLIO_MINISTRI;
-{DELIB}({ST}del)?{ST}{CONS}						BEGIN(atto); salvaNocPos(); return DELIBERA_CONSIGLIO;
-{DELIB}({ST}del)?{ST}{CONS}{S}{COMUNAL})		|
+{DELIB}({ST}(di|del))?{ST}{COMIN}				BEGIN(atto); salvaNocPos(); return DELIBERA_CONSIGLIO_MINISTRI;
+{DELIB}({PS}(di|del))?{PS}c{PS}c{PS}			|
 {DELIB}{ST}{CONSIL}								|
+{DELIB}({ST}(di|del))?{ST}{CONS}({S}{COMUNAL})?	BEGIN(atto); salvaNocPos(); return DELIBERA_CONSIGLIO;
+{DELIB}({PS}(di|della))?{PS}{GIUNTA}({S}{COMUNAL})?		|
+{DELIB}({PS}(di|della))?{PS}g{PS}m{PS}					{ BEGIN(atto); salvaNocPos(); return DELIBERA_GIUNTA; }
 {DELIB}											BEGIN(atto); salvaNocPos(); return DELIBERA;
    /* *******************************
     * GENERICI                      *
@@ -388,11 +418,11 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaNocPos(); return DECRETO_D
     * COMUNITARI                    *
     * *******************************/
 <atto>{
-{NUM}?{S}({UENUM_NA}|{UENUM_AN})	salvaNocPos(); noclval=(int)strdup(noctext); return UE_NUM;
+{UENUM}								salvaNocPos(); noclval=(int)strdup(noctext); return UE_NUM;
 {UEDEN}								salvaNocPos(); return UE_DEN;
-{PARLAM}							salvaNocPos(); return PARLAMENTO;
-{CONS}								salvaNocPos(); return CONSIGLIO;
-{COMMIS}							salvaNocPos(); return COMMISSIONE;
+{PARLAM}({S}{EUROP})?				salvaNocPos(); return PARLAMENTO;
+{CONS}({S}{EUROP})?					salvaNocPos(); return CONSIGLIO;
+{COMMIS}({S}{EUROP})?				salvaNocPos(); return COMMISSIONE;
 }
    /* *******************************
     * DATA PRIMA DI NUMERO          *
@@ -408,11 +438,15 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaNocPos(); return DECRETO_D
     * *******************************/
 <data>{
 {NUM}?{S}{N}({S}\/{S}{N}){0,2}				BEGIN(0); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO_ESTESO;
+{NUM}?{S}{N}{S}\/c\/{S}{N}					BEGIN(0); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO_CONSIGLIO;
+{NUM}?{S}{N}{S}\/g\/{S}{N}					BEGIN(0); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO_GIUNTA;
 .											BEGIN(0); unput(*noctext); return BREAK;
 }
    /* *******************************
     * NUMERO PRIMA DI DATA          *
     * *******************************/
+<atto>{NUM}?{S}{N}{S}\/c\/{S}{N}		BEGIN(nume); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO_CONSIGLIO;
+<atto>{NUM}?{S}{N}{S}\/g\/{S}{N}		BEGIN(nume); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO_GIUNTA;
 <atto>{NUM}{S}{N}						BEGIN(nume); salvaNocPos(); noclval=(int)strdup(utilConvCardinale(noctext,0)); return NUMERO_ATTO;
 <nume>[/]{S}/{N}						nocpos+=nocleng; noclval=(int)strdup(noctext); return BARRA;
 <atto,nume>{N}							BEGIN(nume); salvaNocPos(); noclval=(int)strdup(noctext); return NUMERO_CARDINALE;

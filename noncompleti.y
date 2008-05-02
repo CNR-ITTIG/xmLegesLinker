@@ -88,7 +88,7 @@ int nocwrap() {
 %token DECRETO_LEGISLATIVO
 %token DISEGNO_LEGGE
 
-%token DELIBERA_CONSIGLIO_COMUNALE
+%token DELIBERA_GIUNTA
 %token DELIBERA
 %token PROPOSTA_DELIBERA
 
@@ -110,13 +110,21 @@ int nocwrap() {
 %token STATUTO_REGIONALE
 %token REGIONE
 
+%token REGOLAMENTO_EDILIZIO
+%token REGOLAMENTO_POLIZIA
+%token REGOLAMENTO_QUARTIERE
+%token REGOLAMENTO_CONSIGLIO
+%token REGOLAMENTO_CONTABILITA
+
 %token UE_NUM
 %token UE_DEN
 %token PARLAMENTO
 %token CONSIGLIO
 %token COMMISSIONE
 %token DIRETTIVA
+%token DIRETTIVA_UE
 %token DECISIONE
+%token DECISIONE_UE
 %token REGOLAMENTO
 %token REGOLAMENTO_UE
 
@@ -125,6 +133,8 @@ int nocwrap() {
 %token NUMERO_ATTO
 %token NUMERO_CARDINALE
 %token NUMERO_ESTESO
+%token NUMERO_CONSIGLIO
+%token NUMERO_GIUNTA
 %token BARRA
 
 %token BREAK
@@ -158,6 +168,7 @@ riferimento:
 	| comunitario
 	| statuto
 	| amministrativo
+	| regolamento
 
 /*	| giurisprudenziale
 */	;
@@ -191,7 +202,6 @@ normativoTipo:
 										urnTmp.autorita = strdup(configGetEmanante()); }
 
 /*	| leggeProvinciale					{ $autorita = "provincia.$provincia"; }
-	| regolamento
 */	;
 
 /******************************************************************************/
@@ -223,7 +233,6 @@ attiGenerici:
 	| DIRETTIVA				{ urnTmp.provvedimento = strdup("direttiva"); }
 	| ORDINANZA_GEN			{ urnTmp.provvedimento = strdup("ordinanza"); }
 	| PROVVEDIMENTO_GEN		{ urnTmp.provvedimento = strdup("provvedimento"); }
-	| REGOLAMENTO			{ urnTmp.provvedimento = strdup("regolamento"); }
 	;
 
 /******************************************************************************/
@@ -373,8 +382,8 @@ comunitarioOrgano:
 /******************************************************************************/
 
 comunitarioDirettiva:
-	DIRETTIVA comunitarioEstremi comunitarioEmanante comunitarioDenominazione
-	| DIRETTIVA comunitarioEmanante comunitarioDenominazione comunitarioEstremi
+	DIRETTIVA_UE comunitarioEstremi comunitarioEmanante comunitarioDenominazione
+	| DIRETTIVA_UE comunitarioEmanante comunitarioDenominazione comunitarioEstremi
 	;
 
 comunitarioDenominazione:
@@ -392,8 +401,8 @@ comunitarioEstremi:
 /******************************************************************************/
 
 comunitarioDecisione:
-	DECISIONE comunitarioEstremi comunitarioEmanante comunitarioDenominazione
-	| DECISIONE comunitarioEmanante comunitarioDenominazione comunitarioEstremi
+	DECISIONE_UE comunitarioEstremi comunitarioEmanante comunitarioDenominazione
+	| DECISIONE_UE comunitarioEmanante comunitarioDenominazione comunitarioEstremi
 	;
 
 /******************************************************************************/
@@ -402,15 +411,41 @@ comunitarioDecisione:
 
 comunitarioRegolamento:
 	REGOLAMENTO_UE comunitarioDenominazione comunitarioEstremi
-	| REGOLAMENTO comunitarioDenominazione comunitarioNumero
+/*	| REGOLAMENTO comunitarioDenominazione comunitarioNumero */
 	;
 	
+/******************************************************************************/
+/************************************************************* REGOLAMENTO ****/
+/******************************************************************************/
+
+regolamento:
+/*	suddivisioneOpz regolamentoTipo */
+	suddivisioneOpz regolamentoTipo estremi			{ if (configGetEmanante()) { urnTmp.autorita = strdup(configGetEmanante());
+													utilEstrai(urnTmp.autorita,strdup(configGetEmanante()),"",";"); } } // solo 1.o livello
+	| suddivisioneOpz regolamentoGen estremi		{ if (configGetEmanante()) { urnTmp.autorita = strdup(configGetEmanante());
+													utilEstrai(urnTmp.autorita,strdup(configGetEmanante()),"",";"); } } // solo 1.o livello
+	;
+
+regolamentoTipo:
+	REGOLAMENTO_EDILIZIO				{ urnTmp.provvedimento = strdup("regolamento;edilizia"); }
+	| REGOLAMENTO_POLIZIA				{ urnTmp.provvedimento = strdup("regolamento;polizia.municipale"); }
+	| REGOLAMENTO_QUARTIERE				{ urnTmp.provvedimento = strdup("regolamento;consigli.quartiere"); }
+	| REGOLAMENTO_CONSIGLIO				{ urnTmp.provvedimento = strdup("regolamento;consiglio.comunale"); }
+	| REGOLAMENTO_CONTABILITA			{ urnTmp.provvedimento = strdup("regolamento;contabilita"); }
+	;
+
+regolamentoGen:
+	REGOLAMENTO							{ urnTmp.provvedimento = strdup("regolamento"); }
+	;
+
+
 /******************************************************************************/
 /********************************************************** AMMINISTRATIVO ****/
 /******************************************************************************/
 
 amministrativo:
 	suddivisioneOpz amministrativoTipo estremi
+	| suddivisioneOpz amministrativoTipo estremiDelibere
 	;
 
 amministrativoTipo:
@@ -419,8 +454,12 @@ amministrativoTipo:
 										urnTmp.autorita = strdup("consiglio.nazionale.ricerche"); }
 	| PROVVEDIMENTO_ORDINAMENTALE		{ urnTmp.provvedimento = strdup("provvedimento"); 
 										if (configGetEmanante()) urnTmp.autorita = strdup(configGetEmanante()); }
-	| DELIBERA_CONSIGLIO_COMUNALE		{ urnTmp.provvedimento = strdup("delibera"); 
+	| DELIBERA_CONSIGLIO				{ urnTmp.provvedimento = strdup("delibera"); 
 										if (configGetEmanante()) urnTmp.autorita = strdup(configGetEmanante()); }
+	| DELIBERA_GIUNTA					{ urnTmp.provvedimento = strdup("delibera"); 
+										if (configGetEmanante()) { urnTmp.autorita = malloc(sizeof(char) * (strlen(configGetEmanante()) + 12)); // dim. x consiglio
+										utilEstrai(urnTmp.autorita,strdup(configGetEmanante()),"",";");
+										strcat(urnTmp.autorita, ";giunta"); } }
 	| DELIBERA							{ urnTmp.provvedimento = strdup("delibera"); 
 										if (configGetEmanante()) urnTmp.autorita = strdup(configGetEmanante()); }
 	| PROPOSTA_DELIBERA					{ urnTmp.provvedimento = strdup("proposta.delibera"); 
@@ -571,6 +610,21 @@ estremiNumero:
 
 estremiAnno:
 	NUMERO_CARDINALE						{ urnTmp.data = (char *) $1; }
+	;
+
+/******************************************************************************/
+/********************************************************* ESTREMI DELIBERE ***/
+/******************************************************************************/
+
+estremiDelibere:
+	data estremiNumeroDelibere
+	| estremiNumeroDelibere data
+	| estremiNumeroDelibere
+	;
+
+estremiNumeroDelibere:
+	NUMERO_CONSIGLIO						{ urnTmp.numero = (char *) $1; }
+	| NUMERO_GIUNTA							{ urnTmp.numero = (char *) $1; }
 	;
 
 /******************************************************************************/
