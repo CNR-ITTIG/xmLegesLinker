@@ -31,6 +31,9 @@ int nInfIds = 0;
 vir *tabVirPos[10000];
 int nVirPos = 0;
 
+mod *tabModPos[10000];
+int nModPos = 0;
+
 /******************************************************************************/
 /**************************************************************** IDS CLOSE ****/
 /******************************************************************************/
@@ -55,6 +58,12 @@ void urnCloseIds()
 	tabVirPos[nVirPos] = tbv;
 	tabVirPos[nVirPos] -> inizio = LONG_MAX;
 	tabVirPos[nVirPos] -> fine = LONG_MAX;
+
+	mod *tbm = (mod *) malloc (sizeof(mod));
+	tabModPos[nModPos] = tbm;
+	tabModPos[nModPos] -> inizio = LONG_MAX;
+	tabModPos[nModPos] -> fine = LONG_MAX;
+
 }
 
 /******************************************************************************/
@@ -87,7 +96,14 @@ void urnShift(urn *u)
 	u->com = NULL;
 	u->let = NULL;
 	u->num = NULL;
+	u->pun = NULL;
 	u->prg = NULL;
+	u->artord = NULL;
+	u->comord = NULL;
+	u->letord = NULL;
+	u->numord = NULL;
+	u->punord = NULL;
+	u->perord = NULL;
 }
 
 void urnFree(urn *u) 
@@ -102,11 +118,18 @@ void urnFree(urn *u)
 	free(u->tit);
 	free(u->cap);
 	free(u->sez);
-	free(u->art);
-	free(u->com);
-	free(u->let);
-	free(u->num);
+	if (u->art) 	{ free(u->art); u->artord=NULL; }
+	if (u->com) 	{ free(u->com); u->comord=NULL; }
+	if (u->let) 	{ free(u->let); u->letord=NULL; }
+	if (u->num) 	{ free(u->num); u->numord=NULL; }
+	if (u->pun) 	{ free(u->pun); u->punord=NULL; }
 	free(u->prg);
+	free(u->artord);
+	free(u->comord);
+	free(u->letord);
+	free(u->numord);
+	free(u->punord);
+	free(u->perord);
 }
 
 
@@ -201,9 +224,10 @@ char * urnPartizioni(urn u) {
 		if (u.art) ret = utilConcatena(4, ret, "art", u.art, "-");
 		if (u.tipo == 'e')
 		{
-			if (u.art && u.com) 		ret = utilConcatena(4, ret, "com", u.com, "-");
+			if (u.art && u.com) 			ret = utilConcatena(4, ret, "com", u.com, "-");
 			if (u.art && u.com && u.let)	ret = utilConcatena(4, ret, "let", u.let, "-");
 			if (u.art && u.com && u.num)	ret = utilConcatena(4, ret, "num", u.num, "-"); 
+			if (u.art && u.com && u.pun)	ret = utilConcatena(4, ret, "pun", u.pun, "-"); 
 //			if (u.art && u.com && u.prg)	ret = utilConcatena(4, ret, "prg", u.prg, "-");
 		}
 		else
@@ -211,6 +235,7 @@ char * urnPartizioni(urn u) {
 			if (u.com) ret = utilConcatena(4, ret, "com", u.com, "-");
 			if (u.let) ret = utilConcatena(4, ret, "let", u.let, "-");
 			if (u.num) ret = utilConcatena(4, ret, "num", u.num, "-");
+			if (u.pun) ret = utilConcatena(4, ret, "pun", u.pun, "-");
 //  			if (u.prg) ret = utilConcatena(4, ret, "prg", u.prg, "-");
 		}
 		len = strlen(ret);
@@ -218,6 +243,30 @@ char * urnPartizioni(urn u) {
 			ret[len-1] = 0;
 		
 //	}
+
+	return ret;
+}
+
+
+/******************************************************************************/
+/********************************************************** URN FRAMMENTO ****/
+/******************************************************************************/
+char * urnFrammento(urn u) {
+	char * ret;
+
+	ret = utilConcatena(1, "");
+
+	if (u.artord) 					ret = utilConcatena(4, ret, "articolo:ord=", u.artord, ";");
+	if (u.comord) 					ret = utilConcatena(4, ret, "comma:ord=", u.comord, ";");
+		else if (!u.art && u.com) 		ret = utilConcatena(4, ret, "comma:num=", u.com, ";");
+	if (u.letord) 					ret = utilConcatena(4, ret, "lettera:ord=", u.letord, ";");
+		else if (!(u.art && u.com) && u.let)	ret = utilConcatena(4, ret, "lettera:num=", u.let, ";");
+	if (u.numord) 					ret = utilConcatena(4, ret, "numero:ord=", u.numord, ";");
+		else if (!(u.art && u.com) && u.num)	ret = utilConcatena(4, ret, "numero:num=", u.num, ";"); 
+	if (u.punord) 					ret = utilConcatena(4, ret, "punto:ord=", u.punord, ";");
+		else if (!(u.art && u.com) && u.pun)	ret = utilConcatena(4, ret, "punto:num=", u.pun, ";"); 
+	if (u.perord)					ret = utilConcatena(4, ret, "periodo:ord=", u.perord, ";"); 
+//	if (u.art && u.com && u.prg)	ret = utilConcatena(4, ret, "prg", u.prg, "-");
 
 	return ret;
 }
@@ -250,6 +299,33 @@ void urnCheckVirg()
 			if (urns[i]->inizio >= tabVirPos[k]->inizio &&
 			    urns[i]->fine   <= tabVirPos[k]->fine)			// interno a virgolette
 				urns[i]->tipo = 'n';							// trasformo in rif. non completo
+		}
+		else if (urns[i]->tipo == 'e')
+		{
+			for ( ; urns[i]->inizio > tabVirPos[k]->fine; k++);	// sincronizza posizione
+			if (urns[i]->inizio >= tabVirPos[k]->inizio &&
+			    urns[i]->fine   <= tabVirPos[k]->fine)			// interno a virgolette
+				urns[i]->mod = 'n';								// trasformo in rif. non completo
+		}
+	}
+}
+
+
+/******************************************************************************/
+/********************************************************** URN CHECK MOD ****/
+/******************************************************************************/
+void urnCheckMod() 
+{
+	register int i=0, k=0;
+
+	for (i=0; i<nurns; i++)
+	{
+		if (urns[i]->tipo == 'e')
+		{
+			for ( ; urns[i]->inizio > tabModPos[k]->fine; k++);	// sincronizza posizione
+			if (urns[i]->inizio >= tabModPos[k]->inizio &&
+			    urns[i]->fine   <= tabModPos[k]->fine)			// interno a mod
+				urns[i]->mod = 's';								// dentro mod
 		}
 	}
 }

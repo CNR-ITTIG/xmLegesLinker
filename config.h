@@ -28,4 +28,7 @@ void configSetRegione(char* regione);
 char *configGetEmanante(void);
 void configSetEmanante(char* emanante);
 
+int configGetRifFra(void);
+void configSetRifFra(int frammento);
+
 #endif

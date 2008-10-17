@@ -25,6 +25,8 @@ extern int nInfIds;
 extern ids *tabInfIds[];
 extern int nVirPos;
 extern vir *tabVirPos[];
+extern int nModPos;
+extern mod *tabModPos[];
 
 int long idpos=0;
 
@@ -61,6 +63,21 @@ void salvaVirPos(int ini)
 	}
 }
 
+void salvaModPos(int ini)
+{
+	if (ini)
+	{
+		mod *tab = (mod *) malloc (sizeof(mod));
+		tabModPos[nModPos] = tab;
+		tabModPos[nModPos] -> inizio = idpos;
+	}
+	else
+	{
+		tabModPos[nModPos] -> fine = idpos;
+		nModPos++;
+	}
+}
+
 
 %}
 
@@ -68,17 +85,25 @@ PARSUP		(libro|parte|titolo|capo|sezione)
 PARINF		(articolo|comma|el|en|ep)
 SP			([[:space:]])
 
-%x	supstart supend infstart infend virgol
+%x	supstart supend infstart infend virgol mod
 
 %%
    /* ***********************
+    * TAG MOD               *
+    * ***********************/
+(<mod[^>]*>)				BEGIN(mod); idpos+=idsleng; salvaModPos(1);
+
+<mod>[a-z0-9]+				|
+<mod>.|\n					idpos+=idsleng;
+<mod>(<\/mod>)				BEGIN(0); salvaModPos(0); idpos+=idsleng;
+   /* ***********************
     * TAG VIRGOLETTE        *
     * ***********************/
-(<virgolette[^>]*>)			BEGIN(virgol); idpos+=idsleng; salvaVirPos(1);
+<mod>(<virgolette[^>]*>)	BEGIN(virgol); idpos+=idsleng; salvaVirPos(1);
 
 <virgol>[a-z0-9]+			|
 <virgol>.|\n				idpos+=idsleng;
-<virgol>(<\/virgolette>)	BEGIN(0); salvaVirPos(0); idpos+=idsleng;
+<virgol>(<\/virgolette>)	BEGIN(mod); salvaVirPos(0); idpos+=idsleng;
    /* *******************************
     * PARTIZIONI SUPERIORI ARTICOLO *
     * *******************************/

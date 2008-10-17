@@ -28,6 +28,7 @@ urn urnTmp;
 void rifInit() 
 {
 	urnTmp.tipo = 'e';	/* riferimenti esterni */
+	urnTmp.mod  = 'n';	/* no mod */
 }
 
 
@@ -61,6 +62,17 @@ int yywrap() {
 %token NUMERO
 %token PARAGRAFO
 %token PERIODO
+
+%token ARTICULT
+%token COMMAULT
+%token LETTULT
+%token NUMULT
+%token PUNTULT
+
+%token ARTICORD
+%token COMMAORD
+%token NUMORD
+%token PUNTORD
 
 %token DECRETO_GEN
 %token PROVVEDIMENTO_GEN
@@ -493,6 +505,7 @@ suddivisionePartizioneInfArt:
 	| suddivisioneCapoverso
 	| suddivisioneLettera
 	| suddivisioneNumero
+	| suddivisionePunto
 	| suddivisionePeriodo
 	| suddivisioneParagrafo
 	;
@@ -518,12 +531,24 @@ suddivisioneSezione:
 	;
 
 suddivisioneArticolo:
-	ARTICOLO suddivisionePartizioneInfArtOpz	{ urnTmp.art = (char *)$1; }
-	| suddivisionePartizioneInfArtOpz ARTICOLO	{ urnTmp.art = (char *)$2; }
+	Articolo suddivisionePartizioneInfArtOpz
+	| suddivisionePartizioneInfArtOpz Articolo
+	;
+
+Articolo:
+	ARTICOLO									{ urnTmp.art = (char *)$1; }
+	| ARTICORD 									{ urnTmp.art = (char *)$1; urnTmp.artord = (char *)$1; }
+	| ARTICULT 									{ urnTmp.artord = (char *)$1; }
 	;
 
 suddivisioneComma:
-	COMMA suddivisionePartizioneInfArtOpz		{ urnTmp.com = (char *)$1; }
+	Comma suddivisionePartizioneInfArtOpz
+	;
+
+Comma:
+	COMMA									{ urnTmp.com = (char *)$1; }
+	| COMMAORD 								{ urnTmp.com = (char *)$1; urnTmp.comord = (char *)$1; }
+	| COMMAULT 								{ urnTmp.comord = (char *)$1; }
 	;
 
 suddivisioneCapoverso:
@@ -531,11 +556,31 @@ suddivisioneCapoverso:
 	;
 
 suddivisioneLettera:
-	LETTERA suddivisionePartizioneInfArtOpz		{ urnTmp.let = (char *)$1; }
+	Lettera suddivisionePartizioneInfArtOpz
+	;
+
+Lettera:
+	LETTERA									{ urnTmp.let = (char *)$1; }
+	| LETTULT 								{ urnTmp.letord = (char *)$1; }
 	;
 
 suddivisioneNumero:
-	NUMERO suddivisionePartizioneInfArtOpz		{ urnTmp.num = (char *)$1; }
+	Numero suddivisionePartizioneInfArtOpz
+	;
+
+Numero:
+	NUMERO									{ urnTmp.num = (char *)$1; }
+	| NUMORD 								{ urnTmp.num = (char *)$1; urnTmp.numord = (char *)$1; }
+	| NUMULT 								{ urnTmp.numord = (char *)$1; }
+	;
+
+suddivisionePunto:
+	Punto suddivisionePartizioneInfArtOpz
+	;
+
+Punto:
+	PUNTORD									{ urnTmp.pun = (char *)$1; urnTmp.punord = (char *)$1; }
+	| PUNTULT 								{ urnTmp.punord = (char *)$1; }
 	;
 
 suddivisioneParagrafo:
@@ -543,7 +588,7 @@ suddivisioneParagrafo:
 	;
 
 suddivisionePeriodo:
-	PERIODO suddivisionePartizioneInfArtOpz
+	PERIODO suddivisionePartizioneInfArtOpz		{ urnTmp.perord = (char *)$1; }
 	;
 
 /******************************************************************************/

@@ -21,11 +21,17 @@ typedef struct _vir {
 	long fine;
 } vir;
 
+typedef struct _mod {
+	long inizio;
+	long fine;
+} mod;
+
 typedef struct _urn {
 	long inizio;
 	long fine;
 	long ultimo;
 	char tipo;
+	char mod;
 	char *autorita;
 	char *provvedimento;
 	char *data;
@@ -40,12 +46,20 @@ typedef struct _urn {
 	char *com;
 	char *let;
 	char *num;
+	char *pun;
 	char *prg;
+	char *artord;
+	char *comord;
+	char *letord;
+	char *numord;
+	char *punord;
+	char *perord;
 } urn;
 
 void urnVisualizza(urn *u);
 void urnCompletaId();
 void urnCheckVirg();
+void urnCheckMod();
 int  urnCercaId(ids *tab[], int nt, char str[]);
 void urnCloseIds();
 
@@ -54,6 +68,7 @@ void urnShift(urn *u);
 void urnFree(urn *u);
 char * urnStringa(urn u);
 char * urnPartizioni(urn u);
+char * urnFrammento(urn u);
 void urnMemorizza(urn u);
 
 #endif /* __URN_H__ */

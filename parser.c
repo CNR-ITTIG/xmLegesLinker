@@ -23,7 +23,7 @@
 #include "config.h"
 #include "urn.h"
 
-const char *versione = "1.10";
+const char *versione = "1.11";
 
 extern FILE * yyin;
 extern urn *urns[];
@@ -55,6 +55,7 @@ int main(int argc, char *argv[]) {
 	char *paramNocDopo = "</rif>?>";
 	int paramRifNoc = 0; 	// riferimenti non completi = no
 	int paramRifInt = 0; 	// riferimenti interni = no
+	int paramRifFra = 0; 	// commento frammento = no
 	int param1stRif = 0; 	// ignora primo riferimento = no
 	int markDtdNir = 0;		// marcatura con dtd nir
 
@@ -116,6 +117,7 @@ int main(int argc, char *argv[]) {
 			case 'r':	// TIPO RIFERIMENTI: non completi, interni
 				if (strchr(optarg, 'n')) 	paramRifNoc = 1;
 				if (strchr(optarg, 'i')) 	paramRifInt = 1;
+				if (strchr(optarg, 'f')) 	paramRifFra = 1;
 				break;
 			case 'o':	// TIPO DI USCITA
 				if (!strcmp(optarg, "doc")) 		paramUscita = doc;
@@ -180,12 +182,17 @@ int main(int argc, char *argv[]) {
 				abort ();
 		}
 
-	// congruità parametri rif. non completi e interni
+	// congruità parametri rif. non completi, interni e frammento
 
 	if (paramUscita == doc)
 	{
 		if (!markDtdNir || paramInput != xml)	paramRifNoc, paramRifInt = 0;
 	}
+	if (paramRifFra == 1)
+	{
+		if (!markDtdNir || paramInput == html || !(paramUscita == doc))	paramRifFra = 0;
+	}
+	configSetRifFra(paramRifFra);				
 
 	if (paramInput == xml)	// non ignora primo riferimento 
 		param1stRif = 0;
@@ -275,6 +282,7 @@ int main(int argc, char *argv[]) {
 
 	if (paramRifInt)
 	{
+		urnCheckMod();
 		urnCheckVirg();
 		urnCompletaId();
 	}
@@ -375,6 +383,7 @@ void help(void)
 	puts("-r <ni>: tipo di riferimenti:");
 	puts("                     - n:  segnalazione dei riferimenti non completi (solo dtdnir)");
 	puts("                     - i:  marcatura dei riferimenti interni (solo dtdnir)");
+	puts("                     - f:  inserisce in commento partizioni non convertite in ID del frammento");
 	puts("-R <regione>:   regione di default se non specificata (per L.R. o REGOL.REG.)");
 	puts("-M <ministero>: [non attivato] ministero di default se non specificato (per D.M. o O.M.)");
 	puts("-E <emanante>:  istituzione emanante di default se non specificata (altri atti)");

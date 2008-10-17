@@ -68,7 +68,7 @@ void uscitaDaFile(char *buf, urn *u[], int first, int n, char *prima, char *dopo
 			if (i == u[j]->inizio) 
 			{
 				if (u[j]->tipo != 'n') 			printf("%s", uscitaCalcolaStringa(prima, u[j]));
-				if (u[j]->tipo == 'n' && noc) printf("%s", uscitaCalcolaStringa(nocprima, u[j]));
+				if (u[j]->tipo == 'n' && noc) 	printf("%s", uscitaCalcolaStringa(nocprima, u[j]));
 				blocco = 1;
 			}
 		if (blocco || tutto) 
@@ -91,7 +91,9 @@ void uscitaDaFile(char *buf, urn *u[], int first, int n, char *prima, char *dopo
 			if (i == u[j]->fine-1) 
 			{
 				if (u[j]->tipo != 'n') 			printf("%s", uscitaCalcolaStringa(dopo, u[j]));
-				if (u[j]->tipo == 'n' && noc) printf("%s", uscitaCalcolaStringa(nocdopo, u[j]));
+				if (u[j]->tipo == 'n' && noc) 	printf("%s", uscitaCalcolaStringa(nocdopo, u[j]));
+				if (u[j]->mod == 's' && u[j]->tipo == 'e' && configGetRifFra() && strlen(urnFrammento(*(u[j]))))	
+												printf("%s", utilConcatena(3,"<!-- frammento ", urnFrammento(*(u[j]))," -->"));
 				j++;
 				blocco = 0;
 			}

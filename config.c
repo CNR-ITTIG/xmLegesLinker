@@ -19,6 +19,7 @@
 tipoInput _configTipoInput = txt;
 char* _configRegione = NULL;
 char* _configEmanante = NULL;
+int   _configFrammento = 0;
 
 
 /******************************************************************************/
@@ -128,4 +129,20 @@ char* configGetEmanante(void) {
 /******************************************************************************/
 void configSetEmanante(char* emanante) {
 	_configEmanante = strdup(emanante);
+}
+
+
+/******************************************************************************/
+/***************************************************** CONFIG GET FRAMMENTO ****/
+/******************************************************************************/
+int configGetRifFra(void) {
+	return _configFrammento;
+}
+
+
+/******************************************************************************/
+/***************************************************** CONFIG SET FRAMMENTO ****/
+/******************************************************************************/
+void configSetRifFra(int frammento) {
+	_configFrammento = frammento;
 }

@@ -62,6 +62,9 @@ N	([0-9]+)
 N12	([0-9]{1,2})
 N4	([0-9]{4})
 
+ULTIMO	((pen|terz)?ultim(a|o))
+UNICO 	(unico)
+
 CONN1	({S}del(la|lo|l)?{SPA})
 CONN2	({S}d(i|ei|gli){SPA})
 CONN	({CONN1}|{CONN2})
@@ -132,6 +135,7 @@ LET		(lettera|lett?{PS})
 NUM		(numero|num{PS}|nr?{PS}|n\.o)
 PARA	(paragrafo|par{PS})
 PERIO	(periodo|per{PS})
+PUNTO	(punto|trattino)
 
 UE			(cee?|euratom|ceea|ceca)
 UE_P		(\(?{UE}(({SVB}{UE}){1,2})?\)?)
@@ -217,27 +221,44 @@ ROM	([ivx]+)
 {ART}{S}{N}{PTO}?{LAT}?/{NOAN}	|
 {N}{PTO}?{S}{ART}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return ARTICOLO;
 {ART}{S}{ORD}{LAT}?				|
-{ORD}{S}{ART}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return ARTICOLO;
+{ORD}{S}{ART}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return ARTICORD;
+{ART}{S}{ULTIMO}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,2)); return ARTICULT;
+{ULTIMO}{S}{ART}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,1)); return ARTICULT;
+{ART}{S}{UNICO}					|
+{UNICO}{S}{ART}					BEGIN(sudd); salvaPos(); yylval=(int)strdup("1"); return ARTICOLO;
    /* ***********************
     * COMMA                 *
     * ***********************/
-{COM}{S}{ROM}{LAT}?/{NOAN}		BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoDopo(yytext)); return COMMA;
-{ROM}{S}{COM}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoPrima(yytext)); return COMMA;
+{COM}{S}{ROM}{LAT}?/{NOAN}		BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoDopo(yytext)); return COMMAORD;
+{ROM}{S}{COM}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvRomanoPrima(yytext)); return COMMAORD;
 {COM}{S}{N}{PTO}?{LAT}?/{NOAN}	|
 {N}{PTO}?{S}{COM}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return COMMA;
 {COM}{S}{ORD}{LAT}?				|
-{ORD}{S}{COM}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return COMMA;
+{ORD}{S}{COM}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return COMMAORD;
+{COM}{S}{ULTIMO}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,2)); return COMMAULT;
+{ULTIMO}{S}{COM}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,1)); return COMMAULT;
    /* ***********************
     * LETTERA               *
     * ***********************/
 {LET}{S}[a-z][a-z]?{LAT}?\)?	BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilCalcLettera(yytext)); return LETTERA;
+{LET}{S}{ULTIMO}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,2)); return LETTULT;
+{ULTIMO}{S}{LET}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,1)); return LETTULT;
    /* ***********************
     * NUMERO                *
     * ***********************/
 <INITIAL,sudd>{NUM}{S}{N}{PTO}?{LAT}?		BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO;
 {N}{PTO}{S}{NUM}{SPA}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO;
 {NUM}{S}{ORD}{LAT}?					|
-{ORD}{S}{NUM}						BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return NUMERO;
+{ORD}{S}{NUM}						BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return NUMORD;
+{NUM}{S}{ULTIMO}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,2)); return NUMULT;
+{ULTIMO}{S}{NUM}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,1)); return NUMULT;
+   /* ***********************
+    * PUNTO                 *
+    * ***********************/
+{ORD}{S}{PUNTO}					|
+{PUNTO}{S}{ORD}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return PUNTORD;
+{ULTIMO}{S}{PUNTO}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,1)); return PUNTULT;
+{PUNTO}{S}{ULTIMO}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,2)); return PUNTULT;
    /* ***********************
     * PARAGRAFO             *
     * ***********************/
@@ -246,7 +267,10 @@ ROM	([ivx]+)
    /* ***********************
     * PERIODO               *
     * ***********************/
-{ORD}{S}{PERIO}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(yytext); return PERIODO;
+{ORD}{S}{PERIO}					|
+{PERIO}{S}{ORD}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,0)); return PERIODO;
+{ULTIMO}{S}{PERIO}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,1)); return PERIODO;
+{PERIO}{S}{ULTIMO}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilEstraiUltimo(yytext,2)); return PERIODO;
 
    /* =================================================== ATTI ========================================== */
 
