@@ -197,10 +197,12 @@ ROM	([ivx]+)
    /* ***********************
     * CAPOVERSO             *
     * ***********************/
-{CAPOV}{S}{N}{PTO}?{LAT}?/{NOAN}	|
-{N}{PTO}?{S}{CAPOV}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,1)); return CAPOVERSO;
-{CAPOV}{S}{ORD}{LAT}?				|
-{ORD}{LAT}?{S}{CAPOV}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,1)); return CAPOVERSO;
+   /*
+   {CAPOV}{S}{N}{PTO}?{LAT}?/{NOAN}	|
+   {N}{PTO}?{S}{CAPOV}					BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,1)); return CAPOVERSO;
+   {CAPOV}{S}{ORD}{LAT}?				|
+   {ORD}{LAT}?{S}{CAPOV}				BEGIN(sudd); salvaPos(); yylval=(int)strdup(utilConvOrdinale(yytext,1)); return CAPOVERSO;
+   */
    /* ***********************
     * CAPO                  *
     * ***********************/
