@@ -23,7 +23,7 @@
 #include "config.h"
 #include "urn.h"
 
-const char *versione = "1.11";
+const char *versione = "1.12";
 
 extern FILE * yyin;
 extern urn *urns[];
@@ -49,10 +49,12 @@ int main(int argc, char *argv[]) {
 
 	tipoInput paramInput = txt;
 	trattamentoLink paramLink = keep;
-	char *paramPrima = "<a href=\"http://www.nir.it/cgi-bin/N2Ln?__URN__\">";
+	char *paramPrima = "<a href=\"http://www.normattiva.it/uri-res/N2Ls?__URN__\">";
 	char *paramDopo = "</a>";
 	char *paramNocPrima = "<?rif <rif xlink:href=\"__URN__\">";
 	char *paramNocDopo = "</rif>?>";
+	char *paramSeparExt = "#";
+	char *paramSeparInt = "#";
 	int paramRifNoc = 0; 	// riferimenti non completi = no
 	int paramRifInt = 0; 	// riferimenti interni = no
 	int paramRifFra = 0; 	// commento frammento = no
@@ -70,7 +72,7 @@ int main(int argc, char *argv[]) {
 	int fpTmpInc = 1000000;
 
 	opterr = 0;
-	while ((c = getopt (argc, argv, "i:l:b:a:m:o:r:R:E:L:M:f:F:v:h1c:g")) != -1)
+	while ((c = getopt (argc, argv, "i:l:b:a:S:s:m:o:r:R:E:L:M:f:F:v:h1c:g")) != -1)
 		switch (c) 
 		{
 			case 'i':	// TIPO DI INPUT
@@ -83,7 +85,7 @@ int main(int argc, char *argv[]) {
 			case '1':	// IGNORA PRIMO RIFERIMENTO TROVATO
 				param1stRif = 1;
 				break;
-			case 'l':	// TIPO TRATTAMENTO LINK
+			case 'l':	// TIPO TRATTAMENTO LINK ESISTENTI
 				if (!strcmp(optarg, "keep")) 		paramLink = keep;
 				else if (!strcmp(optarg, "replace")) 	paramLink = replace;
 				else help();
@@ -97,6 +99,18 @@ int main(int argc, char *argv[]) {
 				paramDopo = strdup(optarg);
 				if (!paramDopo)
 					help();
+				break;
+			case 'S':	// CARAT. SEPARATORE DI PARTIZIONE NEI RIF. ESTERNI
+				paramSeparExt = strdup(optarg);
+				if (!paramSeparExt || strlen(paramSeparExt)>1)
+					help();
+				configSetSeparExt(paramSeparExt);
+				break;
+			case 's':	// CARAT. SEPARATORE DI PARTIZIONE NEI RIF. INTERNI
+				paramSeparInt = strdup(optarg);
+				if (!paramSeparInt || strlen(paramSeparInt)>1)
+					help();
+				configSetSeparInt(paramSeparInt);
 				break;
 			case 'm':	// IMPOSTAZIONE AUTOMATICA DI -b E -a
 				if (!strcmp(optarg, "htmlnir")) ;
@@ -364,9 +378,11 @@ void help(void)
 	puts("-1: se input non xml, ignora il primo riferimento trovato (intestazione)");
 	puts("-b <str>: tag di inizio marcatura del riferimento");
 	puts("-a <str>: tag di fine marcatura del riferimento");
+	puts("-S <chr>: carattere separatore di partizione nella URN dei riferimenti esterni (default = '#')");
+	puts("-s <chr>: carattere prefissato alla partizione nei riferimenti interni (default = '#')");
 	puts("-m <htmlnir|dtdnir|urn>: marcatura richiesta (impostazione automatica di -a -b):");
-	puts("                     - htmlnir: tag HTML per accedere al risolutore di Norme in Rete:");
-	puts("                         -b \"<a href=\"http://www.nir.it/cgi-bin/N2Ln?__URN__\">\"");
+	puts("                     - htmlnir: tag HTML per accedere al risolutore di NormAttiva:");
+	puts("                         -b \"<a href=\"http://www.normattiva.it/uri-res/N2Ls?__URN__\">\"");
 	puts("                         -a \"</a>\"");
 	puts("                     - dtdnir:  tag XML conformi alla DTD-NIR:");
 	puts("                         -b \"<rif xlink:href=\"__URN__\">\"");

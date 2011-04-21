@@ -153,7 +153,7 @@ char * urnStringa(urn u)
 			utilSostStr(u.autorita, " ", ".");
 		}
 
-		if (u.autorita) 	ret = utilConcatena(5, "urn:nir:", u.autorita, ":", u.provvedimento, ":");
+		if (u.autorita) ret = utilConcatena(5, "urn:nir:", u.autorita, ":", u.provvedimento, ":");
 		else 			ret = utilConcatena(3, "urn:nir::", u.provvedimento, ":");
 
 		if (u.numero) {
@@ -197,8 +197,12 @@ char * urnStringa(urn u)
 	}
 
 	strcpy(cdc, urnPartizioni(u));
-	if (cdc[0])
-		ret = utilConcatena(3, ret, "#", cdc);
+	if (cdc[0]) {
+		if (ret[0])
+			ret = utilConcatena(3, ret, configGetSeparExt(), cdc);
+		else
+			ret = utilConcatena(3, ret, configGetSeparInt(), cdc);
+	}
 	utilStringToLower(ret);
 	return ret;
 
@@ -236,7 +240,7 @@ char * urnPartizioni(urn u) {
 			if (u.let) ret = utilConcatena(4, ret, "let", u.let, "-");
 			if (u.num) ret = utilConcatena(4, ret, "num", u.num, "-");
 			if (u.pun) ret = utilConcatena(4, ret, "pun", u.pun, "-");
-//  			if (u.prg) ret = utilConcatena(4, ret, "prg", u.prg, "-");
+// 			if (u.prg) ret = utilConcatena(4, ret, "prg", u.prg, "-");
 		}
 		len = strlen(ret);
 		if (ret[len-1] == '-')

@@ -31,4 +31,10 @@ void configSetEmanante(char* emanante);
 int configGetRifFra(void);
 void configSetRifFra(int frammento);
 
+char *configGetSeparExt(void);
+void configSetSeparExt(char* separatore);
+
+char *configGetSeparInt(void);
+void configSetSeparInt(char* separatore);
+
 #endif
