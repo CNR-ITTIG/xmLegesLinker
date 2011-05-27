@@ -49,30 +49,37 @@ int main(int argc, char *argv[]) {
 
 	tipoInput paramInput = txt;
 	trattamentoLink paramLink = keep;
-	char *paramPrima = "<a href=\"http://www.normattiva.it/uri-res/N2Ls?__URN__\">";
+	char *paramPrima = NULL;
 	char *paramDopo = "</a>";
 	char *paramNocPrima = "<?rif <rif xlink:href=\"__URN__\">";
 	char *paramNocDopo = "</rif>?>";
 	char *paramSeparExt = "#";
 	char *paramSeparInt = "#";
+	int paramSeparExtInd = 0;
 	int paramRifNoc = 0; 	// riferimenti non completi = no
 	int paramRifInt = 0; 	// riferimenti interni = no
 	int paramRifFra = 0; 	// commento frammento = no
 	int param1stRif = 0; 	// ignora primo riferimento = no
 	int markDtdNir = 0;		// marcatura con dtd nir
+	int markHtmRis = 0;		// marcatura html con risolutore
 
 	tipoUscita paramUscita = doc;
+	char *paramUrlRis = NULL;
 	char *paramRegione = NULL;
 	char *paramMinistero = NULL;
 	char *paramEmanante = NULL;
 	char *paramFile = NULL;
 	char *paramFileOut = NULL;
-//	FILE *fileout = stdout;
+
+	paramPrima = (char*) malloc(sizeof(char) * 512);
+	strcpy(paramPrima,"<a href=\"http://www.normattiva.it/uri-res/N2Ls?__URN__\">");
+
+	//	FILE *fileout = stdout;
 
 	int fpTmpInc = 1000000;
 
 	opterr = 0;
-	while ((c = getopt (argc, argv, "i:l:b:a:S:s:m:o:r:R:E:L:M:f:F:v:h1c:g")) != -1)
+	while ((c = getopt (argc, argv, "i:l:b:a:u:S:s:m:o:r:R:E:L:M:f:F:v:h1c:g")) != -1)
 		switch (c) 
 		{
 			case 'i':	// TIPO DI INPUT
@@ -104,6 +111,7 @@ int main(int argc, char *argv[]) {
 				paramSeparExt = strdup(optarg);
 				if (!paramSeparExt || strlen(paramSeparExt)>1)
 					help();
+				paramSeparExtInd = 1;
 				configSetSeparExt(paramSeparExt);
 				break;
 			case 's':	// CARAT. SEPARATORE DI PARTIZIONE NEI RIF. INTERNI
@@ -112,8 +120,13 @@ int main(int argc, char *argv[]) {
 					help();
 				configSetSeparInt(paramSeparInt);
 				break;
+			case 'u':	// URL DEL RISOLUTORE
+				paramUrlRis = (char *)strdup(optarg);
+				break;
 			case 'm':	// IMPOSTAZIONE AUTOMATICA DI -b E -a
 				if (!strcmp(optarg, "htmlnir")) ;
+				else if (!strcmp(optarg, "htmlris"))
+					markHtmRis = 1;
 				else if (!strcmp(optarg, "dtdnir")) 
 				{
 					paramPrima = "<rif xlink:href=\"__URN__\">";
@@ -196,6 +209,15 @@ int main(int argc, char *argv[]) {
 				abort ();
 		}
 
+	// impostazione -b con uscita html e risolutore
+
+	if (markHtmRis && paramUrlRis)
+	{
+		strcpy (paramPrima, "<a href=\"");
+		strcat (paramPrima, paramUrlRis);
+		strcat (paramPrima, "__URN__\">");
+	}
+
 	// congruità parametri rif. non completi, interni e frammento
 
 	if (paramUscita == doc)
@@ -211,6 +233,11 @@ int main(int argc, char *argv[]) {
 	if (paramInput == xml)	// non ignora primo riferimento 
 		param1stRif = 0;
 	
+	// impostazione separatore rif. esterni se non indicato
+
+		if (!paramSeparExtInd && !markDtdNir)	// uscita html
+			configSetSeparExt("~");
+
 	//loggerImpostaLivello(none);
 	loggerInfo("-------------------------------------------");
 	loggerInfo("START");
@@ -378,8 +405,9 @@ void help(void)
 	puts("-1: se input non xml, ignora il primo riferimento trovato (intestazione)");
 	puts("-b <str>: tag di inizio marcatura del riferimento");
 	puts("-a <str>: tag di fine marcatura del riferimento");
-	puts("-S <chr>: carattere separatore di partizione nella URN dei riferimenti esterni (default = '#')");
+	puts("-S <chr>: carattere separatore di partizione nella URN dei rif. esterni (def: html='~'; xml='#')");
 	puts("-s <chr>: carattere prefissato alla partizione nei riferimenti interni (default = '#')");
+	puts("-u <url>: indirizzo del risolutore (def. Normattiva: http://www.normattiva.it/uri-res/N2Ls?");
 	puts("-m <htmlnir|dtdnir|urn>: marcatura richiesta (impostazione automatica di -a -b):");
 	puts("                     - htmlnir: tag HTML per accedere al risolutore di NormAttiva:");
 	puts("                         -b \"<a href=\"http://www.normattiva.it/uri-res/N2Ls?__URN__\">\"");
