@@ -375,7 +375,7 @@ d{LGS}											BEGIN(atto); salvaNocPos(); return DECRETO_LEGISLATIVO;
     * CNR                   *
     * ***********************/
 {DECRETO}({S}del)?{S}{PRES}({S}del)?{S}{CNR}	|
-d[.]?{ST}p[.]?{ST}{CNR}						BEGIN(atto); salvaNocPos(); return DECRETO_PRESIDENTE_CNR;
+d[.]?{ST}p[.]?{ST}{CNR}							BEGIN(atto); salvaNocPos(); return DECRETO_PRESIDENTE_CNR;
 
 {DECRETO}({S}del)?{S}{DIRGEN}({S}del)?{S}{CNR}	|
 d[.]?{ST}d[.]?g[.]?{ST}{CNR}					BEGIN(atto); salvaNocPos(); return DECRETO_DIRETTORE_GENERALE_CNR;
@@ -455,7 +455,7 @@ d[.]?{ST}d[.]?g[.]?{ST}{CNR}					BEGIN(atto); salvaNocPos(); return DECRETO_DIRE
     * *******************************/
 <data>{
 {NUM}?{S}{N}{S}[/]{S}r/{NOAN}			BEGIN(0); salvaNocPos(); noclval=(int)strdup(utilCercaCifra(noctext)); return NUMERO_BARRA_ERRE;
-{NUM}{S}{N}{S}[-]{S}{N}				BEGIN(0); salvaNocPos(); noclval=(int)strdup(utilCercaCifra(noctext)); return NUMERO_CON_TRATTINO;
+{NUM}{S}{N}{S}[-]{S}{N}					BEGIN(0); salvaNocPos(); noclval=(int)strdup(utilCercaCifra(noctext)); return NUMERO_CON_TRATTINO;
 {NUM}?{S}{N}{S}[/]{S}{N}{S}{CODSET}		BEGIN(0); salvaNocPos(); noclval=(int)strdup(utilCercaCifra(noctext)); return NUMERO_DETERMINA;
 {NUM}?{S}{N}({S}[/]{S}{N}){0,2}			BEGIN(0); salvaNocPos(); noclval=(int)strdup(utilCercaCifra(noctext)); return NUMERO_ESTESO;
 {NUM}?{S}{N}{S}[/]c[/]{S}{N}			BEGIN(0); salvaNocPos(); noclval=(int)strdup(utilCercaCifra(noctext)); return NUMERO_CONSIGLIO;
