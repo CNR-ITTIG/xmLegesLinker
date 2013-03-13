@@ -27,6 +27,8 @@ typedef int YYSTYPE;
 extern YYSTYPE yylval;
 */
 
+int swdebug = 0;	// sw per print di debug
+
 int salta = 1;
 
 void salvaPos() 
@@ -104,12 +106,17 @@ CONS	(consiglio|cons{PS}|c{PS})
 MINIS	(ministri|min{PS}|m{PS})
 COMIN	({CONS}({ST}dei)?{ST}{MINIS})
 COMMIS	(commissione|comm{PS})
+CONSREG	({CONS}{S}(regionale|r{PS})|cr)
 
 PROP	(proposta{SPA}di)
 DELIB	(delibera(zione)?|delib{PS})
+UFFPRES	(ufficio{SPA}(di{SPA})?presidenza)
 COMUNAL	(comunale|com{PS}|municipale)
 CONSIL	(consiliare)
 GIUNTA	(giunta)
+
+DETERM	(determina(zione)?|det{PS}|dd|d{PS}d{PS})
+CODSET	(db{N4}|a[0-9]{5})
 
 PRORD	(provvedimento{S}ordinamentale)
 CNR		(({CONS}{S}nazionale{S}(delle)?{S}ricerche)|(c{PS}?n{PS}?r{PS}?))
@@ -141,8 +148,8 @@ UE			(cee?|euratom|ceea|ceca)
 UE_P		(\(?{UE}(({SVB}{UE}){1,2})?\)?)
 UEDEN		(dell[ae']{S}(unione|comunit.'?){S}europe[ea])
 EUROP		(europe[ao])
-UENUM_AN	(({N12}|{N4})\/{N}(\/|{S}){UE}(({SVB}{UE}){1,2})?)
-UENUM_NA	({N}\/({N12}|{N4})(\/|{S}){UE}(({SVB}{UE}){1,2})?)
+UENUM_AN	(({N12}|{N4})[/]{N}([/]|{S}){UE}(({SVB}{UE}){1,2})?)
+UENUM_NA	({N}[/]({N12}|{N4})([/]|{S}){UE}(({SVB}{UE}){1,2})?)
 UENUM		({NUM}?{S}({UENUM_NA}|{UENUM_AN}))	
 
 REGIONI1	(abruzzo|basilicata|calabria|campania|emilia{ST}romagna|lazio|liguria|lombardia|marche|molise)
@@ -403,8 +410,13 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
 {PRORD}(({S}del)?{S}{COMSTR})?					{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return PROVVEDIMENTO_ORDINAMENTALE; }
 							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
    /* *******************************
-    * DELIBERE                      *
+    * DELIBERAZIONI                 *
     * *******************************/
+{DELIB}{SPA}(dell)?{S}{UFFPRES}({SPA}(del)?{S}{CONSREG})?	{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DELIBERA_UFF_PRESIDENZA; }
+							  								else { BEGIN(0); pos+=yyleng; return BREAK; } }
+{DELIB}{SPA}(del)?{S}{CONSREG}					|
+(dcr|d{PS}c{PS}r{PS})							{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DELIBERA_CONS_REGIONALE; }
+							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
 {PROP}{SPA}{DELIB}								{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return PROPOSTA_DELIBERA; }
 							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
 {DELIB}({PS}(di|del))?{PS}{CONS}({S}{COMUNAL})?	|
@@ -415,6 +427,11 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
 {DELIB}({PS}(di|della))?{PS}g{PS}m{PS}					{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DELIBERA_GIUNTA_COMUNALE; }
 							  							else { BEGIN(0); pos+=yyleng; return BREAK; } }
 {DELIB}											{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DELIBERA; }
+							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
+   /* *******************************
+    * DETERMINAZIONI                *
+    * *******************************/
+{DETERM}										{ if (configGetEmanante()) { BEGIN(atto); salvaPos(); return DETERMINA; }
 							  					else { BEGIN(0); pos+=yyleng; return BREAK; } }
    /* *******************************
     * GENERICI                      *
@@ -450,25 +467,31 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * DATA PRIMA DI NUMERO          *
     * *******************************/
 <atto>{
-{N12}[/\.-]{N12}[/\.-]({N4}|{N12})/[^0-9]	{ BEGIN(data); salvaPos(); 
-											  yylval=(int)utilConvDataNumerica(yytext); return DATA_GG_MM_AAAA; }
-{N12}{ST}{MESI}{ST}({N4}|{N12})/[^0-9]		{ BEGIN(data); salvaPos(); 
-											  yylval=(int)utilConvDataEstesa(yytext); return DATA_GG_MM_AAAA; }
+{N12}[/\.\-]{N12}[/\.\-]({N4}|{N12})/{NOAN}		{ BEGIN(data); salvaPos(); 
+											  	yylval=(int)utilConvDataNumerica(yytext); return DATA_GG_MM_AAAA; }
+{N12}{ST}{MESI}{ST}({N4}|{N12})/{NOAN}			{ BEGIN(data); salvaPos(); 
+											  	yylval=(int)utilConvDataEstesa(yytext); return DATA_GG_MM_AAAA; }
 }
    /* *******************************
     * NUMERO DOPO DATA              *
     * *******************************/
 <data>{
-{NUM}?{S}{N}({S}\/{S}{N}){0,2}				BEGIN(0); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_ESTESO;
-{NUM}?{S}{N}{S}\/c\/{S}{N}					BEGIN(0); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_CONSIGLIO;
-{NUM}?{S}{N}{S}\/g\/{S}{N}					BEGIN(0); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_GIUNTA;
-.											BEGIN(0); unput(*yytext); return BREAK;
+{NUM}?{S}{N}{S}[/]{S}r/{NOAN}			BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_BARRA_ERRE;
+{NUM}{S}{N}{S}[\-]{S}{N}				BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_CON_TRATTINO;
+{NUM}?{S}{N}{S}[/]{S}{N}{S}{CODSET}		BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_DETERMINA;
+{NUM}?{S}{N}({S}[/]{S}{N}){0,2}			BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_ESTESO;
+{NUM}?{S}{N}{S}[/]c[/]{S}{N}			BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_CONSIGLIO;
+{NUM}?{S}{N}{S}[/]g[/]{S}{N}			BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_GIUNTA;
+.										BEGIN(0); unput(*yytext); return BREAK;
 }
    /* *******************************
     * NUMERO PRIMA DI DATA          *
     * *******************************/
-<atto>{NUM}?{S}{N}{S}\/c\/{S}{N}		BEGIN(nume); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_CONSIGLIO;
-<atto>{NUM}?{S}{N}{S}\/g\/{S}{N}		BEGIN(nume); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_GIUNTA;
+<atto>{NUM}?{S}{N}{S}[/]{S}r/{NOAN}		BEGIN(nume); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_BARRA_ERRE;
+<atto>{NUM}{S}{N}{S}[\-]{S}{N}			BEGIN(nume); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_CON_TRATTINO;
+<atto>{NUM}?{S}{N}{S}[/]{S}{N}{S}{CODSET}	BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_DETERMINA;
+<atto>{NUM}?{S}{N}{S}[/]c[/]{S}{N}		BEGIN(nume); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_CONSIGLIO;
+<atto>{NUM}?{S}{N}{S}[/]g[/]{S}{N}		BEGIN(nume); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_GIUNTA;
 <atto>{NUM}{S}{N}						BEGIN(nume); salvaPos(); yylval=(int)strdup(utilConvCardinale(yytext,0)); return NUMERO_ATTO;
 <nume>[/]{S}/{N}						pos+=yyleng; yylval=(int)strdup(yytext); return BARRA;
 <atto,nume>{N}							BEGIN(nume); salvaPos(); yylval=(int)strdup(yytext); return NUMERO_CARDINALE;
@@ -476,10 +499,10 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * DATA DOPO NUMERO              *
     * *******************************/
 <nume>{
-{N12}[/\.-]{N12}[/\.-]({N4}|{N12})/[^0-9]	{ BEGIN(0); salvaPos(); 
-											  yylval=(int)utilConvDataNumerica(yytext); return DATA_GG_MM_AAAA; }
-{N12}{ST}{MESI}{ST}({N4}|{N12})/[^0-9]		{ BEGIN(0); salvaPos(); 
-											  yylval=(int)utilConvDataEstesa(yytext); return DATA_GG_MM_AAAA; }
+{N12}[/\.\-]{N12}[/\.\-]({N4}|{N12})/{NOAN}		{ BEGIN(0); salvaPos(); 
+											  	yylval=(int)utilConvDataNumerica(yytext); return DATA_GG_MM_AAAA; }
+{N12}{ST}{MESI}{ST}({N4}|{N12})/{NOAN}			{ BEGIN(0); salvaPos(); 
+											  	yylval=(int)utilConvDataEstesa(yytext); return DATA_GG_MM_AAAA; }
 {CONN}										|
 {INDAT}										pos+=yyleng;
 .											BEGIN(0); unput(*yytext); return BREAK;
@@ -489,7 +512,7 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * *******************************/
 <INITIAL,sudd,atto>{
 [a-z0-9_]+							|
-([#]{1,256})							|
+([#]{1,256})						|
 \.									BEGIN(0); pos+=yyleng; if (!salta) { salta = 1; return BREAK; }
 
 .									pos++;
