@@ -56,8 +56,8 @@ NOAN	([^a-z0-9])
 SPA	([ ]+)
 PS	(\.|{SPA})
 S	({SPA}*)
-ST	({S}([\-]?){S})
-SVB	({S}([\-,\/]?){S})
+ST	({S}([-]?){S})
+SVB	({S}([-,/]?){S})
 PTO	(\^|(\.?[oa]))
 
 N	([0-9]+)
@@ -296,18 +296,18 @@ cost(\.|ituz(\.|ione))? 			BEGIN(0); salvaPos(); return COSTITUZIONE;
     * PRESIDENTE CONSIGLIO MINISTRI *
     * *******************************/
 {DECRETO}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}	|
-d[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?				BEGIN(atto); salvaPos(); return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI;
+d[.]?{ST}p[.]?{ST}c[.]?{ST}m[\.]?					BEGIN(atto); salvaPos(); return DECRETO_PRESIDENTE_CONSIGLIO_MINISTRI;
 
 {DIR}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}		|
-dir[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?				BEGIN(atto); salvaPos(); return DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI;
+dir[.]?{ST}p[.]?{ST}c[.]?{ST}m[\.]?					BEGIN(atto); salvaPos(); return DIRETTIVA_PRESIDENTE_CONSIGLIO_MINISTRI;
 
 {ODZ}({ST}del)?{ST}{PRES}({ST}del)?{ST}{COMIN}		|
-o(rd)?[\.]?{ST}p[\.]?{ST}c[\.]?{ST}m[\.]?			BEGIN(atto); salvaPos(); return ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI;
+o(rd)?[.]?{ST}p[.]?{ST}c[.]?{ST}m[.]?				BEGIN(atto); salvaPos(); return ORDINANZA_PRESIDENTE_CONSIGLIO_MINISTRI;
    /* *******************************
     * PRESIDENTE REPUBBLICA         *
     * *******************************/
 {DECRETO}{ST}(del{ST})?{PRES}{ST}(della{ST})?{REPUB}	|
-d[\.]?{ST}p[\.]?{ST}r[\.]? 								BEGIN(atto); salvaPos(); return DECRETO_PRESIDENTE_REPUBBLICA;
+d[.]?{ST}p[.]?{ST}r[.]? 								BEGIN(atto); salvaPos(); return DECRETO_PRESIDENTE_REPUBBLICA;
    /* *******************************
     * ATTI REGI                     *
     * *******************************/
@@ -395,10 +395,10 @@ presente{SPA}{STATU}												|
     * CNR                   *
     * ***********************/
 {DECRETO}({S}del)?{S}{PRES}({S}del)?{S}{CNR}	|
-d[\.]?{ST}p[\.]?{ST}{CNR}						BEGIN(atto); salvaPos(); return DECRETO_PRESIDENTE_CNR;
+d[.]?{ST}p[.]?{ST}{CNR}						BEGIN(atto); salvaPos(); return DECRETO_PRESIDENTE_CNR;
 
 {DECRETO}({S}del)?{S}{DIRGEN}({S}del)?{S}{CNR}	|
-d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRETTORE_GENERALE_CNR;
+d[.]?{ST}d[.]?g[.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRETTORE_GENERALE_CNR;
 
 {PRORD}({S}del)?{S}{COMSTR}({S}del)?{S}{CNR}	|
 {PRORD}({S}del)?{S}{CNR}						BEGIN(atto); salvaPos(); return PROVVEDIMENTO_ORDINAMENTALE_CNR;
@@ -467,17 +467,17 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * DATA PRIMA DI NUMERO          *
     * *******************************/
 <atto>{
-{N12}[/\.\-]{N12}[/\.\-]({N4}|{N12})/{NOAN}		{ BEGIN(data); salvaPos(); 
-											  	yylval=(int)utilConvDataNumerica(yytext); return DATA_GG_MM_AAAA; }
-{N12}{ST}{MESI}{ST}({N4}|{N12})/{NOAN}			{ BEGIN(data); salvaPos(); 
-											  	yylval=(int)utilConvDataEstesa(yytext); return DATA_GG_MM_AAAA; }
+{N12}[/.-]{N12}[/.-]({N4}|{N12})/{NOAN}		{ BEGIN(data); salvaPos(); 
+											yylval=(int)utilConvDataNumerica(yytext); return DATA_GG_MM_AAAA; }
+{N12}{ST}{MESI}{ST}({N4}|{N12})/{NOAN}		{ BEGIN(data); salvaPos(); 
+											yylval=(int)utilConvDataEstesa(yytext); return DATA_GG_MM_AAAA; }
 }
    /* *******************************
     * NUMERO DOPO DATA              *
     * *******************************/
 <data>{
 {NUM}?{S}{N}{S}[/]{S}r/{NOAN}			BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_BARRA_ERRE;
-{NUM}{S}{N}{S}[\-]{S}{N}				BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_CON_TRATTINO;
+{NUM}{S}{N}{S}[-]{S}{N}					BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_CON_TRATTINO;
 {NUM}?{S}{N}{S}[/]{S}{N}{S}{CODSET}		BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_DETERMINA;
 {NUM}?{S}{N}({S}[/]{S}{N}){0,2}			BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_ESTESO;
 {NUM}?{S}{N}{S}[/]c[/]{S}{N}			BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_CONSIGLIO;
@@ -488,7 +488,7 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * NUMERO PRIMA DI DATA          *
     * *******************************/
 <atto>{NUM}?{S}{N}{S}[/]{S}r/{NOAN}		BEGIN(nume); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_BARRA_ERRE;
-<atto>{NUM}{S}{N}{S}[\-]{S}{N}			BEGIN(nume); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_CON_TRATTINO;
+<atto>{NUM}{S}{N}{S}[-]{S}{N}			BEGIN(nume); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_CON_TRATTINO;
 <atto>{NUM}?{S}{N}{S}[/]{S}{N}{S}{CODSET}	BEGIN(0); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_DETERMINA;
 <atto>{NUM}?{S}{N}{S}[/]c[/]{S}{N}		BEGIN(nume); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_CONSIGLIO;
 <atto>{NUM}?{S}{N}{S}[/]g[/]{S}{N}		BEGIN(nume); salvaPos(); yylval=(int)strdup(utilCercaCifra(yytext)); return NUMERO_GIUNTA;
@@ -499,10 +499,10 @@ d[\.]?{ST}d[\.]?g[\.]?{ST}{CNR}					BEGIN(atto); salvaPos(); return DECRETO_DIRE
     * DATA DOPO NUMERO              *
     * *******************************/
 <nume>{
-{N12}[/\.\-]{N12}[/\.\-]({N4}|{N12})/{NOAN}		{ BEGIN(0); salvaPos(); 
-											  	yylval=(int)utilConvDataNumerica(yytext); return DATA_GG_MM_AAAA; }
-{N12}{ST}{MESI}{ST}({N4}|{N12})/{NOAN}			{ BEGIN(0); salvaPos(); 
-											  	yylval=(int)utilConvDataEstesa(yytext); return DATA_GG_MM_AAAA; }
+{N12}[/.-]{N12}[/.-]({N4}|{N12})/{NOAN}		{ BEGIN(0); salvaPos(); 
+											yylval=(int)utilConvDataNumerica(yytext); return DATA_GG_MM_AAAA; }
+{N12}{ST}{MESI}{ST}({N4}|{N12})/{NOAN}		{ BEGIN(0); salvaPos(); 
+											yylval=(int)utilConvDataEstesa(yytext); return DATA_GG_MM_AAAA; }
 {CONN}										|
 {INDAT}										pos+=yyleng;
 .											BEGIN(0); unput(*yytext); return BREAK;
