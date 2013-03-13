@@ -12,6 +12,7 @@ BINDIR=$(PREFIX)/bin
 ETCDIR=$(PREFIX)/etc
 LIBDIR=$(PREFIX)/lib
 INCLUDEDIR = $(PREFIX)/include
+FLEX = $(PREFIX)/flex
 
 CFLAGS=-O3 -I$(INCLUDEDIR)		# produzione
 #CFLAGS=-ggdb -I$(INCLUDEDIR)
@@ -30,46 +31,46 @@ riferimenti: pre.lex.yy.c pre.tab.c riferimenti.lex.yy.c riferimenti.tab.c levar
 				 util.o parser.o urn.o uscita.o config.o $(LIBS)
 
 pre.lex.yy.c: pre.lex
-	flex -i -8 -Ce -Ppre -opre.lex.yy.c pre.lex		# produzione
+	$(FLEX) -i -8 -Ce -Ppre -opre.lex.yy.c pre.lex		# produzione
 	# per debug
-	#flex -d -i -8 -Ce -Ppre -opre.lex.yy.c pre.lex
+	#$(FLEX) -d -i -8 -Ce -Ppre -opre.lex.yy.c pre.lex
 
 pre.tab.c: pre.y
 	# per debug (con predebug=1)
 	bison -td -ppre pre.y
 
 ids.lex.yy.c: ids.lex urn.h
-	flex -i -8 -CFe -Pids -oids.lex.yy.c ids.lex		# produzione
+	$(FLEX) -i -8 -CFe -Pids -oids.lex.yy.c ids.lex		# produzione
 	# per debug
-	#flex -d -i -8 -CFe -Pids -oids.lex.yy.c ids.lex
+	#$(FLEX) -d -i -8 -CFe -Pids -oids.lex.yy.c ids.lex
 
 levarif.lex.yy.c: levarif.lex parser.h
-	flex -i -8 -CFe -Plev -olevarif.lex.yy.c levarif.lex		# produzione
+	$(FLEX) -i -8 -CFe -Plev -olevarif.lex.yy.c levarif.lex		# produzione
 	# per debug
-	#flex -d -i -8 -CFe -Plev -olevarif.lex.yy.c levarif.lex
+	#$(FLEX) -d -i -8 -CFe -Plev -olevarif.lex.yy.c levarif.lex
 
 riferimenti.lex.yy.c: riferimenti.lex
-	flex -i -8 -Ce -oriferimenti.lex.yy.c riferimenti.lex		# produzione
+	$(FLEX) -i -8 -Ce -oriferimenti.lex.yy.c riferimenti.lex		# produzione
 	# per debug
-	#flex -d -i -8 -Ce -oriferimenti.lex.yy.c riferimenti.lex
+	#$(FLEX) -d -i -8 -Ce -oriferimenti.lex.yy.c riferimenti.lex
 
 riferimenti.tab.c: riferimenti.y
 	bison -g -v -td riferimenti.y
 	# per debug yydebug=1
 
 noncompleti.lex.yy.c: noncompleti.lex
-	flex -i -8 -Ce -Pnoc -ononcompleti.lex.yy.c noncompleti.lex		# produzione
+	$(FLEX) -i -8 -Ce -Pnoc -ononcompleti.lex.yy.c noncompleti.lex		# produzione
 	# per debug
-	#flex -d -i -8 -Ce -Pnoc -ononcompleti.lex.yy.c noncompleti.lex
+	#$(FLEX) -d -i -8 -Ce -Pnoc -ononcompleti.lex.yy.c noncompleti.lex
 
 noncompleti.tab.c: noncompleti.y
 	# per debug (con yydebug=1)
 	bison -g -v -td -pnoc noncompleti.y
 
 interni.lex.yy.c: interni.lex
-	flex -i -8 -Ce -Pint -ointerni.lex.yy.c interni.lex		# produzione
+	$(FLEX) -i -8 -Ce -Pint -ointerni.lex.yy.c interni.lex		# produzione
 	# per debug
-	# flex -d -i -8 -Ce -Pint -ointerni.lex.yy.c interni.lex
+	# $(FLEX) -d -i -8 -Ce -Pint -ointerni.lex.yy.c interni.lex
 
 interni.tab.c: interni.y
 	# per debug (con yydebug=1)
@@ -95,7 +96,7 @@ clean:
 			ids.lex.yy.c noncompleti.lex.yy.c noncompleti.tab.* \
 			interni.lex.yy.c interni.tab.* \
 			pre.lex.yy.c pre.tab.* \
-			*.output *.vcg *~
+			*.output *.dot *.vcg *~
 
 install: all
 
