@@ -21,7 +21,7 @@
 
 int errore = 0;
 
-int yydebug = 0;		/* per debug */
+int yydebug = 0;		/* 1 per debug */
 
 urn urnTmp;
 
@@ -89,10 +89,13 @@ int yywrap() {
 %token DECRETO_LEGGE
 %token DECRETO_LEGISLATIVO
 
+%token DELIBERA_UFF_PRESIDENZA
+%token DELIBERA_CONS_REGIONALE
 %token DELIBERA_GIUNTA_COMUNALE
 %token DELIBERA_CONSIGLIO_COMUNALE
 %token DELIBERA
 %token PROPOSTA_DELIBERA
+%token DETERMINA
 
 %token DECRETO_PRESIDENTE_CNR
 %token DECRETO_DIRETTORE_GENERALE_CNR
@@ -136,6 +139,9 @@ int yywrap() {
 %token DATA_GG_MM_AAAA
 
 %token NUMERO_ATTO
+%token NUMERO_BARRA_ERRE
+%token NUMERO_CON_TRATTINO
+%token NUMERO_DETERMINA
 %token NUMERO_CARDINALE
 %token NUMERO_ESTESO
 %token NUMERO_CONSIGLIO
@@ -444,17 +450,23 @@ amministrativoTipo:
 										urnTmp.autorita = strdup("consiglio.nazionale.ricerche"); }
 	| PROVVEDIMENTO_ORDINAMENTALE		{ urnTmp.provvedimento = strdup("provvedimento"); 
 										urnTmp.autorita = strdup(configGetEmanante()); }
-	| DELIBERA_CONSIGLIO_COMUNALE		{ urnTmp.provvedimento = strdup("delibera"); 
+	| DELIBERA_CONS_REGIONALE			{ urnTmp.provvedimento = strdup("deliberazione"); 
+										urnTmp.autorita = strdup(configGetEmanante()); }
+	| DELIBERA_UFF_PRESIDENZA			{ urnTmp.provvedimento = strdup("deliberazione"); 
+										urnTmp.autorita = strdup(configGetEmanante()); }
+	| DELIBERA_CONSIGLIO_COMUNALE		{ urnTmp.provvedimento = strdup("deliberazione"); 
 										urnTmp.autorita = malloc(sizeof(char) * (strlen(configGetEmanante()) + 12)); // dim. x consiglio
 										utilEstrai(urnTmp.autorita,strdup(configGetEmanante()),"",";");
 										strcat(urnTmp.autorita, ";consiglio");  }
-	| DELIBERA_GIUNTA_COMUNALE			{ urnTmp.provvedimento = strdup("delibera"); 
+	| DELIBERA_GIUNTA_COMUNALE			{ urnTmp.provvedimento = strdup("deliberazione"); 
 										urnTmp.autorita = malloc(sizeof(char) * (strlen(configGetEmanante()) + 12)); // dim. x consiglio
 										utilEstrai(urnTmp.autorita,strdup(configGetEmanante()),"",";");
 										strcat(urnTmp.autorita, ";giunta"); }
-	| DELIBERA							{ urnTmp.provvedimento = strdup("delibera"); 
+	| DELIBERA							{ urnTmp.provvedimento = strdup("deliberazione"); 
 										urnTmp.autorita = strdup(configGetEmanante()); }
-	| PROPOSTA_DELIBERA					{ urnTmp.provvedimento = strdup("proposta.delibera"); 
+	| PROPOSTA_DELIBERA					{ urnTmp.provvedimento = strdup("proposta.deliberazione"); 
+										urnTmp.autorita = strdup(configGetEmanante()); }
+	| DETERMINA							{ urnTmp.provvedimento = strdup("determinazione"); 
 										urnTmp.autorita = strdup(configGetEmanante()); }
 	;
 
@@ -619,6 +631,7 @@ estremiAbbreviati:
 
 estremiNumeroEstesoOpz:
 	NUMERO_ESTESO							{ urnTmp.numero = (char *) $1; }
+	| NUMERO_BARRA_ERRE						{ urnTmp.numero = (char *) $1; }
 	| /* vuoto */
 	;
 
@@ -634,6 +647,7 @@ estremiNumeroBarraOpz:
 estremiNumero:
 	NUMERO_ATTO								{ urnTmp.numero = (char *) $1; }
 	| NUMERO_CARDINALE						{ urnTmp.numero = (char *) $1; }
+	| NUMERO_BARRA_ERRE						{ urnTmp.numero = (char *) $1; }
 	;
 
 estremiAnno:
@@ -650,7 +664,9 @@ estremiDelibere:
 	;
 
 estremiNumeroDelibere:
-	NUMERO_CONSIGLIO						{ urnTmp.numero = (char *) $1; }
+	NUMERO_CON_TRATTINO						{ urnTmp.numero = (char *) $1; }
+	| NUMERO_DETERMINA						{ urnTmp.numero = (char *) $1; }
+	| NUMERO_CONSIGLIO						{ urnTmp.numero = (char *) $1; }
 	| NUMERO_GIUNTA							{ urnTmp.numero = (char *) $1; }
 	;
 
